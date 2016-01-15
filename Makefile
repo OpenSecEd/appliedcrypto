@@ -1,4 +1,6 @@
-SUBDIR= 	bitcoin
+SUBDIR=
+SUBDIR+= 	./crypto
+SUBDIR+= 	./bitcoin
 
 
 INCLUDE_MAKEFILES=makefiles

@@ -26,6 +26,7 @@ $ git submodule update --recursive --init
 Then you can go into the directory of the desired document and run `make`.
 The source files are structured as follows:
 
+- `crypto` contains slides for a high-level overview of cryptography.
 - `bitcoin` contains slides for how to analyse properties and design a system 
   using proper crypto mechanisms.
 
