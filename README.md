@@ -7,12 +7,12 @@ students are aware of the possibilities and (if desired) can apply them when
 designing secure systems.
 
 The module is part of the [Open Security Education][OpenSecEd] project and the 
-maintainer is [Daniel Bosk][dbosk].  The latest release can be found under 
+maintainer is [Daniel Bosk][Maintainer].  The latest release can be found under 
 [releases][Releases].  You can safely link directly to the PDFs found there.
 
-[OpenSecEd]: https://github.com/OpenSecEd/
-[dbosk]: https://github.com/dbosk/
-[Releases]: releases
+[OpenSecEd]: https://github.com/OpenSecEd
+[Maintainer]: https://github.com/dbosk
+[Releases]: https://github.com/OpenSecEd/appliedcrypto/releases
 
 
 File Structure and Building
