@@ -1,0 +1,143 @@
+\documentclass[a4paper]{llncs}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[swedish,english]{babel}
+\usepackage[hyphens]{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{varioref}
+\usepackage{cleveref}
+\usepackage{amssymb}
+\usepackage{csquotes}
+\usepackage{verbatim}
+
+\usepackage[natbib,style=alphabetic,maxbibnames=99,sorting=none]{biblatex}
+\addbibresource{spuriouslab.bib}
+
+\usepackage[lncs,crypto]{libbib}
+
+%\printanswers
+\pagestyle{plain}
+
+\title{May the (Brute) Force Be with You}
+\author{%
+  Daniel Bosk\inst{1}\fnmsep\inst{2}
+}
+\institute{%
+  School of Computer Science and Communication\\
+  KTH Royal Institute of Technology, SE-100\,44 Stockholm
+  \and
+  Department of Information and Communication Systems\\
+  Mid Sweden University, SE-851\,70 Sundsvall
+}
+\date{14th April 2015}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+  \input{abstract.tex}
+\end{abstract}
+
+
+\section{Introduction}
+
+The idea of this assignment is to introduce the concept of brute forcing 
+security mechanisms.
+The mechanism in question here is a simple monoalphabetic cryptographic 
+algorithm.
+It also serves to help you reflect on deniability: how can you be sure that 
+your solution is the correct one?
+
+\subsection{Aims}
+
+The aim of this assignment is to examine that you are:
+\begin{itemize}
+  \input{aims.tex}
+\end{itemize}
+
+
+\section{Theory}
+
+If you do not have probability theory and statistics fresh in memory you are 
+recommended to revise that.
+% XXX replace Swedish text with English counterpart
+The text \citetitle{kthsannolikhet} by \citet{kthsannolikhet} (in Swedish) 
+treats this subject, you are recommended to read Sect.~1--4.
+
+If you have previously taken (or are currently taking) a course on 
+cryptography, the material from that course covering classical cryptography is 
+enough.
+% XXX replace Swedish text with English counterpart
+Otherwise you are recommended to read \citetitle{Bosk2013itn} 
+\cite{Bosk2013itn} (in Swedish) or Chap.~1 in \citetitle{Stinson2006cta} by 
+\citet{Stinson2006cta}.
+
+Finally, you should read about spurious keys and unicity distance.
+The recommended literature is Chap.~2 in~\cite{Stinson2006cta}.
+
+
+\section{Assignment}
+
+The first part of the assignment is to break a monoalphabetic cipher.
+The intercepted text is the following:
+%\begin{quote}
+%  TSVCFMSFQ OÅ CFMMB LVQT TLB UBQB UÄK EÖQSQPHMB NFC OQPHQBNNFQJMH PDG 
+%  NBSFNBSJL PDG LQXOSPHQBEJ.
+%\end{quote}
+\begin{verbatim}
+  TSVCFMSFQOÅCFMMBLVQTTLBUBQBUÄKEÖQSQPHMBNFCOQPHQBNNFQJMHPDG
+  NBSFNBSJLPDGLQXOSPHQBEJ
+\end{verbatim}
+Find the corresponding plaintext of this ciphertext.
+When you have found a plaintext and the key, think about how certain you can be 
+that this is indeed the correct key (and thus correct plaintext).
+
+The second part of the assignment is about spurious keys 
+\cite[Chap.~2]{Stinson2006cta}.
+By spurious keys we mean a set of \(n\) keys \(k_1, k_2, \ldots, k_n\) which 
+all decrypt a ciphertext \(c\) to meaningful plaintexts \(m_1, m_2, \ldots, 
+m_n\).
+Your job is to construct such a ciphertext with two spurious keys \(k_1\) and 
+\(k_2\) for the cryptosystem used in the first part of the assignment.
+The texts should be as long as possible (the longest meaningful plaintexts will 
+receive an award), and they do not have to be both in Swedish or English---one 
+plaintext in English and one in Swedish is fine.
+
+Algorithmically finding a spurious key should be possible, in this case, by 
+generating plaintext using \(n\)-grams.
+However, using pen and paper is probably the most straightforward way, and 
+probably the fastest for this short assignment.
+
+
+\section{Examination}
+
+You must submit your solutions to the assignment in a report (PDF-format) in 
+the course platform.
+The report must contain the following:
+\begin{enumerate}
+  \item The plaintext corresponding to the cryptotext given above with an 
+    explanation of what makes you sure this is the correct plaintext.
+
+%    \begin{solution}
+%      % XXX construct a ciphertext which can decrypt into two plaintexts
+%      % XXX change the plain- and ciphertexts to English
+%      The key is: \enquote{badcfehgjilknmporqtsvuwyxzåäö}.
+%      The plaintext is \enquote{studenter på denna kurs ska vara väl förtrogna 
+%      med programmering och matematik och kryptografi}.
+%      They should motivate why this is a probably-correct decryption.
+%    \end{solution}
+
+  \item One ciphertext \(c\), two keys \(k_1\) and \(k_2\) and the 
+    corresponding plaintexts \(m_1\) and \(m_2\), such that \(\Enc[k_1]{m_1} 
+      = c = \Enc[k_2]{m_2}\).
+    Also explain your method for creating \(c, k_1, k_2, m_1. m_2\) and why we 
+    want to have spurious keys.
+    Also, how is the length of the message affecting the spurious keys?
+
+%    \begin{solution}
+%      Verify that \( \Enc[k_1]{m_1} = c = \Enc[k_2]{m_2}\).
+%    \end{solution}
+\end{enumerate}
+
+
+\printbibliography{}
+\end{document}

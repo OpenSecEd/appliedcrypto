@@ -31,6 +31,8 @@ The source files are structured as follows:
   functions.
 - `bitcoin` contains slides for how to analyse properties and design a system 
   using proper crypto mechanisms.
+- `spuriouslab` contains the instruction for a lab on brute forcing and 
+  spurious keys.
 
 In each directory the files are structured as follows:
 
