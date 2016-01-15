@@ -27,6 +27,7 @@ Then you can go into the directory of the desired document and run `make`.
 The source files are structured as follows:
 
 - `crypto` contains slides for a high-level overview of encryption.
+- `symcrypt` is an introduction to symmetric crypto, very similar to `crypto`.
 - `hashsign` contains slides for a high-level overview of signatures and hash 
   functions.
 - `bitcoin` contains slides for how to analyse properties and design a system 

@@ -1,0 +1,711 @@
+% $Id$
+%\documentclass[handout]{beamer}
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ibycus,english,swedish]{babel}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{subfig}
+\usepackage{multicol}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{booktabs}
+\usepackage[squaren,binary]{SIunits}
+\usepackage{verbatim}
+
+\setbeamertemplate{bibliography item}[text]
+\usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
+\addbibresource{symcrypt.bib}
+
+%\newtheorem{theorem}{Sats}%[chapter]
+\providetranslation[to=swedish]{Theorem}{Sats}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{corollary}{Korollarium}
+\providetranslation[to=swedish]{Corollary}{Korollarium}
+\theoremstyle{definition}
+%\newtheorem{definition}{Definition}
+%\newtheorem{axiom}[definition]{Axiom}
+\newenvironment{axiom}[1]{\begin{block}{Postulat (#1)}}{\end{block}}
+%\newtheorem{example}{Exempel}
+\providetranslation[to=swedish]{Example}{Exempel}
+\newtheorem{exercise}{Övning}
+
+\DeclareMathOperator{\p}{\mathcal{P}}
+\let\P\p
+\DeclareMathOperator{\C}{\mathcal{C}}
+\DeclareMathOperator{\K}{\mathcal{K}}
+\DeclareMathOperator{\E}{\mathcal{E}}
+\DeclareMathOperator{\D}{\mathcal{D}}
+\DeclareMathOperator{\X}{\mathcal{X}}
+\DeclareMathOperator{\Y}{\mathcal{Y}}
+\DeclareMathOperator{\h}{\mathcal{H}}
+\let\H\h
+
+\DeclareMathOperator{\N}{\mathbb{N}}
+\DeclareMathOperator{\Z}{\mathbb{Z}}
+\DeclareMathOperator{\R}{\mathbb{R}}
+
+\let\stoch\mathbf
+
+\renewcommand{\p}{\stoch P}
+\renewcommand{\c}{\stoch C}
+\renewcommand{\k}{\stoch K}
+\newcommand{\x}{\stoch X}
+\newcommand{\y}{\stoch Y}
+\newcommand{\e}{\stoch E}
+\newcommand{\s}{\stoch S}
+
+\DeclareMathOperator{\lequiv}{\Longleftrightarrow}
+\DeclareMathOperator{\xor}{\oplus}
+
+\renewcommand{\qedsymbol}{Q.E.D.}
+
+\DeclareMathOperator{\hmac}{HMAC}
+\DeclareMathOperator{\concat}{||}
+
+\mode<presentation>
+{
+  \usetheme{Frankfurt}
+  \setbeamercovered{transparent}
+  \usecolortheme{seagull}
+}
+\setbeamertemplate{footline}{\insertframenumber}
+
+\title{%
+  Symmetrisk kryptografi
+}
+\author{Daniel Bosk\footnote{%
+  Detta verk är tillgängliggjort under licensen Creative Commons 
+  Erkännande-DelaLika 2.5 Sverige (CC BY-SA 2.5 SE).
+  För att se en sammanfattning och kopia av licenstexten besök URL 
+  \url{http://creativecommons.org/licenses/by-sa/2.5/se/}.
+}}
+\institute[MIUN IKS]{%
+  %Department of Information and Communication Systems (ICS),\\
+  %Mid Sweden University, Sundsvall.
+  %
+  Avdelningen för informations- och kommunikationssytem (IKS),\\
+  Mittuniversitetet, Sundsvall.
+}
+\date{\today}
+
+%\pgfdeclareimage[height=0.65cm]{university-logo}{MU_logotyp_int_CMYK.pdf}
+%\logo{\pgfuseimage{university-logo}}
+
+\AtBeginSection[]{%
+  \begin{frame}<beamer>{Översikt}
+    \small
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+\AtBeginSubsection[]{%
+  \begin{frame}<beamer>{Översikt}
+    \small
+    \tableofcontents[currentsubsection,sectionstyle=shaded]
+  \end{frame}
+}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Översikt}
+  \tableofcontents
+\end{frame}
+\begin{frame}{Litteratur}
+  \input{literature.tex}
+\end{frame}
+
+
+% Since this a solution template for a generic talk, very little can
+% be said about how it should be structured. However, the talk length
+% of between 15min and 45min and the theme suggest that you stick to
+% the following rules:  
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+
+\section{Klassisk kryptografi}
+
+\subsection{Kryptosystem}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Ordet kryptografi kommer från grekiskans \ibygr{krupto's} 
+      (\emph{kryptos}) och \ibygr{gra'fos} (\emph{graphos}) \cite{OED2013cg}.
+
+    \item Dessa betyder \emph{gömd} eller \emph{hemlig} \cite{OED2013c} 
+      respektive \emph{skrift} \cite{OED2013g}.
+
+    \item Ordet kryptografi betyder följaktligen \emph{hemlig skrift}.
+
+    \item I modern tid är kryptografin ett högst matematiskt område.
+
+    \item Det finns inte utrymme för annat än matematisk precision.
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{symmetric.eps}
+    \caption{Symmetrisk kryptering.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{definition}\label{def:kryptosystem}
+    Ett \emph{kryptosystem} är en tupel \((\P, \C, \K, \E, \D)\) där följande 
+    gäller:
+    \begin{enumerate}
+      \item \(\P\) är en ändlig mängd av möjliga klartexter.
+
+      \item \(\C\) är en ändlig mängd av möjliga kryptotexter.
+
+      \item \(\K\), kallad \emph{nyckelrymden}, är en ändlig mängd av möjliga 
+        nycklar.
+
+      \item För varje \(k\in \K\) finns en \emph{krypteringsregel} \(e_k\in 
+        \E\) och motsvarande \emph{avkrypteringsregel} \(d_k\in \D\).
+        Varje \(e_k\colon \P\to \C\) och \(d_k\colon \C\to \P\) är funktioner 
+        sådana att \(d_k(e_k(p)) = p\) för alla klartexter \(p\in \P\).
+
+    \end{enumerate}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Typer av operationer för att transformera klartext till kryptotext.
+
+    \item Antalet nycklar som används.
+
+    \item Sätt att processa klartexten:
+      \begin{itemize}
+        \item Blockchiffer.
+        \item Strömchiffer.
+      \end{itemize}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}{Kryptanalys}
+  \begin{itemize}
+    \item Enbart chiffertext (ciphertext only).
+    \item Känd klartext (known plaintext).
+    \item Vald klartext (chosen plaintext).
+    \item Vald kryptotext (chosen ciphertext).
+    \item Vald text (chosen text).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{definition}
+    Ett kryptosystem är beräkningsmässigt säkert om det uppfyller någon eller 
+    båda av följande:
+    \begin{itemize}
+      \item Kostnaden för att knäcka chiffret är högre än värdet på 
+        informationen det skyddar.
+      \item Tiden det tar att knäcka chiffret är längre än tiden informationen 
+        är värdefull.
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\subsection{Substitutionschiffer}
+
+\begin{frame}{\insertsubsectionhead}{Caesarchiffer}
+  \begin{definition}[Skiftchiffer]\label{def:shiftCipher}
+    Låt \(\P = \C = \K = \Z_{29}\) och låt varje bokstav i det svenska 
+    alfabetet motsvara ett unikt tal i \(\Z_{29}\).
+    För alla \(k\in \K\) definierar vi
+    \begin{align}
+      \nonumber
+      e_k(p) &= (p + k) \bmod 29, \text{ och } \\
+      \nonumber
+      d_k(c) &= (c - k) \bmod 29,
+    \end{align}
+    där \(p\in \P\) är en klartextbokstav och \(c = e_k(p)\in \C\) är 
+    motsvarande kryptotextbokstav.
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}{Caesarchiffer}
+  \begin{example}\label{ex:shiftdef}
+    Låt oss numrera bokstäverna i det svenska alfabetet enligt index med start 
+    från noll.
+    Då får vi att textsträngen ''hej'' skulle kunna motsvaras av tupeln \(p 
+    = (7, 4, 9)\).
+    Om vi låter nyckeln \(k\in \K\) vara \(2\) får vi att
+    \begin{align}
+      \nonumber
+      c = e_2(p) &= (e_2(7), e_2(4), e_2(9)) \\
+      \nonumber
+        &= (9, 6, 11).
+    \end{align}
+    Om vi översätter tillbaka till bokstäver får vi att \(c\) motsvarar 
+    strängen ''JGL''.
+  \end{example}
+
+  \begin{example}
+    \label{ex:CaesarSkatten}
+    Om vi krypterar ordet \emph{skatten} blir det \emph{UMCVVGP}.
+  \end{example}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}{Caesarchiffer}
+  \begin{block}{Kryptanalys}
+    \begin{itemize}
+      \item Kan enkelt testa alla 29 nycklarna för hand.
+
+      \item Kan titta efter upprepningar:
+        \begin{itemize}
+          \item Upprepade bokstäver är sannolikt konsonanter.
+          \item Upprepade bokstavskombinationer är sannolikt vanliga ord.
+        \end{itemize}
+
+      \item Trots enkelheten att knäcka detta försökte terrorister seriöst att 
+        använda systemet så sent som 2011 \cite{Register2011bjr}.
+
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{definition}[Substitutionschiffer]\label{def:substitutionCipher}
+    Låt \(A\) vara vårt alfabet och låt \(\P = \C = A\).
+    Vidare låt \(\K\) bestå av alla möjliga permutationer av \(A\).
+    För varje permutation \(\pi\in \K\) definierar vi att
+    \begin{align}
+      \nonumber
+      e_\pi(p) &= \pi(p), \text{ och } \\
+      \nonumber
+      d_\pi(c) &= \pi^{-1}(c),
+    \end{align}
+    där \(\pi^{-1}\) är den inverterade permutationen \(\pi\), \(p\in \P\) är 
+    en klartextbokstav och \(c = e_\pi(p)\in \C\) är motsvarande 
+    kryptotextbokstav.
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{table}
+    \centering\small
+    \begin{tabular}{c|ccccccccccccccc}
+      \toprule
+      \(\alpha\) & a & b & c & d & e & f & g & h & i & j & k & l & m & n & o \\
+      \(\pi(\alpha)\) 
+      & C & M & Q & F & Z & Ö & I & J & P & L & D & N & O & K & D \\
+      \midrule
+      \(\alpha\) & p & q & r & s & t & u & v & w & x & y & z & å & ä & ö \\
+      \(\pi(\alpha)\) 
+      & R & S & T & Å & V & Y & X & W & G & U & Ä & H & A & B \\
+      \bottomrule
+    \end{tabular}
+    \caption{Nyckel för att kryptera med ett substitutionschiffer.
+      Gemener används som klartextalfabete och versaler som kryptoalfabete.}
+    \label{tbl:Substitutionschiffer}
+  \end{table}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{example}
+    Vi låter \(A\) vara det svenska alfabetet.
+    Nyckeln \(\pi\in \K\) ges av föregående tabell.
+    Då får vi att \(e_\pi(h) = J, e_\pi(e) = Z, e_\pi(j) = L\).
+  \end{example}
+
+  \begin{example}
+    \label{ex:SubstitutionSkatten}
+    Om vi krypterar ordet \emph{skatten} blir det \emph{ÅDCVVZK}.
+  \end{example}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{table}
+    \centering\tiny
+    \begin{tabular}{r|cccccccccc}
+      \toprule
+      \(\alpha\) & a & b & c & d & e & f & g & h & i & j  \\
+      \(\Pr(\x = \alpha)\) & 0.063  & 0.000 & 0.000 & 0.031 & 0.156 & 0.000 
+      & 0.031 & 0.094 & 0.064 & 0.000 \\
+      \midrule
+      \(\alpha\) & k & l & m & n & o & p & q & r & s & t \\
+      \(\Pr(\x = \alpha)\) & 0.000 & 0.063 & 0.000 & 0.094 & 0.031 & 0.000 
+      & 0.000 & 0.031 & 0.156 & 0.125 \\
+      \midrule
+      \(\alpha\) & u & v & w & x & y & z & å & ä & ö \\
+      \(\Pr(\x = \alpha)\) & 0.000 & 0.000 & 0.031 & 0.031 & 0.000 & 0.000 
+      & 0.000 & 0.000 & 0.000 \\
+      \bottomrule
+    \end{tabular}
+    \caption{Tabell av sannolikhetsfördelningen för den stokastiska variabeln 
+    \(\x\) som antar bokstäver i meningen ''anenglishtexthasnoswedishletters'', 
+    angiven med tre decimalers noggrannhet.}
+    \label{tbl:SannolikhetstabellKlartext}
+  \end{table}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}{Sannolikhetsfördelningar}
+  \begin{itemize}
+    \item Likformig sannolikhetsfördelning (uniform distribution).
+    \item Oberoende.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{table}
+    \centering\tiny
+    \begin{tabular}{r|cccccccccccc}
+      \toprule
+      \(\alpha\) & A & B & C & D & E & F & G & H & I & J \\
+      \(\Pr(\y = \alpha)\) & 0.000 & 0.000 & 0.063  & 0.000 & 0.000 & 0.031 
+      & 0.156 & 0.000 & 0.031 & 0.094 \\
+      \midrule
+      \(\alpha\) & K & L & M & N & O & P & Q & R & S & T \\
+      \(\Pr(\y = \alpha)\) & 0.064 & 0.000 & 0.000 & 0.063 & 0.000 & 0.094 
+      & 0.031 & 0.000 & 0.000 & 0.031 \\
+      \midrule
+      \(\alpha\) & U & V & W & X & Y & Z & Å & Ä & Ö \\
+      \(\Pr(\y = \alpha)\) & 0.156 & 0.125 & 0.000 & 0.000 &  0.031 & 0.031 
+      & 0.000 & 0.000 & 0.000 \\
+      \bottomrule
+    \end{tabular}
+    \caption{Tabell av sannolikhetsfördelningen för den stokastiska variabeln 
+    \(\y\) som antar bokstäver i meningen ''CPGPINKUJVGZVJCUPQUYGFKUJNGVVGTU'', 
+    angiven med tre decimalers noggrannhet.}
+    \label{tbl:SannolikhetstabellKryptotext}
+  \end{table}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}{Vigenèrechiffer}
+  \begin{definition}[Vigenèrechiffer]
+    Låt \(n\) vara ett positivt heltal.
+    Definiera att \(\P = \C = \K = (\Z_{29})^n\).
+    För alla nycklar \(k = (k_1,\ldots,k_n)\in \K\), klartexter \(p = (p_1, 
+    \ldots, p_n)\in \P\) och kryptotexter \(c = (c_1,\ldots,c_n)\in \C\) 
+    definierar vi att
+    \begin{align}
+      \nonumber
+      e_k(p) &= (p_1 + k_1, \ldots, p_n + k_n), \text{ och } \\
+      \nonumber
+      d_k(c) &= (c_1 - k_1, \ldots, c_n - k_n),
+    \end{align}
+    där alla operationer utförs i \(\Z_{29}\).
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}{Vigenèrechiffer}
+  \begin{table}
+    \centering
+    \begin{tabular}{l|cccccccccc}
+      \toprule
+      Klartext & a & b & c & d & e & f & g & h & i & j \\
+      A        & A & B & C & D & E & F & G & H & I & J \\
+      B        & B & C & D & E & F & G & H & I & J & K \\
+      C        & C & D & E & F & G & H & I & J & K & L \\
+      \midrule
+      Klartext & k & l & m & n & o & p & q & r & s & t \\
+      A        & K & L & M & N & O & P & Q & R & S & T \\
+      B        & L & M & N & O & P & Q & R & S & T & U \\
+      C        & M & N & O & P & Q & R & S & T & U & V \\
+      \midrule
+      Klartext & u & v & w & x & y & z & å & ä & ö \\
+      A        & U & V & W & X & Y & Z & Å & Ä & Ö \\
+      B        & V & W & X & Y & Z & Å & Ä & Ö & A \\
+      C        & W & X & Y & Z & Å & Ä & Ö & A & B \\
+      \bottomrule
+    \end{tabular}
+    \caption{Vigenèrechiffer med nyckeln \emph{ABC}.}
+    \label{tbl:Vigenerechiffer}
+  \end{table}
+\end{frame}
+
+\begin{frame}[fragile]{\insertsubsectionhead}{Vigenèrechiffer}
+  \begin{example}
+    \label{ex:VigenereSkatten}
+    Om vi vill kryptera order \emph{skatten} ska bokstäverna i nyckeln användas 
+    enligt
+    \begin{verbatim}
+      skatten
+      ABCABCA
+    \end{verbatim}
+    och vi får alltså \emph{SLCTUGN} genom att använda de olika Caesarchiffren 
+    i föregående tabell.
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]{\insertsubsectionhead}{Vigenèrechiffer}
+  \begin{example}
+    \label{ex:VigenereMedUpprepning}
+    Ett Vigenèrechiffer med nyckeln \emph{ABCD} används för att kryptera texten 
+    \emph{cryptoisshortforcryptography}.
+    \begin{verbatim}
+      Nyckel:     ABCDABCDABCDABCDABCDABCDABCD
+      Klartext:   cryptoisshortforcryptography
+      Kryptotext: CSASTPKVSIQUTGQUCSASTPIUAQJB
+    \end{verbatim}
+    Avståndet mellan den upprepade texten \emph{CSASTP} är 16, från första 
+    tecken till första tecken.
+    De möjliga nyckellängderna är alltså \(16, 8, 4, 2\) eller \(1\).
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]{\insertsubsectionhead}{Vigenèrechiffer}
+  \begin{example}
+    \label{ex:VigenereKolumner}
+    Ett Vigenèrechiffer med nyckeln \emph{ABCD} används för att kryptera texten 
+    \emph{cryptoisshortforcryptography}.
+    \begin{verbatim}
+      Nyckel:     ABCD              ABCD
+      Klartext:   cryp  Kryptotext: CSAS
+                  tois              TPKV
+                  shor              SIQU
+                  tfor              TGQU
+                  cryp              CSAS
+                  togr              TPIU
+                  aphy              AQJB
+    \end{verbatim}
+  \end{example}
+\end{frame}
+
+\subsection{Permutationschiffer}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{definition}[Permutationschiffer]\label{def:permutationCipher}
+    Låt \(n\) vara ett positivt heltal och \(A\) ett alfabet.
+    Låt också \(\P = \C = A^n\) och låt \(\K\) vara alla möjliga permutationer 
+    av mängden \(\{1,\ldots,n\}\).
+    För en permutation \(\pi\in \K\) definierar vi
+    \begin{align}
+      \nonumber
+      e_\pi(p_1,\ldots,p_n) = (p_{\pi(1)},\ldots,p_{\pi(n)}),
+    \end{align}
+    för alla klartexter \(p = (p_1,\ldots,p_n)\in \P\), och
+    \begin{align}
+      \nonumber
+      d_\pi(c_1,\ldots,c_n) = (c_{\pi^{-1}(1)},\ldots,c_{\pi^{-1}(n)}),
+    \end{align}
+    för alla kryptotexter \(c = (c_1,\ldots,c_n)\in \C\) och där \(\pi^{-1}\) 
+    är den inverterade permutationen \(\pi\).
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{table}
+    \centering\small
+    \begin{tabular}{r|rrrrrrrrrrrrrr}
+      \toprule
+      \(i\)       & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 
+      \\
+      \(\pi(i)\)  & 1 & 8 & 2 & 9 & 3 & 10 & 4 & 11 & 5 & 12 & 6 & 13 & 7 & 14 
+      \\
+      \bottomrule
+    \end{tabular}
+    \caption{Definitionen av permutationen \(\pi\).}
+    \label{tbl:pi}
+  \end{table}
+
+  \begin{example}\label{ex:permutationEnDagIJuni}
+    Låt \(n = 14\).
+    Permutationen \(\pi\in \K\) definieras enligt tabellen ovan.
+    För att kryptera använder vi \(e_\pi\in \E\).
+    Om vi låter \(p = (p_1, \ldots, p_n)\) vara vår klartext ''en dag i juni'', 
+    får vi att \(c = e_\pi(p) = (p_1, p_8, p_2, p_9, \ldots, p_7, p_{14})\) och 
+    således att \(c\) är vår kryptotext ''EIN\_\_JDUANGI\_.''.
+
+    Vi avkrypterar på samma sätt med hjälp av \(\pi^{-1}\).
+  \end{example}
+\end{frame}
+
+%\begin{frame}{\insertsubsectionhead}
+%  \begin{definition}[Hillchiffret]
+%  \end{definition}
+%\end{frame}
+
+\subsection{Perfekt sekretess}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{definition}\label{def:perfectSecrecy}
+    Ett kryptosystem \((\P, \C, \K, \E, \D)\) sägs ha \emph{perfekt sekretess} 
+    om \(\Pr(\p = p\mid \c = c) = \Pr(\p = p)\) för alla \(p\in \P\) och \(c\in 
+    \C\).
+    Det vill säga, sannolikheten a posteriori att en klartext är \(p\) om 
+    kryptotexten är \(c\) är densamma som sannolikheten a priori att klartexten 
+    är \(p\).
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{theorem}[Shannons sats]\label{thm:perfectSecrecy}
+    Antag att \((\P, \C, \K, \E, \D)\) är ett kryptosystem sådant att \(|\K| 
+    = |\C| = |\P|\).
+    Detta kryptosystem tillhandahåller perfekt sekretess om och endast om
+    varje nyckel \(k\in \K\) används med lika sannolikhet \(1/|\K|\) och det 
+    för varje klartext \(p\in \P\) och kryptotext \(c\in \C\) finns en unik 
+    nyckel \(k\in \K\) sådan att \(e_k(p) = c\).
+  \end{theorem}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{definition}[One-time Pad]
+    Låt \(n\) vara ett positivt heltal.
+    Definiera att \(\P = \C = \K = (\Z_2)^n\).
+    För alla nycklar \(k = (k_1,\ldots,k_n)\in \K\), klartexter \(p = (p_1, 
+    \ldots, p_n)\in \P\) och kryptotexter \(c = (c_1,\ldots,c_n)\in \C\) 
+    definierar vi att
+    \begin{align}
+      \nonumber
+      e_k(p) &= (p_1 + k_1, \ldots, p_n + k_n),
+    \end{align}
+    där alla operationer utförs i \(\Z_2\), och därefter definierar vi att 
+    \(d_k = e_k\).
+
+    Nyckeln \(k\in \K\) måste väljas slumpmässigt och får aldrig återanvändas.
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Perfekt sekretess är krångligt att uppnå.
+    \item Använder ''beräkningsmässigt säker'' istället.
+  \end{itemize}
+\end{frame}
+
+
+\section{Modern symmetrisk kryptering}
+
+\subsection{Data Encryption Standard (DES)}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{feistel.eps}
+    \caption{Feistelstruktur.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{des-round.eps}
+    \caption{En runda i DES.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[width=0.5\textwidth]{3des.eps}
+    \caption{DES tillämpad i 3DES.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\subsection{Advanced Encryption Standard (AES)}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{aes.eps}
+    \caption{AES översikt.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{aes-round.eps}
+    \caption{En runda i AES.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\section{Pseudoslumptal och strömchiffer}
+
+\subsection{Pseudoslumptal}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Pseudorandom number generator.
+    \item True random number generator.
+    \item Pseudorandom function.
+  \end{itemize}
+\end{frame}
+
+\subsection{Strömchiffer}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Pseudorandom number generator som utgår från nyckeln.
+  \end{itemize}
+\end{frame}
+
+
+\section{Block Modes of Operation}
+
+\subsection{Introduktion}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Ett blockchiffer i standardutförande är inte särskilt säkert om vi 
+      vill kryptera mer än ett block med samma nyckel.
+
+    \item För att åtgärda detta använder vi olika 
+      ''\foreignlanguage{english}{modes of operation}'' för blockchiffer.
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{itemize}
+    \item Det mode of operation som vi hittills använt utan att benämna det som 
+      ett sådant är ''\foreignlanguage{english}{electronic code-book mode}'' 
+      (ECB).
+
+    \item Detta går som vi nämnt tidigare ut på att vi delar upp meddelandet 
+      enligt blockstorleken och krypterar del för del.
+
+  \end{itemize}
+\end{frame}
+
+\subsection{Några andra modes of operation}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{cbc.eps}
+    \caption{Cipher block chaining (CBC) mode.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{cfb.eps}
+    \caption{Cipher feedback (CFB) mode.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsectionhead}
+  \begin{figure}
+    \includegraphics[height=0.7\textheight]{ctr.eps}
+    \caption{Counter (CTR) mode.
+    Bild: \cite{Stallings2011can}.}
+  \end{figure}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Referenser}
+  \small
+  \printbibliography
+\end{frame}
+
+\end{document}

@@ -1,5 +1,6 @@
 SUBDIR=
 SUBDIR+= 	./crypto
+SUBDIR+= 	./symcrypt
 SUBDIR+= 	./hashsign
 SUBDIR+= 	./bitcoin
 
