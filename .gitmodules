@@ -1,0 +1,8 @@
+[submodule "makefiles"]
+	path = makefiles
+	url = https://github.com/dbosk/makefiles.git
+	branch = master
+[submodule "libbib"]
+	path = libbib
+	url = https://github.com/dbosk/libbib.git
+	branch = master
