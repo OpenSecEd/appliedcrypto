@@ -1,0 +1,23 @@
+When looking at secure systems it is easy to assume they are safe just because 
+the secret keys are not directly reachable.
+This is not always true.
+Even if the key storage is unreachable, there is some information that can be 
+extracted anyway.
+For instance the fact \emph{that} two principals are communicating, \emph{when} 
+they are communicating, the time each operation takes to perform, etc., is not 
+provided any confidentiality.
+The information possible to extract from this is what is called side-channel 
+information.
+
+An overview of this area is provided in Chapters 17 and 23 of 
+\cite{Anderson2008sea}.
+An interesting paper on this topic is 
+\citetitle{genkin2013rsa}~\cite{genkin2013rsa} where the authors extract RSA 
+keys using acoustic side-channels, i.e.~they analyse the sound emitted by the 
+electrical circuitry to find the computations done and hence derive the RSA key 
+used.
+
+There is another aspect of this too, namely covert channels.
+Covert channels are channels over which communication can take place, even with 
+limited bandwidth, despite the prohibition of this due to the security policy.
+
