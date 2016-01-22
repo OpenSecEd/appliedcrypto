@@ -27,6 +27,8 @@ Then you can go into the directory of the desired document and run `make`.
 The source files are structured as follows:
 
 - `crypto` contains slides for a high-level overview of encryption.
+- `cryptoproofs` is a learning module on proof techniques in cryptography and 
+  security.
 - `symcrypt` is an introduction to symmetric crypto, very similar to `crypto`.
 - `pubkey` is an introduction to public-key crypto, very similar to `hashsign`.
 - `hashsign` contains slides for a high-level overview of signatures and hash 

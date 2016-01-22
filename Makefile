@@ -5,6 +5,8 @@ SUBDIR+= 	./pubkey
 SUBDIR+= 	./hashsign
 SUBDIR+= 	./bitcoin
 
+SUBDIR+=	./cryptoproofs
+
 SUBDIR+= 	./spuriouslab
 
 

@@ -6,3 +6,7 @@
 	path = libbib
 	url = https://github.com/dbosk/libbib.git
 	branch = master
+[submodule "cryptoproofs"]
+	path = cryptoproofs
+	url = https://github.com/OpenSecEd/cryptoproofs.git
+	branch = master
