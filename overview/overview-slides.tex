@@ -1,0 +1,44 @@
+%\documentclass[ignoreframetext,handout]{beamer}
+\documentclass[ignoreframetext]{beamer}
+\input{overview-preamble.tex}
+
+\ProvideDocumentEnvironment{exercise}{o}{%
+  \setbeamercolor{block body}{bg=yellow!30,fg=black}
+  \setbeamercolor{block title}{bg=yellow,fg=black}
+  \IfValueTF{#1}{%
+    \begin{block}{Exercise: #1}
+  }{%
+    \begin{block}{Exercise}
+  }
+}{%
+  \end{block}
+}
+
+\mode<presentation>{%
+  \usetheme{Berlin}
+  \setbeamercovered{transparent}
+  \setbeamertemplate{bibliography item}[text]
+  \setbeamertemplate{footline}{%
+    \begin{beamercolorbox}[colsep=1.5pt]{upper separation line foot}
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+      {\usebeamerfont{title in head/foot}\insertshorttitle}
+      \hfill\insertframenumber%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[colsep=1.5pt]{lower separation line foot}
+    \end{beamercolorbox}
+  }
+}
+
+\AtBeginSection[]{%
+  \begin{frame}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\begin{document}
+\mode<all>
+\input{overview-content.tex}
+\mode*
+\end{document}
