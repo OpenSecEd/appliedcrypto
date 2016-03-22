@@ -1,4 +1,4 @@
-SUBDIR=
+SUBDIR+=	./overview
 SUBDIR+= 	./crypto
 SUBDIR+= 	./symcrypt
 SUBDIR+= 	./pubkey

@@ -1,5 +1,5 @@
 \title{%
-  An Applied Overview of Cryptography
+  A High-Level Overview of Cryptography
 }
 \author{%
   Daniel Bosk
@@ -39,12 +39,12 @@
 
 \begin{frame}
   \begin{itemize}
-    \item The word has its origin in greek~\cite{OED2013cg}:
+    \item The word has its origin in greek~\footfullcite{OED2013cg}:
       \begin{description}
         \item[\ibygr{krupto's}] (\emph{kryptos}) meaning 
-          hidden~\cite{OED2013c}.
+          hidden~\footfullcite{OED2013c}.
         \item[\ibygr{gra'fos}] (\emph{graphos}) meaning 
-          writing~\cite{OED2013g}.
+          writing~\footfullcite{OED2013g}.
       \end{description}
 
       \pause{}
@@ -74,12 +74,12 @@
 \subsection{Kerckhoff's Principle}
 
 \begin{frame}
-  \begin{block}{A quote}
-    \begin{displaycquote}[translated from French]{KerckhoffsPrinciple}\relax
+  \begin{block}{A quote\footfullcite{KerckhoffsPrinciple}}
+    \begin{displayquote}\relax
       [A cryptosystem] should not require secrecy, and it should not be 
       a problem
       if it falls into the enemy hands;
-    \end{displaycquote}
+    \end{displayquote}
   \end{block}
 
   \pause{}
@@ -149,7 +149,8 @@
 \end{frame}
 
 \begin{frame}
-  \begin{definition}\label{CryptoSystem}
+  \begin{definition}[Crypto 
+    system\footfullcite{Stinson2006cta}]\label{CryptoSystem}
     \begin{itemize}
         \item A \emph{crypto system} is a tuple \((\M, \C, \K, \E, \D)\), 
           where:
@@ -211,7 +212,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{definition}[\Acl{PRP}, \acs{PRP}]
+  \begin{definition}[\Acl{PRP}, \acs{PRP}\footfullcite{KatzLindell-v1}]
     \begin{itemize}
       \item Let \(F\colon \{0,1\}^s\times \{0, 1\}^n\to \{0,1\}^n\).
       \item \(F\) is \iac{PRP} if
@@ -271,7 +272,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{definition}[One-way function]
+  \begin{definition}[One-way function\footfullcite{GoldreichFOC-1}]
     \begin{itemize}
       \item Let \(h\colon \{0,1\}^*\to \{0,1\}^*\).
       \item \(h\) is \emph{one-way} if
@@ -423,7 +424,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{solution}[\Acl{HMAC}, \acs{HMAC}]
+  \begin{solution}[\Acl{HMAC}, \acs{HMAC}\footfullcite{HMAC}]
     \begin{itemize}
       \item Let \(h\) be a one-way function.
       \item Let \(c\) be the ciphertext, \(s\) our \ac{MA} secret.
@@ -448,22 +449,233 @@
 
 \section{Public-Key Cryptography}
 
+\subsection{Key-Exchange Schemes}
+
+\begin{frame}
+  \begin{block}{The idea}
+    \begin{itemize}
+      \item It's difficult to have to exchange keys in advance.
+
+        \pause{}
+
+      \item What if we could securely exchange keys at a distance?
+      \item If we could do it just before we use them?
+    \end{itemize}
+  \end{block}
+
+  \pause{}
+
+  \begin{exercise}
+    \begin{itemize}
+      \item Say Alice and Bob want to communicate.
+      \item Eve wants to eavesdrop as usual.
+      \item What are the requirements of such a system?
+    \end{itemize}
+  \end{exercise}
+\end{frame}
+
+\begin{frame}
+  \begin{solution}[Requirements]
+    \begin{itemize}
+      \item We need a problem that is easy for Alice and Bob.
+      \item It should be hard for Eve.
+    \end{itemize}
+  \end{solution}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[\Acl{DLP}, \acs{DLP}]
+    \begin{itemize}
+      \item Let \(\Z_n^*\) be the multiplicative group of residues modulo 
+        \(n\in \N\).
+
+        \pause{}
+
+        \begin{description}
+          \item[Given] \(g, g^x\in \Z_n^*\)
+          \item[Find] \(x\).
+        \end{description}
+
+      \item I.e.\ compute \(\log_{g\in \Z_n}(g^x)\).
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[\Acl{DHP}, \acs{DHP}\footfullcite{DiffieHellman}]
+    \begin{description}
+      \item[Given] \(g, g^x, g^y\in \Z_n^*\)
+      \item[Find] \(g^{xy}\)
+    \end{description}
+  \end{definition}
+
+  \pause{}
+  
+  \begin{definition}[\Acl{DDH} Problem, \acs{DDH}]
+    \begin{description}
+      \item[Given] \(g, g^x, g^y, g^z\in \Z_n^*\)
+      \item[Decide] \(z \stackrel{?}{=} xy\)
+    \end{description}
+  \end{definition}
+\end{frame}
+
 \begin{frame}
   \begin{itemize}
-    \item Encryption and decryption
-    \item Digital signatures
-    \item Homomorphic properties
+    \item If we can solve \ac{DLP}, then we can solve \ac{DHP} and \ac{DDH} 
+      too.
+
+      \pause{}
+
+    \item Maybe \ac{DHP} and \ac{DDH} can be solved without \ac{DLP}.
+    \item We don't know yet.
+
+      \pause{}
+
+    \item We usually assume \ac{DLP}, \ac{DHP} and \ac{DDH} are hard.
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    \begin{itemize}
+      \item \citeauthor{DiffieHellman}\footfullcite{DiffieHellman} used 
+        \ac{DHP} to create a key-exchange protocol.
+
+        \pause{}
+
+      \item Take some time to figure out how we can use these problems to 
+        achieve what we want.
+    \end{itemize}
+  \end{exercise}
+
+  \begin{block}{Reminder}
+    \begin{itemize}
+      \item Alice and Bob want to exchange a secret key.
+      \item Then they can use the key to encrypt their communications.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Diffie-Hellman key-exchange]
+    \begin{itemize}
+      \item Let \(g\in \Z_n^*\).
+
+        \pause{}
+
+      \color{green!50!red}
+      \item Alice generates random \(0 < x < |\Z_n^*|\).
+      \item She send \(g^x\) to Bob.
+
+        \pause{}
+
+      \color{blue}
+      \item Bob generates random \(0 < y < |\Z_n^*|\).
+      \item He sends \(g^y\) to Alice.
+
+        \pause{}
+
+      \color{green!50!red}
+      \item Alice has \(x\) and \(g^y\).
+      \color{blue}
+      \item Bob has \(g^x\) and \(y\).
+      \color{black}
+      \item They both compute \(g^{xy} = {\color{green!50!red} (g^y)^x} 
+          = {\color{blue} (g^x)^y}\).
+
+        \pause{}
+
+      \color{red}
+      \item Eve has \(g^x, g^y\).
+      \item By \ac{DHP} she cannot compute \(g^{xy}\).
+    \end{itemize}
+  \end{definition}
 \end{frame}
 
 \subsection{Encryption and Decryption}
 
 \begin{frame}
+  \begin{block}{The idea}
+    \begin{itemize}
+      \item Fine, we can use \(g^{xy}\) as a key in a cipher.
+        \begin{itemize}
+          \item \(\Enc[g^{xy}]{m}\), where \(\EncOp\) is a symmetric cipher.
+        \end{itemize}
+      \item But shouldn't we be able to include a message directly?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[ElGamal Encryption Scheme\footfullcite{ElGamal}]
+    Set-up:
+    \begin{itemize}
+      \item Let \(g\in \Z_n^*\), randomly choose \(0 < x < |\Z_n^*|\).
+      \item Alice publishes \(\Z_n^*, g, g^x\) to everyone.
+    \end{itemize}
+    Encryption:
+    \begin{itemize}
+      \item Bob chooses random \(0 < y < |\Z_n^*|\) and computes \(g^y\).
+      \item Bob's message \(m\in \Z_n^*\).
+      \item He sends \((g^y, m(g^{x})^y)\) to Alice.
+    \end{itemize}
+    Decryption:
+    \begin{itemize}
+      \item Alice computes \((g^y)^x\) and \(m(g^x)^y((g^{y})^x)^{-1} = m\).
+    \end{itemize}
+  \end{definition}
 \end{frame}
 
 \subsection{Digital Signatures}
 
 \begin{frame}
+  \begin{block}{The idea}
+    \begin{itemize}
+      \item Sure, if Bob sends a message to Alice, he's sure she's the only one
+        who can decrypt it.
+
+        \pause{}
+
+      \item Can't we turn this around?
+        \begin{itemize}
+          \item Can't Alice use the same system to ensure Bob knows the message
+            came from Alice?
+        \end{itemize}
+    \end{itemize}
+  \end{block}
+
+  \pause{}
+
+  \begin{exercise}
+    \begin{itemize}
+      \item Look at the ElGamal encryption scheme for a bit.
+      \item Try to find a way to \enquote{run it backwards}.
+    \end{itemize}
+  \end{exercise}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[ElGamal Signature Scheme\footfullcite{ElGamal}]
+    Set-up:
+    \begin{itemize}
+      \item Let \(g\in \Z_n^*\) and \framebox{\(h\) be a one-way function}.
+      \item Alice publishes \(\Z_n^*, g, g^x\) to everyone.
+    \end{itemize}
+    Signing \(m\in \Z_n^*\):
+    \begin{itemize}
+      \item \framebox{Alice} chooses random \(0 < y < |\Z_n^*|\) and computes 
+        \(r = g^y\in \Z_n^*\).
+      \item She computes \framebox{\(s = (h(m) - xr)\pmod{|\Z_n^*|}\).}
+      \item She sends \((r, s)\) to Bob.
+    \end{itemize}
+    Verification:
+    \begin{itemize}
+      \item \framebox{Bob checks if \(g^{h(m)} \stackrel{?}{=}_{\Z_n^*} (g^x)^r 
+            r^s\)}\( =_{\Z_n^*}
+          (g^x)^{g^y} (g^y)^{h(m) - xg^y} =_{\Z_n^*}
+          g^{xg^y + h(m) - xg^y}\)
+    \end{itemize}
+  \end{definition}
 \end{frame}
 
 \subsection{Homomorphic Properties}
