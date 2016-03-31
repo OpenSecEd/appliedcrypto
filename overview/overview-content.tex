@@ -681,21 +681,102 @@
 \subsection{Homomorphic Properties}
 
 \begin{frame}
+  \begin{definition}[Homomorphism]
+    A \emph{homomorphism} is a map (function) that preserves structure between 
+    two algebraic structures.
+  \end{definition}
+
+  \pause{}
+
+  \begin{example}
+    \begin{itemize}
+      \item Let \(G_1 = (\R, \cdot)\) and \(G_2 = (\R, +)\) be groups.
+      \item \(g_1, g_1^\prime\in G_1\) and \(g_2, g_2^\prime\in G_2\).
+
+        \pause{}
+
+      \item Consider \(\log\colon G_1\to G_2\).
+        
+        \pause{}
+
+      \item \(\log(g_1\cdot g_1^\prime) = g_2 + g_2^\prime\).
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    The encryption (decryption) function of the ElGamal cryptosystem is 
+    a homomorphism, what structure does it preserve?
+  \end{exercise}
+\end{frame}
+
+\begin{frame}
+  \begin{example}[ElGamal's homomorphism]
+    \begin{itemize}
+      \item Messages \(m, m^\prime\), ciphertexts \((g^y, m\cdot g^{xy}), 
+          (g^{y^\prime}, m^\prime\cdot g^{x y^\prime})\).
+
+      \item Remember: private key \(x\), hence the same.
+
+        \pause{}
+
+      \item Create ciphertext
+        \begin{align*}
+          (g^y g^{y^\prime}, m\cdot g^{xy}\cdot m^\prime\cdot g^{x y^\prime})
+          &= (g^{y + y^\prime}, m\cdot m^\prime\cdot g^{xy + xy^\prime}) \\
+          &= (g^{y + y^\prime}, m\cdot m^\prime\cdot g^{x(y + y^\prime)}).
+        \end{align*}
+
+        \pause{}
+
+      \item Decryption: take \(g^{y + y^\prime}\), compute \((g^{y+y^\prime})^x 
+          = g^{x(y + y^\prime)}\).
+
+      \item Decryption thus yields \(m\cdot m^\prime\).
+
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{alertblock}{Note}
+    \begin{itemize}
+      \item Actually the reason we use a hash function is the signature scheme 
+        is to counter the homomorphic property.
+
+      \item Without the hash function we could create a valid signature for 
+        a new message \emph{without knowing the signature key!}
+
+        \pause{}
+
+      \item \(h(m)\cdot h(m^\prime)\neq h(m\cdot m^\prime)\).
+    \end{itemize}
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Final remark}
+    \begin{itemize}
+      \item There are many schemes with different homomorphic properties.
+      \item There is even \emph{fully homomorphic encryption}.
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 
 \section{More Counter-Intuitive Things}
 
-\subsection{Zero-Knowledge Proofs}
-
-\begin{frame}
-\end{frame}
-
-
 \subsection{(Secure) Multi-Party Computation}
 
 \begin{frame}
 \end{frame}
+
+\subsection{Zero-Knowledge Proofs of Knowledge}
+
+\begin{frame}
+\end{frame}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%
