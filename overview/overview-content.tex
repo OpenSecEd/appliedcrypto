@@ -486,17 +486,17 @@
 \begin{frame}
   \begin{definition}[\Acl{DLP}, \acs{DLP}]
     \begin{itemize}
-      \item Let \(\Z_n^*\) be the multiplicative group of residues modulo 
-        \(n\in \N\).
+      \item Let \(\Z_p^*\) be the multiplicative group of residues modulo 
+        \(p\in \N\), where \(p\) is a prime.
 
         \pause{}
 
         \begin{description}
-          \item[Given] \(g, g^x\in \Z_n^*\)
+          \item[Given] \(g, g^x\in \Z_p^*\)
           \item[Find] \(x\).
         \end{description}
 
-      \item I.e.\ compute \(\log_{g\in \Z_n}(g^x)\).
+      \item I.e.\ compute \(\log_{g\in \Z_p}(g^x)\).
     \end{itemize}
   \end{definition}
 \end{frame}
@@ -504,7 +504,7 @@
 \begin{frame}
   \begin{definition}[\Acl{DHP}, \acs{DHP}\footfullcite{DiffieHellman}]
     \begin{description}
-      \item[Given] \(g, g^x, g^y\in \Z_n^*\)
+      \item[Given] \(g, g^x, g^y\in \Z_p^*\)
       \item[Find] \(g^{xy}\)
     \end{description}
   \end{definition}
@@ -513,7 +513,7 @@
   
   \begin{definition}[\Acl{DDH} Problem, \acs{DDH}]
     \begin{description}
-      \item[Given] \(g, g^x, g^y, g^z\in \Z_n^*\)
+      \item[Given] \(g, g^x, g^y, g^z\in \Z_p^*\)
       \item[Decide] \(z \stackrel{?}{=} xy\)
     \end{description}
   \end{definition}
@@ -559,18 +559,18 @@
 \begin{frame}
   \begin{definition}[Diffie-Hellman key-exchange]
     \begin{itemize}
-      \item Let \(g\in \Z_n^*\).
+      \item Let \(g\in \Z_p^*\).
 
         \pause{}
 
       \color{green!50!red}
-      \item Alice generates random \(0 < x < |\Z_n^*|\).
+      \item Alice generates random \(0 < x < |\Z_p^*|\).
       \item She send \(g^x\) to Bob.
 
         \pause{}
 
       \color{blue}
-      \item Bob generates random \(0 < y < |\Z_n^*|\).
+      \item Bob generates random \(0 < y < |\Z_p^*|\).
       \item He sends \(g^y\) to Alice.
 
         \pause{}
@@ -610,13 +610,13 @@
   \begin{definition}[ElGamal Encryption Scheme\footfullcite{ElGamal}]
     Set-up:
     \begin{itemize}
-      \item Let \(g\in \Z_n^*\), randomly choose \(0 < x < |\Z_n^*|\).
-      \item Alice publishes \(\Z_n^*, g, g^x\) to everyone.
+      \item Let \(g\in \Z_p^*\), randomly choose \(0 < x < |\Z_p^*|\).
+      \item Alice publishes \(\Z_p^*, g, g^x\) to everyone.
     \end{itemize}
     Encryption:
     \begin{itemize}
-      \item Bob chooses random \(0 < y < |\Z_n^*|\) and computes \(g^y\).
-      \item Bob's message \(m\in \Z_n^*\).
+      \item Bob chooses random \(0 < y < |\Z_p^*|\) and computes \(g^y\).
+      \item Bob's message \(m\in \Z_p^*\).
       \item He sends \((g^y, m(g^{x})^y)\) to Alice.
     \end{itemize}
     Decryption:
@@ -658,21 +658,21 @@
   \begin{definition}[ElGamal Signature Scheme\footfullcite{ElGamal}]
     Set-up:
     \begin{itemize}
-      \item Let \(g\in \Z_n^*\) and \framebox{\(h\) be a one-way function}.
-      \item Alice publishes \(\Z_n^*, g, g^x\) to everyone.
+      \item Let \(g\in \Z_p^*\) and \framebox{\(h\) be a one-way function}.
+      \item Alice publishes \(\Z_p^*, g, g^x\) to everyone.
     \end{itemize}
-    Signing \(m\in \Z_n^*\):
+    Signing \(m\in \Z_p^*\):
     \begin{itemize}
-      \item \framebox{Alice} chooses random \(0 < y < |\Z_n^*|\) and computes 
-        \(r = g^y\in \Z_n^*\).
-      \item She computes \framebox{\(s = (h(m) - xr)\pmod{|\Z_n^*|}\).}
+      \item \framebox{Alice} chooses random \(0 < y < |\Z_p^*|\) and computes 
+        \(r = g^y\in \Z_p^*\).
+      \item She computes \framebox{\(s = (h(m) - xr)\pmod{|\Z_p^*|}\).}
       \item She sends \((r, s)\) to Bob.
     \end{itemize}
     Verification:
     \begin{itemize}
-      \item \framebox{Bob checks if \(g^{h(m)} \stackrel{?}{=}_{\Z_n^*} (g^x)^r 
-            r^s\)}\( =_{\Z_n^*}
-          (g^x)^{g^y} (g^y)^{h(m) - xg^y} =_{\Z_n^*}
+      \item \framebox{Bob checks if \(g^{h(m)} \stackrel{?}{=}_{\Z_p^*} (g^x)^r 
+            r^s\)}\( =_{\Z_p^*}
+          (g^x)^{g^y} (g^y)^{h(m) - xg^y} =_{\Z_p^*}
           g^{xg^y + h(m) - xg^y}\)
     \end{itemize}
   \end{definition}
