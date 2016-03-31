@@ -440,16 +440,19 @@
         
         \pause{}
         
-      \item \(h(c) = t\), Eve can also compute the hash function: \(h(c^\prime) 
-          = t^\prime\).
+      \item If we use \(h(c) = t\), then Eve can also compute the hash 
+        function: \(h(c^\prime) = t^\prime\).
 
         \pause{}
 
-      \item A secret hash function would violate Kerckhoff's principle.
+      \item A secret hash function would violate Kerckhoff's principle, so 
+        that's not an option.
 
         \pause{}
 
-      \item \(h(m) = t\), then
+      \item If we instead use the message, rather than the ciphertext.
+        
+      \item Then \(h(m) = t\) and
         \begin{itemize}
           \item \(\Dec[k]{c^\prime} = m^\prime = m\oplus m_E, h(m^\prime)\neq 
               t\).
