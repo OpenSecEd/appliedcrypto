@@ -999,28 +999,111 @@
 \subsection{Zero-Knowledge Proofs of Knowledge}
 
 \begin{frame}
-  \begin{example}[Age limits]
+  \begin{example}
     \begin{itemize}
-      \item We want to go see a film in cinema.
-      \item We look very young so they want to have proof of our age.
+      \item Alice must prove her identity to Eve.
+
+      \item Eve has Alice's public key, and knows it belongs to Alice.
+
+        \pause{}
+        
+      \item Alice wants to prove she is the owner of the private key belonging 
+        to the public key that Eve has.
 
         \pause{}
 
-      \item Show physical ID, reveals exact date of birth.
+      \item Eve asks Alice to sign the message \(m\), if the signature verifies
+        under the public key Eve believes Alice.
+        
     \end{itemize}
   \end{example}
 
   \pause{}
 
-  \begin{exercise}
+  \begin{alertblock}{Gaaahh!}
     \begin{itemize}
-      \item That's a bit unnecessary, right?
-      \item What do they actually only need to know?
-      \item How can we achieve that?
+      \item Now Eve can show this message (chosen by Eve) with Alice's 
+        signature on it!
+      \item What if Eve's chosen message was \enquote{I give all my money to 
+          Eve}?
     \end{itemize}
-  \end{exercise}
+  \end{alertblock}
 \end{frame}
 
+\begin{frame}
+  \begin{block}{The idea}
+    \begin{itemize}
+      \item Alice wants to prove that she knows the discrete logarithm \(x\) of 
+        a value \(g^x\).
+
+      \item She will do this without revealing \(x\) to Eve.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Schnorr's protocol\footfullcite{Schnorr}]
+    \begin{itemize}
+      \item Prover wants to prove knowledge of \(x\) for \(g^x = y\).
+
+        \pause{}
+
+      \item Prover commits to randomness \(r\), by sending \(t = g^r\).
+
+        \pause{}
+
+      \item Verifier replies with randomly chosen challenge \(c\).
+
+        \pause{}
+
+      \item After receiving \(c\), prover replies with \(s = r + cx\).
+
+        \pause{}
+
+      \item Verifier accepts if \(g^s = g^{r + cx} = g^r (g^x)^c = t y^c\).
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{proof}[Proof outline]
+    \begin{itemize}
+      \item We need to prove \emph{completeness}: for all (most) statements the 
+        verifier will accept.
+
+        \pause{}
+
+      \item We need to prove \emph{soundness}: for all (most) false statements 
+        the verifier will reject.
+
+        \pause{}
+
+      \item We need to prove that it is zero-knowledge.
+    \end{itemize}
+  \end{proof}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Zero-knowledge}
+    \begin{itemize}
+      \item Transcript for protocol: \((t, c, s)\).
+
+      \item Probability for transcript occurring: \(\frac{1}{|R|}\cdot 
+          \frac{1}{\deg g}\).
+
+        \pause{}
+
+      \item Simulate protocol: randomly choose \(c\), randomly choose \(s\), 
+        compute \(t\) by \(g^s y^c\).
+
+        \pause{}
+
+      \item We see that we get the same probability distribution.
+      \item Thus the simulated transcripts are indistinguishable from the real 
+        ones.
+    \end{itemize}
+  \end{block}
+\end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%
