@@ -6,7 +6,7 @@ SRC+=		abstract.tex overview.bib
 
 FIGURES+=	surjection.eps hashfunc.eps
 
-DEPENDS+=	libbib.sty
+DEPENDS+=	libbib.sty crypto.bib mpc.bib
 
 overview-slides.pdf: overview-slides.tex ${SRC} ${FIGURES}
 overview-slides.pdf: ${DEPENDS}
