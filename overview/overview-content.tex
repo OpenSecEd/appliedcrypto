@@ -746,14 +746,14 @@
     \begin{itemize}
       \item \framebox{Alice} chooses random \(0 < y < |\Z_p^*|\) and computes 
         \(r = g^y\in \Z_p^*\).
-      \item She computes \framebox{\(s = (h(m) - xr)\pmod{|\Z_p^*|}\).}
+      \item She computes \framebox{\(s = (h(m) - xr) y^{-1} \pmod{|\Z_p^*|}\).}
       \item She sends \((r, s)\) to Bob.
     \end{itemize}
     Verification:
     \begin{itemize}
       \item \framebox{Bob checks if \(g^{h(m)} \stackrel{?}{=}_{\Z_p^*} (g^x)^r 
             r^s\)}\( =_{\Z_p^*}
-          (g^x)^{g^y} (g^y)^{h(m) - xg^y} =_{\Z_p^*}
+          (g^x)^{g^y} (g^y)^{(h(m) - xg^y)y^{-1}} =_{\Z_p^*}
           g^{xg^y + h(m) - xg^y}\)
     \end{itemize}
   \end{definition}
