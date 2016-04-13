@@ -2,7 +2,7 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[ibycus,swedish,english]{babel}
+\usepackage[ibycus,swedish,british]{babel}
 \usepackage{url}
 \usepackage{graphicx}
 \usepackage{color}
@@ -14,63 +14,66 @@
 \usepackage{verbatim}
 \usepackage{listings}
 
-\setbeamertemplate{bibliography item}[text]
-\usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
-\addbibresource{overview.bib}
-
+\usepackage{xparse}
+\ProvideDocumentEnvironment{exercise}{o}{%
+  \setbeamercolor{block body}{bg=yellow!30,fg=black}
+  \setbeamercolor{block title}{bg=yellow,fg=black}
+  \IfValueTF{#1}{%
+    \begin{block}{\translate{Exercise}: #1}
+  }{%
+    \begin{block}{\translate{Exercise}}
+  }
+}{%
+  \end{block}
+}
 
 \mode<presentation>{%
-  \usetheme{Frankfurt}
+  \usetheme{Berlin}
+  \setbeamertemplate{footline}{%
+    \begin{beamercolorbox}[colsep=1.5pt]{upper separation line foot}
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}%
+      \leavevmode{\usebeamerfont{author in head/foot}\insertshortauthor}%
+      \hfill%
+      {\usebeamerfont{institute in head/foot}%
+        \usebeamercolor[fg]{institute in head/foot}\insertshortinstitute}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+      {\usebeamerfont{title in head/foot}\insertshorttitle}%
+      \hfill\insertframenumber%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[colsep=1.5pt]{lower separation line foot}
+    \end{beamercolorbox}
+  }
   \setbeamercovered{transparent}
-  \usecolortheme{seagull}
+  \setbeamertemplate{bibliography item}[text]
 }
-\setbeamertemplate{footline}{\insertframenumber}
+
+\usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
+\addbibresource{overview.bib}
 
 \title{%
   Side Channels and Covert Channels
 }
-\author{Daniel Bosk\footnote{%
-  This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 
-  Unported license.
-	To view a copy of this license, visit 
-	\url{http://creativecommons.org/licenses/by-sa/3.0/}.
-}}
+\author{Daniel Bosk}
 \institute[MIUN ICS]{%
   Department of Information and Communication Systems (ICS),\\
   Mid Sweden University, Sundsvall.
 }
 \date{\today}
 
-%\pgfdeclareimage[height=0.65cm]{university-logo}{MU_logotyp_int_CMYK.pdf}
-%\logo{\pgfuseimage{university-logo}}
-
 \AtBeginSection[]{%
-  \begin{frame}<beamer>{Overview}
-    \begin{multicols}{2}
-      \tableofcontents[currentsection]
-    \end{multicols}
+  \begin{frame}<beamer>
+    \tableofcontents[currentsection]
   \end{frame}
 }
-%\AtBeginSubsection[]{%
-%  \begin{frame}<beamer>{Overview}
-%    \tiny
-%    \tableofcontents[currentsubsection,sectionstyle=shaded]
-%  \end{frame}
-%}
 
 \begin{document}
 
 \begin{frame}
-  \titlepage{}
-\end{frame}
-
-%\begin{frame}{Literature}
-%  \input{literature.tex}
-%\end{frame}
-\begin{frame}{Overview}
-  \begin{multicols}{2}
-    \tableofcontents
-  \end{multicols}
+  \maketitle{}
 \end{frame}
 
 
@@ -89,7 +92,7 @@
 
 \subsection{Definition}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{definition}[Side Channel]
     A \emph{side channel} is an unintended channel emitting information which 
     is due to physical implementation flaws and not theoretical weaknesses or 
@@ -102,7 +105,7 @@
   \end{example}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item Looking at the numbers we have we see that \(3_{10} = 11_2\), 
       \(7_{10} = 111_2\) and \(25_{10} = 11001_2\)
@@ -133,7 +136,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item Hence, the first multiplication takes \(17\) time units to perform 
       whereas the second takes \(24\) time units.
@@ -151,7 +154,7 @@
 
 \subsection{Timing Attacks}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item In~\cite{song2001timing} a timing attack on passwords sent over 
       encrypted SSH sessions was shown.
@@ -166,7 +169,7 @@
 
 \subsection{Acoustic Cryptanalysis}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item In~\cite{genkin2013rsa} the authors showed an attack to extract 
       a 4096-bit RSA private key from a laptop PC (GnuPG implementation of 
@@ -186,7 +189,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item The acoustic signals are picked up from components in the power 
       supply.
@@ -204,7 +207,7 @@
 
 \subsection{Definition}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{definition}[Covert Channel]
     A \emph{covert channel} is a mechanism that was not designed for 
     communication but which can nontheless be abused to allow information to 
@@ -217,7 +220,7 @@
   \end{definition}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item The definitions do overlap.
 
@@ -228,7 +231,7 @@
 
 \subsection{Bell-LaPadula}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item BLP says ``no read up'' and ``no write down''.
 
@@ -242,7 +245,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item The Naval Research Laboratory invented the NRL-Pump.
 
@@ -259,7 +262,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{example}[Logistics system]
     \begin{itemize}
       \item A military warehouse holds classified equipment, but the warehouse 
@@ -281,7 +284,7 @@
 
 \subsection{Page Faults and LEDs}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item Another example of how a covert channel might be constructed is page 
       faults.
@@ -296,7 +299,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item Yet another example is the LEDs indicating disk activity.
 
@@ -314,7 +317,7 @@
 
 \subsection{Cheating on the Exam}
 
-\begin{frame}{\insertsubsectionhead}
+\begin{frame}
   \begin{itemize}
     \item Which times someone goes to the toilet: if it is an even minute it's 
       a one, if odd it's a zero.
