@@ -90,7 +90,7 @@
 
 \section{Side Channels}
 
-\subsection{Definition}
+\subsection{What are side-channels?}
 
 \begin{frame}
   \begin{definition}[Side Channel]
@@ -156,26 +156,67 @@
 
 \begin{frame}
   \begin{itemize}
-    \item In~\cite{song2001timing} a timing attack on passwords sent over 
-      encrypted SSH sessions was shown.
-
-    \item As each keystroke in the password is sent in a separate package, the 
-      attacker can observe the delay between keystrokes.
-
-    \item They found that this gave a factor 50 advantage for guessing the 
-      password.
+    \item The first example was a timing attack.
+    \item We can measure the time for different operations.
+    \item Depending on the times it takes we can figure out something about the 
+      operands.
   \end{itemize}
 \end{frame}
 
-\subsection{Acoustic Cryptanalysis}
+\begin{frame}
+  \begin{example}[SSH password guessing]
+    \begin{itemize}
+      \item In~\cite{song2001timing} a timing attack on passwords sent over 
+        encrypted SSH sessions was shown.
+
+      \item As each keystroke in the password is sent in a separate package, 
+        the attacker can observe the delay between keystrokes.
+
+      \item They found that this gave a factor 50 advantage for guessing the 
+        password.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Anonymized traffic with onion routing}
+    \begin{itemize}
+      \item Alice sends a message encrypted in three layers to Bob.
+      \item Bob removes the outermost layer and sends to Carol.
+      \item Carol removes the (next) outermost layer and sends to David.
+      \item David removes the final layer and sends to destination.
+    \end{itemize}
+  \end{block}
+
+  \pause{}
+
+  \begin{example}[De-anonymize traffic]
+    \begin{itemize}
+      \item We can also perform time-correlation attacks against anonymity 
+        systems.
+
+      \item Measure how long it takes between something goes in and something 
+        comes out.
+
+      \item Then we can figure out who is sending where.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\subsection{Traffic Analysis}
+
+\begin{frame}
+\end{frame}
+
+\subsection{Acoustic Attacks}
 
 \begin{frame}
   \begin{itemize}
-    \item In~\cite{genkin2013rsa} the authors showed an attack to extract 
+    \item Some authors\footfullcite{genkin2013rsa} showed an attack to extract 
       a 4096-bit RSA private key from a laptop PC (GnuPG implementation of 
       RSA).
 
-    \item Computers emit high-pitched noice during operation due to some of 
+    \item Computers emit high-pitched noise during operation due to some of 
       their electronic components.
 
     \item This was used to derive the key used for decryption of some chosen 
@@ -183,13 +224,22 @@
 
     \item Their results show that this attack can be accomplished by placing 
       a mobile phone (microphone) next to the target laptop.
-
-    \item They also show a similar attack is possible by measuring the electric 
-      potential of a computer's chassis, e.g.\ by just touching it.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.4\textheight]{acoustic-setup.jpg}
+  \end{figure}
+  \begin{figure}
+    \includegraphics[height=0.4\textheight]{acoustic-mobile.jpg}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.45\textheight]{acoustic-spectrum.jpg}
+  \end{figure}
   \begin{itemize}
     \item The acoustic signals are picked up from components in the power 
       supply.
@@ -200,6 +250,65 @@
       create a characteristic acoustic spectral signature which can be detected 
       using a microphone.
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{acoustic-bits.jpg}
+  \end{figure}
+\end{frame}
+
+\subsection{Physical Attacks}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{physical-setup.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{physical-ethernet.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{physical-human.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.9\textheight]{physical-spectrum.png}
+  \end{figure}
+\end{frame}
+
+\subsection{Electromagnetic Attacks}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=\textheight]{em-spectrum.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{em-pita.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=\textwidth]{em-pita-detailed.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.9\textheight]{em-laptop.png}
+  \end{figure}
+  \cite{FlatPanelEmissions}
 \end{frame}
 
 
