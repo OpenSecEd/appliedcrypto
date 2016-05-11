@@ -44,5 +44,16 @@ em-pita.png:
 em-pita-detailed.png:
 	wget -O $@ https://www.cs.tau.ac.il/~tromer/radioexp/untethered-pita-closeup---annotated.png
 
+
+.PHONY: clean-depends clean-figures
+clean-depends: clean-figures
+clean-figures:
+	${RM} acoustic-spectrum.jpg acoustic-bits.jpg
+	${RM} acoustic-setup.jpg acoustic-mobile.jpg
+	${RM} physical-setup.png physical-ethernet.png physical-human.png
+	${RM} physical-spectrum.png
+	${RM} em-spectrum.png em-pita.png em-pita-detailed.png
+
+
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
