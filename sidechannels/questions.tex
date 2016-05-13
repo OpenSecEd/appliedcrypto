@@ -1,0 +1,166 @@
+\question\label{q:sidechannels}
+% examgen: sidechannels:E
+\begin{parts}
+  \part[3] What is a side-channel attack?
+  \begin{solution}
+    A side channel is an unintended channel emitting information which is due 
+    to physical implementation flaws and not theoretical weaknesses or forcing 
+    attempts.
+  \end{solution}
+
+  \part[1] Is social engineering be a side channel?
+  \begin{solution}
+    No, social engineering would qualify as forcing; it is not due to the 
+    hardware implementation, it is due to the human.
+  \end{solution}
+\end{parts}
+
+
+\question[4]\label{q:sidechannels}
+% examgen: sidechannels:E
+Give an example of a side-channel attack and motivate why it is a side channel.
+
+\begin{solution}
+  A side channel is an unintended channel emitting information which is due 
+  to physical implementation flaws and not theoretical weaknesses or forcing 
+  attempts.
+
+  (2 points) Extracting the secret key from a device by measuring energy 
+  consumption or electromagnetic emissions while the device performs 
+  computations using the secret key.
+
+  (1 point) This is a side channel since it relies on a weakness in the 
+  hardware implementation.
+  (1 point) It is further an active attack since we might need the device to 
+  perform operations on certain ciphertexts (or plaintexts).
+\end{solution}
+
+
+%\question\label{q:sidechannels}
+%% examgen: sidechannels:C
+%Does knowledge about the hardware give any advantage? As a designer, as an 
+%attacker?
+
+
+\question[2]\label{q:sidechannels}
+% examgen: sidechannels:E
+Describe an attack scenario where a side-channel is of central interest.
+
+\begin{solution}
+  The adversary is interested in learning classified information.
+  They set up a device which records electromagnetic emissions to reconstruct 
+  the image on a screen, thus when a target works with the classified data on 
+  the computer the adversary sees the same image.
+  This is a passive attack.
+\end{solution}
+
+
+\question[3]\label{q:sidechannels}
+% examgen: sidechannels:E
+Give an example of a passive side-channel attack.
+
+\begin{solution}
+  The adversary is interested in learning classified information.
+  They set up a device which records electromagnetic emissions to reconstruct 
+  the image on a screen, thus when a target works with the classified data on 
+  the computer the adversary sees the same image.
+  This is a passive attack since we only need to record.
+\end{solution}
+
+
+\question[3]\label{q:sidechannels}
+% examgen: sidechannels:E
+Given an example of an active side-channel attack.
+
+\begin{solution}
+  Extracting the secret key from a device by measuring energy consumption or 
+  electromagnetic emissions while the device performs computations using the 
+  secret key.
+  It is an active attack since we might need the device to perform operations 
+  on certain ciphertexts (or plaintexts).
+\end{solution}
+
+
+\question[3]\label{q:sidechannels}
+% examgen: sidechannels:E
+What is a covert channel?
+
+\begin{solution}
+  A covert channel is a mechanism that was not designed for communication but 
+  which can nonetheless be abused to allow information to flow in a way which 
+  is not allowed in the security policy.
+  The problem commonly arises when two clearance levels shares resources.
+\end{solution}
+
+
+\question[4]\label{q:sidechannels}
+% examgen: sidechannels:E
+Describe a scenario where a covert channel is used.
+
+\begin{solution}
+  A server is anonymous (e.g.\ a Tor hidden service), i.e.\ you may access the 
+  server but not know its location.
+  Part of the server's service is giving the time.
+  It has been shown that the variations in the system clock depend on the 
+  ambient temperature.
+  This means that by studying how the time on the server varies over day and 
+  night and over the seasons, we can eventually figure out the ambient 
+  temperature.
+  From the ambient temperature we can later deduce the geographical location of 
+  the server.
+\end{solution}
+
+
+\question[7]\label{q:sidechannels}
+% examgen: sidechannels:E:C
+\begin{parts}
+  \part[4] Give an example of a covert channel and
+  \begin{solution}
+    A server is anonymous (e.g.\ a Tor hidden service), i.e.\ you may access 
+    the server but not know its location.
+    Part of the server's service is giving the time.
+    It has been shown that the variations in the system clock depend on the 
+    ambient temperature.
+    This means that by studying how the time on the server varies over day and 
+    night and over the seasons, we can eventually figure out the ambient 
+    temperature.
+    From the ambient temperature we can later deduce the geographical location 
+    of the server.
+  \end{solution}
+
+  \part[3] how we can prevent (or at least limit) it.
+  \begin{solution}
+    We can lower the resolution in the time-stamps the server gives, e.g.\ by 
+    not giving seconds.
+    This lowers the bandwidth of the covert channel, perhaps so that the attack 
+    is infeasible.
+    We could also sync the servers clock more often, e.g.\ by using the Network 
+    Time Protocol.
+    However, the only way to prevent it is by not revealing the time of the 
+    server's system clock.
+  \end{solution}
+\end{parts}
+
+
+\question\label{q:sidechannels}
+% examgen: sidechannels:E:C
+\begin{parts}
+  \part[3] What is a covert channel?
+  \begin{solution}
+    A covert channel is a mechanism that was not designed for communication but 
+    which can nonetheless be abused to allow information to flow in a way which 
+    is not allowed in the security policy.
+    The problem commonly arises when two clearance levels shares resources.
+  \end{solution}
+
+  \part[3] Describe a general approach to handling them.
+  \begin{solution}
+    The general approach is to limit the bandwidth of the channel.
+    One way to achieve this is by adding random noise, e.g.\ adding dummy 
+    traffic so that the adversary must distinguish the dummy traffic from the 
+    real one.
+    Another approach is to simply rate-limit the operation that causes the 
+    problem, e.g.\ students are not allowed to go to the toilet too often or do 
+    certain movements repeatedly.
+  \end{solution}
+\end{parts}
