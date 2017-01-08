@@ -1,0 +1,99 @@
+\question\label{q:sidechannels}
+% examgen: sidechannels:E
+\begin{parts}
+  \part[3] What is a side-channel attack?
+
+  \begin{solution}
+    A side channel is an unintended channel emitting information which is due 
+    to physical implementation flaws and not theoretical weaknesses or forcing 
+    attempts.
+  \end{solution}
+
+  \part[1] Is social engineering be a side channel?
+
+  \begin{solution}
+    No, social engineering would qualify as forcing; it is not due to the 
+    hardware implementation, it is due to the human.
+  \end{solution}
+\end{parts}
+
+
+\question[4]\label{q:sidechannels}
+% examgen: sidechannels:E
+Give an example of a side-channel attack and motivate why it is a side channel.
+
+\begin{solution}
+  A side channel is an unintended channel emitting information which is due 
+  to physical implementation flaws and not theoretical weaknesses or forcing 
+  attempts.
+
+  (2 points) Extracting the secret key from a device by measuring energy 
+  consumption or electromagnetic emissions while the device performs 
+  computations using the secret key.
+
+  (1 point) This is a side channel since it relies on a weakness in the 
+  hardware implementation.
+  (1 point) It is further an active attack since we might need the device to 
+  perform operations on certain ciphertexts (or plaintexts).
+\end{solution}
+
+
+\question\label{q:sidechannels}
+% examgen: sidechannels:C
+Does knowledge about the hardware give any advantage? As a designer, as an 
+attacker?
+
+
+\question[2]\label{q:sidechannels}
+% examgen: sidechannels:E
+Describe an attack scenario where a side-channel is of central interest.
+
+\begin{solution}
+  The adversary is interested in learning classified information.
+  They set up a device which records electromagnetic emissions to reconstruct 
+  the image on a screen, thus when a target works with the classified data on 
+  the computer the adversary sees the same image.
+  This is a passive attack.
+\end{solution}
+
+
+\question[3]\label{q:sidechannels}
+% examgen: sidechannels:E
+Give an example of a passive side-channel attack.
+
+\begin{solution}
+  The adversary is interested in learning classified information.
+  They set up a device which records electromagnetic emissions to reconstruct 
+  the image on a screen, thus when a target works with the classified data on 
+  the computer the adversary sees the same image.
+  This is a passive attack since we only need to record.
+\end{solution}
+
+
+\question[3]\label{q:sidechannels}
+% examgen: sidechannels:E
+Given an example of an active side-channel attack.
+
+\begin{solution}
+  Extracting the secret key from a device by measuring energy consumption or 
+  electromagnetic emissions while the device performs computations using the 
+  secret key.
+  It is an active attack since we might need the device to perform operations 
+  on certain ciphertexts (or plaintexts).
+\end{solution}
+
+
+\question\label{q:sidechannels}
+% examgen: sidechannels:E
+What is a covert channel?
+
+
+\question\label{q:sidechannels}
+% examgen: sidechannels:E
+Describe a scenario including a covert channel.
+
+
+\question\label{q:sidechannels}
+% examgen: sidechannels:E:C
+Give an example of a covert channel and how we can prevent (or at least limit) 
+it.
