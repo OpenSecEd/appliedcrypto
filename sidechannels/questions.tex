@@ -9,7 +9,7 @@
     attempts.
   \end{solution}
 
-  \part[1] Is social engineering be a side channel?
+  \part[1] Is social engineering a side channel?
 
   \begin{solution}
     No, social engineering would qualify as forcing; it is not due to the 
@@ -83,17 +83,86 @@ Given an example of an active side-channel attack.
 \end{solution}
 
 
-\question\label{q:sidechannels}
+\question[3]\label{q:sidechannels}
 % examgen: sidechannels:E
 What is a covert channel?
 
+\begin{solution}
+  A covert channel is a mechanism that was not designed for communication but 
+  which can nonetheless be abused to allow information to flow in a way which 
+  is not allowed in the security policy.
+  The problem commonly arises when two clearance levels shares resources.
+\end{solution}
 
-\question\label{q:sidechannels}
+
+\question[4]\label{q:sidechannels}
 % examgen: sidechannels:E
-Describe a scenario including a covert channel.
+Describe a scenario where a covert channel is used.
+
+\begin{solution}
+  A server is anonymous (e.g.\ a Tor hidden service), i.e.\ you may access the 
+  server but not know its location.
+  Part of the server's service is giving the time.
+  It has been shown that the variations in the system clock depend on the 
+  ambient temperature.
+  This means that by studying how the time on the server varies over day and 
+  night and over the seasons, we can eventually figure out the ambient 
+  temperature.
+  From the ambient temperature we can later deduce the geographical location of 
+  the server.
+\end{solution}
 
 
 \question\label{q:sidechannels}
 % examgen: sidechannels:E:C
-Give an example of a covert channel and how we can prevent (or at least limit) 
-it.
+\begin{parts}
+  \part[4] Give an example of a covert channel and
+  \begin{solution}
+    A server is anonymous (e.g.\ a Tor hidden service), i.e.\ you may access 
+    the server but not know its location.
+    Part of the server's service is giving the time.
+    It has been shown that the variations in the system clock depend on the 
+    ambient temperature.
+    This means that by studying how the time on the server varies over day and 
+    night and over the seasons, we can eventually figure out the ambient 
+    temperature.
+    From the ambient temperature we can later deduce the geographical location 
+    of the server.
+  \end{solution}
+
+  \part[3] how we can prevent (or at least limit) it.
+  \begin{solution}
+    We can lower the resolution in the time-stamps the server gives, e.g.\ by 
+    not giving seconds.
+    This lowers the bandwidth of the covert channel, perhaps so that the attack 
+    is infeasible.
+    We could also sync the servers clock more often, e.g.\ by using the Network 
+    Time Protocol.
+    However, the only way to prevent it is by not revealing the time of the 
+    server's system clock.
+  \end{solution}
+\end{parts}
+
+
+\question\label{q:sidechannels}
+% examgen: sidechannels:E:C
+\begin{parts}
+  \part[3] What is a covert channel?
+  \begin{solution}
+    A covert channel is a mechanism that was not designed for communication but 
+    which can nonetheless be abused to allow information to flow in a way which 
+    is not allowed in the security policy.
+    The problem commonly arises when two clearance levels shares resources.
+  \end{solution}
+
+  \part[3] Describe a general approach to handling them.
+  \begin{solution}
+    The general approach is to limit the bandwidth of the channel.
+    One way to achieve this is by adding random noise, e.g.\ adding dummy 
+    traffic so that the adversary must distinguish the dummy traffic from the 
+    real one.
+    Another approach is to simply rate-limit the operation that causes the 
+    problem, e.g.\ students are not allowed to go to the toilet too often or do 
+    certain movements repeatedly.
+  \end{solution}
+\end{parts}
