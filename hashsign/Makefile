@@ -8,5 +8,5 @@ hashsign.pdf: ${FILES}
 
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
-INCLUDE_LIBBIB=../libbib
-include ${INCLUDE_LIBBIB}/libbib.mk
+INCLUDE_BIBSP=../bibsp
+include ${INCLUDE_BIBSP}/bibsp.mk
