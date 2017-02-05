@@ -1,7 +1,7 @@
 .PHONY: all
 all: overview-slides.pdf
 
-SRC+=		overview-preamble.tex overview-content.tex
+SRC+=		preamble.tex contents.tex
 SRC+=		abstract.tex overview.bib
 
 FIGURES+=	surjection.eps hashfunc.eps
