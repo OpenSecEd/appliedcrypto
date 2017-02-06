@@ -92,19 +92,20 @@ Find the corresponding plaintext of this ciphertext.
 When you have found a plaintext and the key, think about how certain you can be 
 that this is indeed the correct key (and thus correct plaintext).
 
-The second part of the assignment is about spurious keys 
-\cite[Chap.~2]{Stinson2006cta}.
-By spurious keys we mean a set of \(n\) keys \(k_1, k_2, \ldots, k_n\) which 
+The second part of the assignment is about spurious 
+keys~\cite[Chap.~2]{Stinson2006cta} and deniability.
+By spurious keys we mean a set of \(n\) keys \(k_1, k_2, \dotsc, k_n\) which 
 all decrypt a ciphertext \(c\) to meaningful plaintexts \(m_1, m_2, \ldots, 
-m_n\).
-Your job is to construct such a ciphertext with two spurious keys \(k_1\) and 
-\(k_2\) for the cryptosystem used in the first part of the assignment.
+  m_n\).
+Your job is to construct such a ciphertext with \(n = 2\), i.e.\ with two 
+spurious keys \(k_1\) and \(k_2\), for the cryptosystem used in the first part 
+of the assignment.
 The texts should be as long as possible (the longest meaningful plaintexts will 
-receive an award), and they do not have to be both in Swedish or English---one 
-plaintext in English and one in Swedish is fine.
+receive an award), and they do not have to be both in Swedish or English --- 
+one plaintext in English and one in Swedish is fine.
 
-Algorithmically finding a spurious key should be possible, in this case, by 
-generating plaintext using \(n\)-grams.
+Finding a spurious key algorithmically is possible, in this case, by generating 
+plaintext using \(n\)-grams.
 However, using pen and paper is probably the most straightforward way, and 
 probably the fastest for this short assignment.
 
@@ -130,9 +131,10 @@ The report must contain the following:
   \item One ciphertext \(c\), two keys \(k_1\) and \(k_2\) and the 
     corresponding plaintexts \(m_1\) and \(m_2\), such that \(\Enc[k_1]{m_1} 
       = c = \Enc[k_2]{m_2}\).
-    Also explain your method for creating \(c, k_1, k_2, m_1. m_2\) and why we 
-    want to have spurious keys.
-    Also, how is the length of the message affecting the spurious keys?
+    (It is not acceptable that either string contains incomprehensible text.)
+    Explain your method for creating \(c, k_1, k_2, m_1. m_2\).
+    Also discuss why we want to have spurious keys and how the length of the 
+    message affects the spurious keys.
 
 %    \begin{solution}
 %      Verify that \( \Enc[k_1]{m_1} = c = \Enc[k_2]{m_2}\).
