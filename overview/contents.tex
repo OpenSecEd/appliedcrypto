@@ -113,7 +113,7 @@
 \subsection{Ciphers}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \item Alice and Bob share a (small) common secret.
 
@@ -131,7 +131,7 @@
 
       \item Bob combines what he received with the secret and gets the message.
     \end{itemize}
-  \end{block}
+  \end{idea}
 \end{frame}
 
 \begin{frame}
@@ -312,7 +312,7 @@
 \subsection{Hash Functions}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \item We want a function which we can efficiently compute.
 
@@ -320,7 +320,7 @@
 
       \item However, it shouldn't be possible to find its inverse.
     \end{itemize}
-  \end{block}
+  \end{idea}
 
   \pause{}
 
@@ -422,7 +422,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{block}{The idea: \acp{MAC}}
+  \begin{idea}[\acp{MAC}]
     \acuse{MA}
     \begin{itemize}
       \item Alice and Bob need something that Eve doesn't know how to modify.
@@ -432,7 +432,7 @@
       \item If that something is tied to the message, then a modified message 
         would be detectable.
     \end{itemize}
-  \end{block}
+  \end{idea}
 
   \pause{}
 
@@ -476,12 +476,6 @@
         \end{itemize}
     \end{itemize}
   \end{example}
-
-  \pause{}
-
-  \begin{exercise}
-    Any better ideas?
-  \end{exercise}
 \end{frame}
 
 \begin{frame}
@@ -498,12 +492,12 @@
 
   \pause{}
 
-  \begin{alertblock}{Note}
+  \begin{remark}
     \begin{itemize}
       \item It requires even a bit more than this!
       \item But the idea is correct.
     \end{itemize}
-  \end{alertblock}
+  \end{remark}
 \end{frame}
 
 \begin{frame}
@@ -524,9 +518,9 @@
 
   \pause{}
 
-  \begin{alertblock}{Note}
-    This is proven secure!
-  \end{alertblock}
+  \begin{remark}
+    This is proven secure in \cite{HMAC}!
+  \end{remark}
 \end{frame}
 
 
@@ -535,7 +529,7 @@
 \subsection{Key-Exchange Schemes}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \item It's difficult to have to exchange keys in advance.
 
@@ -544,7 +538,7 @@
       \item What if we could securely exchange keys at a distance?
       \item If we could do it just before we use them?
     \end{itemize}
-  \end{block}
+  \end{idea}
 
   \pause{}
 
@@ -678,7 +672,7 @@
 \subsection{Encryption and Decryption}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \item Fine, we can use \(g^{xy}\) as a key in a cipher.
         \begin{itemize}
@@ -686,7 +680,7 @@
         \end{itemize}
       \item But shouldn't we be able to include a message directly?
     \end{itemize}
-  \end{block}
+  \end{idea}
 \end{frame}
 
 \begin{frame}
@@ -712,7 +706,7 @@
 \subsection{Digital Signatures}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \item Sure, if Bob sends a message to Alice, he's sure she's the only one
         who can decrypt it.
@@ -725,7 +719,7 @@
             came from Alice?
         \end{itemize}
     \end{itemize}
-  \end{block}
+  \end{idea}
 
   \pause{}
 
@@ -759,6 +753,16 @@
           g^{xg^y + h(m) - xg^y}\)
     \end{itemize}
   \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item It works without the hash.
+      \item But then we can multiply two messages and still get a valid 
+        signature.
+    \end{itemize}
+  \end{remark}
 \end{frame}
 
 \subsection{Homomorphic Properties}
@@ -823,28 +827,26 @@
 \end{frame}
 
 \begin{frame}
-  \begin{alertblock}{Note}
+  \begin{remark}
     \begin{itemize}
-      \item Actually the reason we use a hash function is the signature scheme 
-        is to counter the homomorphic property.
+      \item We use a hash function in the signature scheme to counter the 
+        homomorphic property.
 
-      \item Without the hash function we could create a valid signature for 
-        a new message \emph{without knowing the signature key!}
+      \item \(h(m)\cdot h(m^\prime)\neq h(m\cdot m^\prime)\).
 
         \pause{}
 
-      \item \(h(m)\cdot h(m^\prime)\neq h(m\cdot m^\prime)\).
+      \item Without the hash function we could create a valid signature for 
+        a new message \emph{without knowing the signature key!}
     \end{itemize}
-  \end{alertblock}
+  \end{remark}
 \end{frame}
 
 \begin{frame}
-  \begin{block}{Final remark}
-    \begin{itemize}
-      \item There are many schemes with different homomorphic properties.
-      \item There is even \emph{fully homomorphic encryption}.
-    \end{itemize}
-  \end{block}
+  \begin{itemize}
+    \item There are many schemes with different homomorphic properties.
+    \item There is even \emph{fully homomorphic encryption}.
+  \end{itemize}
 \end{frame}
 
 
@@ -867,7 +869,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \uncover<1>{%
       \item We have \(n\) participants \(P_1, \ldots, P_n\).
@@ -880,7 +882,7 @@
       \item But they desperately want to know \(y = f(x_1, \ldots, x_n)\).
       }
     \end{itemize}
-  \end{block}
+  \end{idea}
 %\end{frame}
 %\begin{frame}
   \begin{figure}
@@ -1033,14 +1035,14 @@
 \end{frame}
 
 \begin{frame}
-  \begin{block}{The idea}
+  \begin{idea}
     \begin{itemize}
       \item Alice wants to prove that she knows the discrete logarithm \(x\) of 
         a value \(g^x\).
 
       \item She will do this without revealing \(x\) to Eve.
     \end{itemize}
-  \end{block}
+  \end{idea}
 \end{frame}
 
 \begin{frame}
