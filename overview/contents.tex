@@ -914,6 +914,17 @@
 \end{frame}
 
 \begin{frame}
+  \begin{example}[Trivial solution]
+    \begin{itemize}
+      \item The \(n\) participants \(P_1, \dotsc, P_n\) agree on \iac{TTP}.
+      \item Each participant give their secret to the \ac{TTP}.
+      \item The \ac{TTP} trusted third-party performs the computation.
+      \item Every participant receives the result from the \ac{TTP}.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
   \begin{definition}[\Acl{MPC}, \acs{MPC}]
     \begin{itemize}
       \item \(n\) participants \(P_1, \ldots, P_n\).
@@ -928,17 +939,17 @@
         \pause{}
 
       \item The participants executing \(\pi\) should be \emph{equivalent} to 
-        giving \(x_1, \ldots, x_n\) to a trusted party \(T\) who computes 
-        \(f(x_1, \ldots, x_n) = y\) and returns \(y\) to each participant.
+        giving \(x_1, \ldots, x_n\) to \iac{TTP} \(T\) who computes \(f(x_1, 
+          \ldots, x_n) = y\) and returns \(y\) to each participant.
     \end{itemize}
   \end{definition}
 
   \pause{}
 
-  \begin{block}{Note}
+  \begin{remark}
     Each participant \(P_i\) learns no more about \(x_j\) (\(i\neq j\))
     than what is revealed by \(y\).
-  \end{block}
+  \end{remark}
 \end{frame}
 
 \begin{frame}
