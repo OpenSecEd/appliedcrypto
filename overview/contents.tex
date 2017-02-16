@@ -636,7 +636,7 @@
 \begin{frame}
   \begin{definition}[Diffie-Hellman key-exchange]
     \begin{itemize}
-      \item Let \(g\in \Z_p^*\).
+      \item Let \(g\in \Z_p^*\) (publicly known, e.g.\ RFC, standard\ dots).
 
         \pause{}
 
@@ -653,9 +653,9 @@
         \pause{}
 
       \color{green!50!red}
-      \item Alice has \(x\) and \(g^y\).
+      \item Alice has \(x\) and \(g, g^y\).
       \color{blue}
-      \item Bob has \(g^x\) and \(y\).
+      \item Bob has \(g, g^x\) and \(y\).
       \color{black}
       \item They both compute \(g^{xy} = {\color{green!50!red} (g^y)^x} 
           = {\color{blue} (g^x)^y}\).
@@ -663,7 +663,7 @@
         \pause{}
 
       \color{red}
-      \item Eve has \(g^x, g^y\).
+      \item Eve has \(g, g^x, g^y\).
       \item By \ac{DHP} she cannot compute \(g^{xy}\).
     \end{itemize}
   \end{definition}
@@ -845,7 +845,8 @@
 \begin{frame}
   \begin{itemize}
     \item There are many schemes with different homomorphic properties.
-    \item There is even \emph{fully homomorphic encryption}.
+    \item There is even \emph{fully homomorphic 
+        encryption}~\cite{GentryFullyHomomorphicEncryption}.
   \end{itemize}
 \end{frame}
 
