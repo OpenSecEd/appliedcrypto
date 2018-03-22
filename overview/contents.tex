@@ -210,6 +210,17 @@
 \end{frame}
 
 \begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item The shift cipher is a classical cipher --- also know as the Caesar 
+        Cipher.
+      \item It's easily broken \emph{by hand}!
+      \item It's used here for illustrative purposes.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}
   \begin{exercise}
     \begin{itemize}
       \item What do we have to do to set this up between two parties, say Alice 
@@ -233,10 +244,10 @@
 
   \pause{}
 
-  \begin{block}{Note}
+  \begin{remark}
     Equivalent to \(H(M\mid C) = H(M)\), i.e.\ ciphertext does not reveal 
     anything about plaintext.
-  \end{block}
+  \end{remark}
 \end{frame}
 
 \begin{frame}
@@ -383,6 +394,20 @@
       \item Protect passwords
     \end{itemize}
   \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item One-wayness returns as a useful property in many situations.
+      \item Encryption also has the one-wayness property:
+        \begin{description}
+          \item[Easy] Given \(k, m\), compute \(c\gets \Enc[k]{m}\).
+          \item[Hard] Given \(c\), compute either of \(k, m\).
+        \end{description}
+      \item However, encryption is bijective, hash functions are generally not.
+    \end{itemize}
+  \end{remark}
 \end{frame}
 
 \subsection{\Aclp{MAC}}
@@ -843,11 +868,13 @@
 \end{frame}
 
 \begin{frame}
-  \begin{itemize}
-    \item There are many schemes with different homomorphic properties.
-    \item There is even \emph{fully homomorphic 
-        encryption}~\cite{GentryFullyHomomorphicEncryption}.
-  \end{itemize}
+  \begin{remark}
+    \begin{itemize}
+      \item There are many schemes with different homomorphic properties.
+      \item There is even \emph{fully homomorphic 
+          encryption}~\cite{GentryFullyHomomorphicEncryption}.
+    \end{itemize}
+  \end{remark}
 \end{frame}
 
 
