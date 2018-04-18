@@ -1,7 +1,7 @@
 .PHONY: all
 all: sidechannels.pdf
 
-SRC=		sidechannels.tex abstract.tex sidechannels.bib
+SRC=		sidechannels.tex contents.tex abstract.tex sidechannels.bib
 SRC+= 		acoustic-spectrum.jpg acoustic-bits.jpg
 SRC+= 		acoustic-setup.jpg acoustic-mobile.jpg
 SRC+= 		physical-setup.png physical-ethernet.png physical-human.png
