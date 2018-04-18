@@ -29,13 +29,6 @@ The source files are structured as follows:
 - `overview` contains slides for a high-level overview of encryption.
 - `cryptoproofs` is a learning module on proof techniques in cryptography and 
   security.
-- `crypto` is an old overview of crypto.
-- `symcrypt` (old) is an introduction to symmetric crypto, very similar to 
-  `crypto`.
-- `pubkey` (old) is an introduction to public-key crypto, very similar to 
-  `hashsign`.
-- `hashsign` (old) contains slides for a high-level overview of signatures and 
-  hash functions.
 - `bitcoin` contains slides for how to analyse properties and design a system 
   using proper crypto mechanisms.
 - `spuriouslab` contains the instruction for a lab on brute forcing and 
