@@ -1,7 +1,7 @@
 .PHONY: all
-all: overview.pdf
+all: sidechannels.pdf
 
-SRC=		overview.tex abstract.tex overview.bib
+SRC=		sidechannels.tex abstract.tex sidechannels.bib
 SRC+= 		acoustic-spectrum.jpg acoustic-bits.jpg
 SRC+= 		acoustic-setup.jpg acoustic-mobile.jpg
 SRC+= 		physical-setup.png physical-ethernet.png physical-human.png
@@ -9,7 +9,7 @@ SRC+= 		physical-spectrum.png
 SRC+= 		em-spectrum.png em-pita.png em-pita-detailed.png
 SRC+= 		em-laptop.png
 
-overview.pdf: ${SRC}
+sidechannels.pdf: ${SRC}
 
 acoustic-spectrum.jpg:
 	wget -O $@ https://www.cs.tau.ac.il/~tromer/acoustic/img/web_manykeys-acoustic.jpg
