@@ -32,6 +32,8 @@
 % - Talk about 30s to 2min per frame. So there should be between about
 %   15 and 30 frames, all told.
 
+\part{First part}
+\newrefsection
 
 \section{Introduction}
 
@@ -544,10 +546,16 @@
   \pause{}
 
   \begin{remark}
-    This is proven secure in \cite{HMAC}!
+    This was proven secure by \textcite{HMAC}!
   \end{remark}
 \end{frame}
 
+\begin{frame}[allowframebreaks]
+  \printbibliography
+  \newrefsection
+\end{frame}
+
+\part{Second part}
 
 \section{Public-Key Cryptography}
 
@@ -1152,6 +1160,6 @@
 %%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[allowframebreaks]
-  \printbibliography{}
+  \printbibliography
 \end{frame}
 
