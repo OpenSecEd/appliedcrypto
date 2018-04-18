@@ -1,8 +1,4 @@
 SUBDIR+=	./overview
-SUBDIR+= 	./crypto
-SUBDIR+= 	./symcrypt
-SUBDIR+= 	./pubkey
-SUBDIR+= 	./hashsign
 SUBDIR+= 	./bitcoin
 
 SUBDIR+=	./cryptoproofs
