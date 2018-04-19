@@ -32,7 +32,7 @@
 \begin{frame}
   \begin{definition}[Side Channel]
     \begin{itemize}
-      \item Unintended channel emitting information
+      \item Unintended channel emitting information.
       \item Due to physical implementation flaws and not theoretical weaknesses 
         or forcing attempts.
     \end{itemize}
@@ -101,26 +101,33 @@
 \end{frame}
 
 \begin{frame}
-  \begin{itemize}
-    \item Hence, the first multiplication takes \(17\) time units to perform 
-      whereas the second takes \(24\) time units.
+  \begin{remark}
+    \begin{itemize}
+      \item The first multiplication takes \(17\) time units to perform,
+        the second takes \(24\) time units.
 
-    \item This is called a timing attack and is one example of why 
-      constant-time operations are desirable.
+      \item This is one example of why \emph{constant-time operations} are 
+        desirable.
+    \end{itemize}
+  \end{remark}
 
-    \item However, in this example we cannot see the difference between 
-      multiplication of \(2_{10} = 10_2\) and \(3_{10} = 11_2\).
+  \pause
 
-    \item But in more complex situations this might not even be necessary.
-
-  \end{itemize}
+  \begin{exercise}
+    \begin{itemize}
+      \item Can we see the difference between \(x = 2_{10} = 10_2\) and \(x = 
+          3_{10} = 11_2\)?
+    \end{itemize}
+  \end{exercise}
 \end{frame}
+
+\subsection{Typing pattern and guessing passwords}
 
 \begin{frame}
   \begin{example}[SSH password guessing]
     \begin{itemize}
-      \item In~\cite{song2001timing} a timing attack on passwords sent over 
-        encrypted SSH sessions was shown.
+      \item \Textcite{song2001timing} showed a timing attack on passwords sent 
+        over encrypted SSH sessions.
 
       \item As each keystroke in the password is sent in a separate package, 
         the attacker can observe the delay between keystrokes.
@@ -131,28 +138,49 @@
   \end{example}
 \end{frame}
 
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item Analytics scripts on many websites send key-presses to the server as 
+        you type.
+      \item That's exactly the same situation.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
 \subsection{Summary}
 
 \begin{frame}
   \begin{itemize}
-    \item The first example was a timing attack.
     \item We can measure the time for different operations.
-    \item Depending on the times it takes we can figure out something about the 
-      operands.
+    \item Depending on the operations and times they take, we can figure out 
+      something about the operands.
   \end{itemize}
 \end{frame}
 
 
-\section{Acoustic attacks}
+\section{Emission attacks}
+
+\subsection{Emissions from electronic systems}
 
 \begin{frame}
   \begin{itemize}
-    \item Some authors\footfullcite{genkin2013rsa} showed an attack to extract 
-      a 4096-bit RSA private key from a laptop PC (GnuPG implementation of 
-      RSA).
+    \item Electronic systems emit signals just by running.
+    \item Remember induction and similar properties from physics class.
+    \item \Eg electromagnetic emissions or acoustic emissions from vibrations.
+  \end{itemize}
+\end{frame}
 
-    \item Computers emit high-pitched noise during operation due to some of 
-      their electronic components.
+\subsection{Exploiting acoustic emissions}
+
+\begin{frame}
+  \begin{itemize}
+    \item Some authors\footfullcite{AcousticKeyExtraction} showed an attack to 
+      extract a 4096-bit RSA private key from a laptop PC (GnuPG implementation 
+      of RSA).
+
+    \item Computers emit high-pitched noise during operation due to vibrations 
+      in some of their electronic components.
 
     \item This was used to derive the key used for decryption of some chosen 
       ciphertexts within an hour!
@@ -193,7 +221,14 @@
   \end{figure}
 \end{frame}
 
-\subsection{Physical Attacks}
+\subsection{Exploiting voltage}
+
+\begin{frame}
+  \begin{itemize}
+    \item The same authors\footfullcite{VoltageKeyExtraction} did the same thing 
+      again, but with variations in the ground--electric potential.
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \begin{figure}
@@ -219,7 +254,14 @@
   \end{figure}
 \end{frame}
 
-\subsection{Electromagnetic Attacks}
+\subsection{Exploiting electromagnetic emissions}
+
+\begin{frame}
+  \begin{itemize}
+    \item And again\footfullcite{ElectromagneticKeyExtraction}, but with 
+      electromagnetic emissions.
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \begin{figure}
@@ -240,23 +282,35 @@
 \end{frame}
 
 \begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item There are also other parts emitting electromagnetic signals.
+      \item \Eg screens~\cite{FlatPanelEmissions}.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}
   \begin{figure}
     \includegraphics[height=0.9\textheight]{em-laptop.png}
   \end{figure}
-  %\cite{FlatPanelEmissions}
 \end{frame}
 
 \section{Summary}
 
 \begin{frame}
   \begin{itemize}
-    \item
+    \item We can measure something during the operations.
+    \item From these measurements we can infer things about operands \etc.
   \end{itemize}
+
+  \pause
 
   \begin{remark}
     \begin{itemize}
       \item Covert channels is a related topic.
-      \item We will return to that.
+      \item Those are more design flaws.
+      \item The SSH example is on the border between side- and covert-channels.
     \end{itemize}
   \end{remark}
 \end{frame}
@@ -265,7 +319,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Referenser}
+\begin{frame}[allowframebreaks]
   \small
   \printbibliography{}
 \end{frame}
