@@ -12,6 +12,11 @@ overview-slides.pdf: overview-slides.tex ${SRC} ${FIGURES}
 overview-slides.pdf: ${DEPENDS}
 
 
+.PHONY: clean
+clean:
+	${RM} overview-slides.pdf
+
+
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
 INCLUDE_BIBSP=../bibsp
