@@ -107,8 +107,30 @@
   \end{remark}
 \end{frame}
 
+\subsection{Outline}
 
-\section{Symmetric Cryptography}
+\begin{frame}
+  \begin{description}
+    \item[Shared-key]
+      Stems from the classical crypto where a key is shared between two users.
+
+      \pause
+
+    \item[Public-key]
+      This is more modern crypto, from 1970s.
+      Each user has a public and a private key.
+
+      \pause
+
+    \item[Counter-intuitive]
+      More modern, from 1980s and onwards.
+      How to do computations on secret inputs, prove knowledge without revealing 
+      of what.
+  \end{description}
+\end{frame}
+
+
+\section{Shared-key cryptography}
 
 \subsection{Ciphers}
 
@@ -320,7 +342,7 @@
   \end{definition}
 \end{frame}
 
-\subsection{Hash Functions}
+\subsection{Hash functions}
 
 \begin{frame}
   \begin{idea}
@@ -544,14 +566,14 @@
   \pause{}
 
   \begin{remark}
-    This is proven secure in \cite{HMAC}!
+    This is proven secure in by \textcite{HMAC}!
   \end{remark}
 \end{frame}
 
 
-\section{Public-Key Cryptography}
+\section{Public-key cryptography}
 
-\subsection{Key-Exchange Schemes}
+\subsection{Key-exchange schemes}
 
 \begin{frame}
   \begin{idea}
@@ -694,7 +716,7 @@
   \end{definition}
 \end{frame}
 
-\subsection{Encryption and Decryption}
+\subsection{Encryption and decryption}
 
 \begin{frame}
   \begin{idea}
@@ -728,7 +750,7 @@
   \end{definition}
 \end{frame}
 
-\subsection{Digital Signatures}
+\subsection{Digital signatures}
 
 \begin{frame}
   \begin{idea}
@@ -790,7 +812,7 @@
   \end{remark}
 \end{frame}
 
-\subsection{Homomorphic Properties}
+\subsection{Homomorphic properties}
 
 \begin{frame}
   \begin{definition}[Homomorphism]
@@ -878,12 +900,12 @@
 \end{frame}
 
 
-\section{More Counter-Intuitive Things}
+\section{More counter-intuitive things}
 
-\subsection{(Secure) Multi-Party Computation}
+\subsection{Secure multi-party computation}
 
 \begin{frame}
-  \begin{example}[Yao's millionaires' problem]
+  \begin{example}[Yao's Millionaires' Problem]
     \begin{itemize}
       \item Two millionaires meet in the street.
       \item They want to find out who is the richer.
@@ -1039,7 +1061,7 @@
   \end{example}
 \end{frame}
 
-\subsection{Zero-Knowledge Proofs of Knowledge}
+\subsection{Zero-knowledge proofs of knowledge}
 
 \begin{frame}
   \begin{example}
