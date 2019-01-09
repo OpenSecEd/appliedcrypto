@@ -1,32 +1,31 @@
-\documentclass[a4paper]{llncs}
+\documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[swedish,english]{babel}
 \usepackage[hyphens]{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{varioref}
-\usepackage{cleveref}
 \usepackage{amssymb}
 \usepackage{csquotes}
 \usepackage{verbatim}
+\usepackage{authblk}
+\let\institute\affil
 
 \usepackage[natbib,style=numeric-comp,maxbibnames=99]{biblatex}
 \addbibresource{spuriouslab.bib}
 
 \usepackage[lncs,crypto]{bibsp}
+\usepackage{cleveref}
 
 %\printanswers
 \pagestyle{plain}
 
-\title{Lab: May the (Brute) Force Be with You}
-\subtitle{A lab to reflect on forcing solutions}
+\title{Lab: May the (brute) force be with you, a lab to reflect on forcing 
+  solutions}
 \author{%
-  Daniel Bosk\inst{1}\fnmsep\inst{2}
+  Daniel Bosk
 }
 \institute{%
-  School of Computer Science and Communication\\
-  KTH Royal Institute of Technology, SE-100\,44 Stockholm
-  \and
   Department of Information and Communication Systems\\
   Mid Sweden University, SE-851\,70 Sundsvall
 }

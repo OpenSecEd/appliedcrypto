@@ -4,7 +4,6 @@ all: spuriouslab.pdf
 FILES=		spuriouslab.tex aims.tex abstract.tex spuriouslab.bib
 
 spuriouslab.pdf: ${FILES}
-spuriouslab.pdf: llncs biblatex-lncs
 spuriouslab.pdf: bibsp.sty
 
 
