@@ -21,11 +21,13 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 .PHONY: clean
 clean:
 	${RM} overview-slides.pdf
+	${RM} hashfunc-eps-converted-to.pdf surjection-eps-converted-to.pdf
 
 .PHONY: distclean
 distclean:
 	${RM} beamer-didactic.sty
 	${MAKE} -C ../beamer-didactic clean distclean
+	${RM} crypto.bib mpc.bib bibsp.sty
 
 
 INCLUDE_MAKEFILES=../makefiles
