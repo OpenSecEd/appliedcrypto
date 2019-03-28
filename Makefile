@@ -1,4 +1,7 @@
-SUBDIR+=	./overview
+SUBDIR+= 	overview
+SUBDIR+= 	intro
+SUBDIR+= 	shared-key
+
 SUBDIR+= 	./bitcoin
 SUBDIR+= 	./sidechannels
 
