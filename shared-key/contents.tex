@@ -1,0 +1,232 @@
+\mode*
+
+% Since this a solution template for a generic talk, very little can
+% be said about how it should be structured. However, the talk length
+% of between 15min and 45min and the theme suggest that you stick to
+% the following rules:  
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+
+\section{Shared-key cryptography}
+
+\subsection{Ciphers}
+
+\begin{frame}
+  \begin{idea}
+    \begin{itemize}
+      \item Alice and Bob share a (small) common secret.
+
+        \pause{}
+
+      \item Alice takes a message, combines it with the secret, sends it to 
+        Bob.
+
+        \pause{}
+
+      \item If Eve captures the whatever Alice sent, she shouldn't learn 
+        anything about the message.
+
+        \pause{}
+
+      \item Bob combines what he received with the secret and gets the message.
+    \end{itemize}
+  \end{idea}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Block-cipher encryption}
+    \begin{description}
+      \item[Input] A fixed-sized \emph{key} \(\Key{}\), a fixed-sized block of 
+        \emph{plaintext} \(p\).
+      \item[Output] A fixed-sized block of \emph{ciphertext} \(c\).
+      \item[Notation] \(\Enc[\Key{}]{p} = c\)
+    \end{description}
+  \end{block}
+
+  \pause{}
+
+  \begin{block}{Block-cipher decryption}
+    \begin{description}
+      \item[Input] A fixed-sized \emph{key} \(\Key{}\), a fixed-sized block of 
+        \emph{ciphertext} \(c\).
+      \item[Output] A fixed-sized block of \emph{plaintext} \(p\).
+      \item[Notation] \(\Dec[\Key{}]{c} = p\)
+    \end{description}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Crypto 
+    system\footfullcite{Stinson2006cta}]\label{CryptoSystem}
+    \begin{itemize}
+        \item A \emph{crypto system} is a tuple \((\M, \C, \K, \E, \D)\), 
+          where:
+          \begin{itemize}
+            \item \(\M\) is a finite set of \emph{plaintexts} or messages,
+            \item \(\C\) is a finite set of \emph{ciphertexts},
+            \item \(\K\) is the \emph{keyspace}, a finite set of keys.
+            \item \(\E\) and \(\D\) are the sets of encryption and decryption
+              rules, respectively.
+          \end{itemize}
+
+          \pause{}
+
+        \item For every \(k\in \K\) there is a \(\Enc[k]{}\in \E\) and 
+          \(\Dec[k]{}\in \D\) such that
+          \begin{itemize}
+            \item \(\Enc[k]{}\colon \M\to \C\) and \(\Dec[k]{}\colon \C\to 
+                \M\) are functions and
+            \item \(\Dec[k]{\Enc[k]{m}} = m\) for all plaintexts \(m\in 
+                \M\).
+          \end{itemize}
+      \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Shift Cipher]\label{ShiftCipher}
+    \begin{itemize}
+      \item Let \(\M = \C = \K = \Z_{29}\)
+      \item For each \(k\in \K\) we define
+        \begin{align}
+          \nonumber
+          \Enc[k]{m} &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
+          \nonumber
+          \Dec[k]{c} &= (c - k) \bmod 29, c\in \C.
+        \end{align}
+    \end{itemize}
+  \end{definition}
+
+  \pause{}
+
+  \begin{example}
+    \begin{itemize}
+      \item \(\Enc[3]{7} = 7+3 \bmod 29 = 10\)\hfill h\(\to\)J
+      \item \(\Enc[3]{4} = 4+3 \bmod 29 = 7\)\hfill e\(\to\)G
+      \item \(\Enc[3]{9} = 9+3 \bmod 29 = 12\)\hfill j\(\to\)L
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item The shift cipher is a classical cipher --- also know as the Caesar 
+        Cipher.
+      \item It's easily broken \emph{by hand}!
+      \item It's used here for illustrative purposes.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    \begin{itemize}
+      \item What do we have to do to set this up between two parties, say Alice 
+        and Bob?
+      \item What problems do we have to solve?
+    \end{itemize}
+  \end{exercise}
+\end{frame}
+
+\subsection{Security}
+
+\begin{frame}
+  \begin{definition}[Perfect secrecy~\footfullcite{ShannonSecrecy}]
+    \begin{itemize}
+      \item Cryptosystem \((\M, \C, \K, \E, \D)\).
+      \item Stochastic variables \(M, C\).
+      \item \emph{Perfect secrecy} if and only if \[\Pr(M = m\mid C = c) 
+          = \Pr(M = m)\] for all \(m\in \M\) and \(c\in \C\).
+    \end{itemize}
+  \end{definition}
+
+  \pause{}
+
+  \begin{remark}
+    Equivalent to \(H(M\mid C) = H(M)\), i.e.\ ciphertext does not reveal 
+    anything about plaintext.
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{theorem}[Shannon's theorem]
+    \begin{itemize}
+      \item Assume cryptosystem \((\M, \C, \K, \E, \D)\) such that \(|\K| 
+          = |\C| = |\M|\).
+
+        \pause{}
+
+      \item This provides perfect secrecy if and only if
+        \begin{enumerate}
+          \item every key \(k\in \K\) is used with equal probability 
+            \(1/|\K|\),
+          \item for every plaintext \(m\in \M\) and \(c\in \C\) there is 
+            a unique key such that \(\Enc[k]{m} = c\).
+        \end{enumerate}
+    \end{itemize}
+  \end{theorem}
+\end{frame}
+
+\begin{frame}
+  \begin{example}[One-time Pad]
+    \begin{itemize}
+      \item Let \(n\) be a positive integer.
+      \item Let \(\M = \C = \K = (\Z_2)^n\).
+
+        \pause{}
+
+      \item For each key \(k = (k_1, \ldots, k_n)\in \K\), plaintexts \(m 
+          = (m_1, \ldots, m_n)\in \M\) and ciphertexts \(c = (c_1, \ldots, 
+          c_n)\in \C\) we define
+        \[\Enc[k]{m} = (m_1 + k_1, \ldots, m_n + k_n)\]
+
+        \pause{}
+
+      \item We also define \(\DecOp = \EncOp\).
+
+        \pause{}
+
+      \item \(k\in \K\) must be chosen uniformly randomly for each encryption.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[\Acl{PRP}, \acs{PRP}\footfullcite{KatzLindell-v1}]
+    \begin{itemize}
+      \item Let \(F\colon \{0,1\}^s\times \{0, 1\}^n\to \{0,1\}^n\).
+
+        \pause{}
+
+      \item \(F\) is \iac{PRP} if
+        \begin{enumerate}
+          \item for any \(k\in \{0, 1\}^s\), \(F\) is a bijection;
+
+            \pause{}
+
+          \item for any \(k\in \{0, 1\}^s\), we can \enquote{efficiently} 
+            evaluate \(F_k(x)\);
+
+            \pause{}
+
+          \item for all \enquote{efficient} distinguishers~\(D\),
+            \[\left|\Pr[D^{F_k}(1^n) = 1] - \Pr[D^{f_n}(1^n) = 1]\right| 
+              < \epsilon(s)\] if we choose \(k\in \{0,1\}^s\) and the random 
+            permutation \(f_n\) uniformly at random.
+        \end{enumerate}
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]
+  \printbibliography{}
+\end{frame}
+
