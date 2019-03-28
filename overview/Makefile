@@ -6,15 +6,26 @@ SRC+=		abstract.tex overview.bib
 
 FIGURES+=	surjection.eps hashfunc.eps
 
-DEPENDS+=	bibsp.sty crypto.bib mpc.bib
+DEPENDS+=	bibsp.sty crypto.bib mpc.bib beamer-didactic.sty
 
 overview-slides.pdf: overview-slides.tex ${SRC} ${FIGURES}
 overview-slides.pdf: ${DEPENDS}
+
+beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
+	${LN} $< $@
+
+../beamer-didactic/beamer-didactic.sty:
+	${MAKE} -C $(dir $@) $(notdir $@)
 
 
 .PHONY: clean
 clean:
 	${RM} overview-slides.pdf
+
+.PHONY: distclean
+distclean:
+	${RM} beamer-didactic.sty
+	${MAKE} -C ../beamer-didactic clean distclean
 
 
 INCLUDE_MAKEFILES=../makefiles
