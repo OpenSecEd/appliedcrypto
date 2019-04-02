@@ -4,8 +4,6 @@ all: overview-slides.pdf
 SRC+=		preamble.tex contents.tex
 SRC+=		abstract.tex overview.bib
 
-FIGURES+=	surjection.eps hashfunc.eps
-
 DEPENDS+=	bibsp.sty crypto.bib mpc.bib beamer-didactic.sty
 
 overview-slides.pdf: overview-slides.tex ${SRC} ${FIGURES}
@@ -21,7 +19,6 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 .PHONY: clean
 clean:
 	${RM} overview-slides.pdf
-	${RM} hashfunc-eps-converted-to.pdf surjection-eps-converted-to.pdf
 
 .PHONY: distclean
 distclean:
