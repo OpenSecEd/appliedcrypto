@@ -1,3 +1,3 @@
-[High-level overview of crypto] provides a high-level overview of modern 
-cryptography, beyond the standard concepts of encryption and decryption, such 
-as zero-knowledge proofs of knowledge.
+[One-way functions] introduces a core cryptographic building block, one-way 
+functions. These functions are easy to evaluate, but it is computationally hard 
+to find inverses.
