@@ -7,7 +7,7 @@ SUBDIR+= 	pub-key
 SUBDIR+= 	./bitcoin
 SUBDIR+= 	./sidechannels
 
-SUBDIR+=	./cryptoproofs
+#SUBDIR+=	cryptoproofs
 
 SUBDIR+= 	./spuriouslab
 
