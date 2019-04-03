@@ -15,12 +15,13 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
-pub-key.bib: pub-key.bib(bibliography.bib crypto.bib)
+bibliography.bib: bibliography.bib(pub-key.bib crypto.bib)
 
 
 .PHONY: clean
 clean:
 	${RM} pub-key-slides.pdf
+	${RM} bibliography.bib
 
 .PHONY: distclean
 distclean:

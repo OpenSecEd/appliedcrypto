@@ -15,12 +15,13 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
-shared-key.bib: shared-key.bib(bibliography.bib crypto.bib)
+bibliography.bib: bibliography(shared-key.bib crypto.bib)
+
 
 .PHONY: clean
 clean:
 	${RM} shared-key-slides.pdf
-	${RM} shared-key.bib
+	${RM} bibliography.bib
 
 .PHONY: distclean
 distclean:

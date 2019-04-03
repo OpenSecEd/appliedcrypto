@@ -17,13 +17,14 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
-one-way.bib: one-way.bib(crypto.bib)
+bibliography.bib: bibliography.bib(one-way.bib crypto.bib)
 
 
 .PHONY: clean
 clean:
 	${RM} one-way-slides.pdf
 	${RM} hashfunc-eps-converted-to.pdf surjection-eps-converted-to.pdf
+	${RM} bibliography.bib
 
 .PHONY: distclean
 distclean:

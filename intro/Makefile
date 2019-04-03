@@ -15,10 +15,13 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
+bibliography.bib: bibliography(intro.bib)
+
 
 .PHONY: clean
 clean:
 	${RM} intro-slides.pdf
+	${RM} bibliography.bib
 
 .PHONY: distclean
 distclean:

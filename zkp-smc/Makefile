@@ -15,10 +15,13 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
+bibliography.bib: bibliography.bib(crypto.bib mpc.bib)
+
 
 .PHONY: clean
 clean:
 	${RM} zkp-smc-slides.pdf
+	${RM} bibliography.bib
 
 .PHONY: distclean
 distclean:
