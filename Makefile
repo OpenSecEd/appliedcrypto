@@ -1,8 +1,8 @@
-SUBDIR+= 	overview
 SUBDIR+= 	intro
 SUBDIR+= 	shared-key
 SUBDIR+= 	one-way
 SUBDIR+= 	pub-key
+SUBDIR+= 	zkp-smc
 
 SUBDIR+= 	./bitcoin
 SUBDIR+= 	./sidechannels

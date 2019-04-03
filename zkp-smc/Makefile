@@ -1,13 +1,13 @@
 .PHONY: all
-all: overview-slides.pdf
+all: zkp-smc-slides.pdf
 
 SRC+=		preamble.tex contents.tex
-SRC+=		abstract.tex overview.bib
+SRC+=		abstract.tex bibliography.bib
 
 DEPENDS+=	bibsp.sty crypto.bib mpc.bib beamer-didactic.sty
 
-overview-slides.pdf: overview-slides.tex ${SRC} ${FIGURES}
-overview-slides.pdf: ${DEPENDS}
+zkp-smc-slides.pdf: zkp-smc-slides.tex ${SRC} ${FIGURES}
+zkp-smc-slides.pdf: ${DEPENDS}
 
 beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 	${LN} $< $@
@@ -18,7 +18,7 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 
 .PHONY: clean
 clean:
-	${RM} overview-slides.pdf
+	${RM} zkp-smc-slides.pdf
 
 .PHONY: distclean
 distclean:
