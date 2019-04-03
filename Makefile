@@ -3,9 +3,9 @@ SUBDIR+= 	shared-key
 SUBDIR+= 	one-way
 SUBDIR+= 	pub-key
 SUBDIR+= 	zkp-smc
+SUBDIR+= 	sidechannels
 
 SUBDIR+= 	./bitcoin
-SUBDIR+= 	./sidechannels
 
 #SUBDIR+=	cryptoproofs
 
