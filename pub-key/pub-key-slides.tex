@@ -1,0 +1,60 @@
+\documentclass[ignoreframetext]{beamer}
+\input{preamble.tex}
+
+\usetheme{Berlin}
+\setbeamertemplate{footline}%{miniframes theme}
+{%
+  \begin{beamercolorbox}[colsep=1.5pt]{upper separation line foot}
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}%
+    \leavevmode{\usebeamerfont{author in head/foot}\insertshortauthor}%
+    \hfill%
+    {\usebeamerfont{institute in head/foot}\usebeamercolor[fg]{institute in head/foot}\insertshortinstitute}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+    {\usebeamerfont{title in head/foot}\insertshorttitle} \hfill     \insertframenumber%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[colsep=1.5pt]{lower separation line foot}
+  \end{beamercolorbox}
+}
+\setbeamercovered{transparent}
+\setbeamertemplate{bibliography item}[text]
+
+\AtBeginSection[]{%
+  \begin{frame}<beamer>
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\usepackage{beamer-didactic}
+
+\begin{document}
+\title{%
+  Public-key cryptography
+}
+\author{%
+  Daniel Bosk
+}
+\institute[KTH/MIUN]{%
+  School of Computer Science and Communication,\\
+  KTH Royal Institute of Technology, Stockholm
+  \and
+  Department of Information and Communication Systems,\\
+  Mid Sweden University, Sundsvall
+}
+\date{\today}
+
+\mode*
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{abstract}
+  \input{abstract.tex}
+\end{abstract}
+
+\mode<all>{\input{contents.tex}}
+\end{document}

@@ -1,8 +1,13 @@
-SUBDIR+=	./overview
-SUBDIR+= 	./bitcoin
-SUBDIR+= 	./sidechannels
+SUBDIR+= 	intro
+SUBDIR+= 	shared-key
+SUBDIR+= 	one-way
+SUBDIR+= 	pub-key
+SUBDIR+= 	zkp-smc
+SUBDIR+= 	sidechannels
 
-SUBDIR+=	./cryptoproofs
+SUBDIR+= 	./bitcoin
+
+#SUBDIR+=	cryptoproofs
 
 SUBDIR+= 	./spuriouslab
 

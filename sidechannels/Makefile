@@ -45,9 +45,13 @@ em-pita-detailed.png:
 	wget -O $@ https://www.cs.tau.ac.il/~tromer/radioexp/untethered-pita-closeup---annotated.png
 
 
+bibliography.bib: bibliography.bib(sidechannels.bib)
+
+
 .PHONY: clean
 clean:
 	${RM} sidechannels-slides.pdf
+	${RM} bibliography.bib
 
 .PHONY: distclean clean-depends clean-figures
 clean-depends distclean: clean-figures

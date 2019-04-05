@@ -10,3 +10,6 @@
 	path = cryptoproofs
 	url = https://github.com/OpenSecEd/cryptoproofs.git
 	branch = master
+[submodule "beamer-didactic"]
+	path = beamer-didactic
+	url = https://github.com/dbosk/beamer-didactic.git
