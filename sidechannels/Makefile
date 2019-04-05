@@ -46,6 +46,7 @@ em-pita-detailed.png:
 
 
 bibliography.bib: bibliography.bib(sidechannels.bib)
+bibliography.bib(%): %
 
 
 .PHONY: clean
