@@ -2,7 +2,7 @@
 all: shared-key-slides.pdf
 
 SRC+=		preamble.tex contents.tex
-SRC+=		abstract.tex shared-key.bib
+SRC+=		abstract.tex bibliography.bib
 
 DEPENDS+=	bibsp.sty crypto.bib beamer-didactic.sty
 
@@ -15,7 +15,7 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
-bibliography.bib: bibliography(shared-key.bib crypto.bib)
+bibliography.bib: bibliography.bib(shared-key.bib crypto.bib)
 
 
 .PHONY: clean
