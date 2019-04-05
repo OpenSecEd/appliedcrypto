@@ -2,7 +2,7 @@
 all: pub-key-slides.pdf
 
 SRC+=		preamble.tex contents.tex
-SRC+=		abstract.tex pub-key.bib
+SRC+=		abstract.tex bibliography.bib
 
 DEPENDS+=	bibsp.sty beamer-didactic.sty
 
@@ -16,6 +16,8 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 bibliography.bib: bibliography.bib(pub-key.bib crypto.bib)
+bibliography.bib(crypto.bib): crypto.bib
+bibliography.bib(pub-key.bib): pub-key.bib
 
 
 .PHONY: clean
