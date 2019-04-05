@@ -2,11 +2,11 @@
 all: one-way-slides.pdf
 
 SRC+=		preamble.tex contents.tex
-SRC+=		abstract.tex one-way.bib
+SRC+=		abstract.tex bibliography.bib
 
 FIGURES+=	surjection.eps hashfunc.eps
 
-DEPENDS+=	bibsp.sty crypto.bib beamer-didactic.sty
+DEPENDS+=	bibsp.sty beamer-didactic.sty
 
 one-way-slides.pdf: one-way-slides.tex ${SRC} ${FIGURES}
 one-way-slides.pdf: ${DEPENDS}

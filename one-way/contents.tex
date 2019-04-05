@@ -19,9 +19,6 @@
   \begin{idea}
     \begin{itemize}
       \item We want a function which we can efficiently compute.
-
-        \pause{}
-
       \item However, it shouldn't be possible to find its inverse.
     \end{itemize}
   \end{idea}
@@ -187,11 +184,7 @@
 
         \pause{}
         
-      \item Eve cannot compute the hash function, she doesn't have \(m\)!
-        \pause{}
-        \begin{itemize}
-          \item Bob: But neither do I\@!
-        \end{itemize}
+      \item Eve makes up \(m'\), she can compute \(t' = h(m')\).
     \end{itemize}
   \end{example}
 \end{frame}
@@ -237,7 +230,7 @@
   \pause{}
 
   \begin{remark}
-    This is proven secure in by \textcite{HMAC}!
+    This is proven secure by \textcite{HMAC}!
   \end{remark}
 \end{frame}
 
