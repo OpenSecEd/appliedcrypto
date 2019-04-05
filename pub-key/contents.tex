@@ -123,13 +123,13 @@
 \begin{frame}
   \begin{definition}[Diffie-Hellman key-exchange]
     \begin{itemize}
-      \item Let \(g\in \Z_p^*\) (publicly known, e.g.\ RFC, standard\ dots).
+      \item Let \(g\in \Z_p^*\) (publicly known, e.g.\ RFC, standard \dots).
 
         \pause{}
 
       \color{green!50!red}
       \item Alice generates random \(0 < x < |\Z_p^*|\).
-      \item She send \(g^x\) to Bob.
+      \item She sends \(g^x\) to Bob.
 
         \pause{}
 
@@ -154,6 +154,16 @@
       \item By \ac{DHP} she cannot compute \(g^{xy}\).
     \end{itemize}
   \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item This is not secure as it is.
+      \item \(g^x, g^y\) are \emph{not authenticated}!
+      \item Alice can tell the difference between Bob and Eve!
+    \end{itemize}
+  \end{remark}
 \end{frame}
 
 \subsection{Encryption and decryption}
@@ -185,7 +195,7 @@
     \end{itemize}
     Decryption:
     \begin{itemize}
-      \item Alice computes \((g^y)^x\) and \(m(g^x)^y((g^{y})^x)^{-1} = m\).
+      \item Alice computes \((g^y)^{-x}\) and \(m(g^x)^y (g^{y})^{-x} = m\).
     \end{itemize}
   \end{definition}
 \end{frame}
@@ -219,6 +229,7 @@
 \end{frame}
 
 \begin{frame}
+  \footnotesize
   \begin{definition}[ElGamal Signature Scheme\footfullcite{ElGamal}]
     Set-up:
     \begin{itemize}
