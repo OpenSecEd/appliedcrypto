@@ -4,7 +4,7 @@ all: zkp-smc-slides.pdf
 SRC+=		preamble.tex contents.tex
 SRC+=		abstract.tex bibliography.bib
 
-DEPENDS+=	bibsp.sty crypto.bib mpc.bib beamer-didactic.sty
+DEPENDS+=	bibsp.sty beamer-didactic.sty
 
 zkp-smc-slides.pdf: zkp-smc-slides.tex ${SRC} ${FIGURES}
 zkp-smc-slides.pdf: ${DEPENDS}
@@ -16,6 +16,7 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 bibliography.bib: bibliography.bib(crypto.bib mpc.bib)
+bibliography.bib(%): %
 
 
 .PHONY: clean
