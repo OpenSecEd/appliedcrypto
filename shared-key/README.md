@@ -1,5 +1,5 @@
 [![Video: Shared-Key 
-Encryption](https://img.youtube.com/vi/83WDuPKToFo/hqdefault.png)](https://youtu.be/83WDuPKToFo) 
+Encryption](https://img.youtube.com/vi/83WDuPKToFo/hqdefault.jpg)](https://youtu.be/83WDuPKToFo) 
 
 Shared-key cryptography is the traditional approach to cryptography and
 the aspect of cryptography that comes as intuitive for most people. We
