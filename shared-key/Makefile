@@ -18,10 +18,23 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 bibliography.bib: bibliography.bib(shared-key.bib crypto.bib)
 
 
+.PHONY: all
+all: README.md
+
+README.md: video.md abstract.md
+	${CAT} $^ > $@
+
+TEX2MDFLAGS=	-s --biliography bibliography.bib -t markdown_strict
+
+abstract.md: abstract.tex
+	${CONVERT.tex.md}
+
+
 .PHONY: clean
 clean:
 	${RM} shared-key-slides.pdf
 	${RM} bibliography.bib
+	${RM} abstract.md
 
 .PHONY: distclean
 distclean:
@@ -32,5 +45,6 @@ distclean:
 
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
 INCLUDE_BIBSP=../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
