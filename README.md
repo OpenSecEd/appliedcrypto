@@ -10,6 +10,15 @@ recording, a short summary, the intended learning outcomes and reading
 instructions. For assignments, it shortly describes the assignment. Apart from 
 this README, there are the sources for the material.
 
+The recommended order for the lectures:
+
+  1. intro
+  2. shared-key
+  3. one-way
+  4. pub-key
+  5. zkp-smc
+  6. sidechannels
+
 
 ## File Structure and Building
 
