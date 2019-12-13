@@ -24,9 +24,9 @@ all: README.md
 README.md: video.md abstract.md
 	${CAT} $^ > $@
 
-TEX2MDFLAGS=	-s --biliography bibliography.bib -t markdown_strict
+TEX2MDFLAGS=	-s --bibliography bibliography.bib -t markdown_strict
 
-abstract.md: abstract.tex
+abstract.md: abstract.tex bibliography.bib
 	${CONVERT.tex.md}
 
 
