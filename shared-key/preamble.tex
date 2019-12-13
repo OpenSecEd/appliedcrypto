@@ -16,7 +16,14 @@
 \usepackage[natbib,sorting=none,maxbibnames=99]{biblatex}
 \addbibresource{bibliography.bib}
 
-\usepackage[std,math,crypto,mpc]{bibsp}
+\usepackage{bibsp}
+\NewFunction{\Enc}{Enc}
+\NewFunction{\Dec}{Dec}
+\NewSet{\M}{M}
+\NewSet{\C}{C}
+\NewSet{\K}{K}
+\NewSet{\E}{E}
+\NewSet{\D}{D}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows}

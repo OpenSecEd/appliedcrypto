@@ -40,10 +40,10 @@
 \begin{frame}
   \begin{block}{Block-cipher encryption}
     \begin{description}
-      \item[Input] A fixed-sized \emph{key} \(\Key{}\), a fixed-sized block of 
+      \item[Input] A fixed-sized \emph{key} \(k\), a fixed-sized block of 
         \emph{plaintext} \(p\).
       \item[Output] A fixed-sized block of \emph{ciphertext} \(c\).
-      \item[Notation] \(\Enc[\Key{}]{p} = c\)
+      \item[Notation] \(\Enc[_k][p] = c\)
     \end{description}
   \end{block}
 
@@ -51,10 +51,10 @@
 
   \begin{block}{Block-cipher decryption}
     \begin{description}
-      \item[Input] A fixed-sized \emph{key} \(\Key{}\), a fixed-sized block of 
+      \item[Input] A fixed-sized \emph{key} \(k\), a fixed-sized block of 
         \emph{ciphertext} \(c\).
       \item[Output] A fixed-sized block of \emph{plaintext} \(p\).
-      \item[Notation] \(\Dec[\Key{}]{c} = p\)
+      \item[Notation] \(\Dec[_k][c] = p\)
     \end{description}
   \end{block}
 \end{frame}
@@ -75,13 +75,13 @@
 
           \pause{}
 
-        \item For every \(k\in \K\) there is a \(\Enc[k]{}\in \E\) and 
-          \(\Dec[k]{}\in \D\) such that
+        \item For every \(k\in \K\) there is a
+          \(\Enc_k\in \E\) and
+          \(\Dec_k\in \D\) such that
           \begin{itemize}
-            \item \(\Enc[k]{}\colon \M\to \C\) and \(\Dec[k]{}\colon \C\to 
-                \M\) are functions and
-            \item \(\Dec[k]{\Enc[k]{m}} = m\) for all plaintexts \(m\in 
-                \M\).
+            \item \(\Enc_k\colon \M\to \C\) and \(\Dec_k\colon \C\to \M\) are 
+              functions and
+            \item \(\Dec[_k][\Enc[_k][m]] = m\) for all plaintexts \(m\in \M\).
           \end{itemize}
       \end{itemize}
   \end{definition}
@@ -90,13 +90,13 @@
 \begin{frame}
   \begin{definition}[Shift Cipher]\label{ShiftCipher}
     \begin{itemize}
-      \item Let \(\M = \C = \K = \Z_{29}\)
+      \item Let \(\M = \C = \K = \ZZ_{29}\)
       \item For each \(k\in \K\) we define
         \begin{align}
           \nonumber
-          \Enc[k]{m} &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
+          \Enc[_k][m] &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
           \nonumber
-          \Dec[k]{c} &= (c - k) \bmod 29, c\in \C.
+          \Dec[_k][c] &= (c - k) \bmod 29, c\in \C.
         \end{align}
     \end{itemize}
   \end{definition}
@@ -105,9 +105,9 @@
 
   \begin{example}
     \begin{itemize}
-      \item \(\Enc[3]{7} = 7+3 \bmod 29 = 10\)\hfill h\(\to\)J
-      \item \(\Enc[3]{4} = 4+3 \bmod 29 = 7\)\hfill e\(\to\)G
-      \item \(\Enc[3]{9} = 9+3 \bmod 29 = 12\)\hfill j\(\to\)L
+      \item \(\Enc[_3][7] = 7+3 \bmod 29 = 10\)\hfill h\(\to\)J
+      \item \(\Enc[_3][4] = 4+3 \bmod 29 = 7\)\hfill e\(\to\)G
+      \item \(\Enc[_3][9] = 9+3 \bmod 29 = 12\)\hfill j\(\to\)L
     \end{itemize}
   \end{example}
 \end{frame}
@@ -155,8 +155,8 @@
         \begin{enumerate}
           \item every key \(k\in \K\) is used with equal probability 
             \(1/|\K|\),
-          \item for every plaintext \(m\in \M\) and \(c\in \C\) there is 
-            a unique key such that \(\Enc[k]{m} = c\).
+          \item for every plaintext \(m\in \M\) and \(c\in \C\) there is a 
+            unique key such that \(\Enc[_k][m] = c\).
         \end{enumerate}
     \end{itemize}
   \end{theorem}
@@ -166,18 +166,18 @@
   \begin{example}[One-time Pad]
     \begin{itemize}
       \item Let \(n\) be a positive integer.
-      \item Let \(\M = \C = \K = (\Z_2)^n\).
+      \item Let \(\M = \C = \K = (\ZZ_2)^n\).
 
         \pause{}
 
       \item For each key \(k = (k_1, \ldots, k_n)\in \K\), plaintexts \(m 
           = (m_1, \ldots, m_n)\in \M\) and ciphertexts \(c = (c_1, \ldots, 
           c_n)\in \C\) we define
-        \[\Enc[k]{m} = (m_1 + k_1, \ldots, m_n + k_n)\]
+        \[\Enc[_k][m] = (m_1 + k_1, \ldots, m_n + k_n)\]
 
         \pause{}
 
-      \item We also define \(\DecOp = \EncOp\).
+      \item We also define \(\Dec = \Enc\).
 
         \pause{}
 
