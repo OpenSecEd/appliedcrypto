@@ -92,7 +92,7 @@
       \item One-wayness returns as a useful property in many situations.
       \item Encryption also has the one-wayness property:
         \begin{description}
-          \item[Easy] Given \(k, m\), compute \(c\gets \Enc[k]{m}\).
+          \item[Easy] Given \(k, m\), compute \(c\gets \Enc[_k][m]\).
           \item[Hard] Given \(c\), compute either of \(k, m\).
         \end{description}
       \item However, encryption is bijective, hash functions are generally not.
@@ -105,12 +105,12 @@
 \begin{frame}
   \begin{example}
     \begin{itemize}
-      \item Let \(\Enc[k]{\cdot} = \Dec[k]{\cdot} = \cdot\oplus k\bmod 2\).
+      \item Let \(\Enc[_k][\cdot] = \Dec[_k][\cdot] = \cdot\oplus k\bmod 2\).
         
         \pause{}
 
       \item Alice and Bob share \(k\).
-      \item Alice sends \(\Enc[k]{m} = c\) to Bob.
+      \item Alice sends \(\Enc[_k][m] = c\) to Bob.
 
         \pause{}
 
@@ -118,13 +118,12 @@
 
         \pause{}
 
-      \item Eve computes \(c^\prime = c\oplus m_E\) and passes \(c^\prime\) to 
-        Bob.
+      \item Eve computes \(c' = c\oplus m_E\) and passes \(c'\) to Bob.
 
         \pause{}
 
-      \item Bob computes \(\Dec[k]{c^\prime} = \Dec[k]{c\oplus m_E} = m\oplus 
-          k\oplus m_E\oplus k = m\oplus m_E\).
+      \item Bob computes \(\Dec[_k][c'] = \Dec[_k][c\oplus m_E] = m\oplus 
+        k\oplus m_E\oplus k = m\oplus m_E\).
     \end{itemize}
   \end{example}
 
@@ -219,8 +218,8 @@
 
         \pause{}
 
-      \item Then tag \(t = \HMAC[s]{c}\), where \[
-          \HMAC[s]{c} = h\left[
+      \item Then tag \(t = \HMAC[_s][c]\), where \[
+          \HMAC[_s][c] = h\left[
             (s\oplus p_o)\concat h\left[ (s\oplus p_i)\concat c \right]
           \right],
         \] and \(p_i, p_o\) are inner and outer pads, respectively.

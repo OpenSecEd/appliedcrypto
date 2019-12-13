@@ -16,7 +16,10 @@
 \usepackage[natbib,sorting=none,maxbibnames=99]{biblatex}
 \addbibresource{bibliography.bib}
 
-\usepackage[std,math,crypto,mpc]{bibsp}
+\usepackage{bibsp}
+\NewFunction{\Enc}{Enc}
+\NewFunction{\Dec}{Dec}
+\NewFunction{\HMAC}{HMAC}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows}
