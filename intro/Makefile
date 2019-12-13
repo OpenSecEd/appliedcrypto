@@ -18,10 +18,23 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 bibliography.bib: bibliography(intro.bib)
 
 
+.PHONY: all
+all: README.md
+
+MD2TEXFLAGS= 	-s --bilbiography intro.bib -t markdown_strict
+
+README.md: video.md abstract.md
+	${CAT} $^ > $@
+
+abstract.md: abstract.tex
+	${CONVERT.tex.md}
+
+
 .PHONY: clean
 clean:
 	${RM} intro-slides.pdf
 	${RM} bibliography.bib
+	${RM} abstract.md
 
 .PHONY: distclean
 distclean:
@@ -32,5 +45,6 @@ distclean:
 
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
 INCLUDE_BIBSP=../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
