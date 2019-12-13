@@ -17,7 +17,13 @@
 \addbibresource{pub-key.bib}
 \addbibresource{crypto.bib}
 
-\usepackage[std,math,crypto,mpc]{bibsp}
+\usepackage{bibsp}
+\NewVariable{\sk}{sk}
+\NewVariable{\pk}{pk}
+\NewAlgorithm{\Enc}{Enc}
+\NewAlgorithm{\Dec}{Dec}
+\NewAlgorithm{\Sign}{Sign}
+\NewAlgorithm{\Vrfy}{Vrfy}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows}
