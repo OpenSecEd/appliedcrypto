@@ -14,7 +14,10 @@
 \usepackage[natbib,style=numeric-comp,maxbibnames=99]{biblatex}
 \addbibresource{spuriouslab.bib}
 
-\usepackage[lncs,crypto]{bibsp}
+\usepackage{bibsp}
+\NewFunction{\Enc}{Enc}
+\NewFunction{\Dec}{Dec}
+
 \usepackage{cleveref}
 
 %\printanswers
@@ -128,15 +131,15 @@ The report must contain the following:
 %    \end{solution}
 
   \item One ciphertext \(c\), two keys \(k_1\) and \(k_2\) and the 
-    corresponding plaintexts \(m_1\) and \(m_2\), such that \(\Enc[k_1]{m_1} 
-      = c = \Enc[k_2]{m_2}\).
+    corresponding plaintexts \(m_1\) and \(m_2\), such that \(\Enc[_{k_1}][m_1] 
+    = c = \Enc[_{k_2}][m_2]\).
     (It is not acceptable that either string contains incomprehensible text.)
     Explain your method for creating \(c, k_1, k_2, m_1. m_2\).
     Also discuss why we want to have spurious keys and how the length of the 
     message affects the spurious keys.
 
 %    \begin{solution}
-%      Verify that \( \Enc[k_1]{m_1} = c = \Enc[k_2]{m_2}\).
+%      Verify that \( \Enc[_{k_1}][m_1] = c = \Enc[_{k_2}][m_2]\).
 %    \end{solution}
 \end{enumerate}
 
