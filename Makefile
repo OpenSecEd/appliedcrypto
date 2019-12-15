@@ -5,11 +5,10 @@ SUBDIR+= 	pub-key
 SUBDIR+= 	zkp-smc
 SUBDIR+= 	sidechannels
 
-SUBDIR+= 	./bitcoin
+SUBDIR+= 	spuriouslab
 
+SUBDIR+= 	bitcoin
 #SUBDIR+=	cryptoproofs
-
-SUBDIR+= 	./spuriouslab
 
 
 INCLUDE_MAKEFILES=makefiles
