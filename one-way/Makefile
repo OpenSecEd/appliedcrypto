@@ -18,8 +18,18 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 bibliography.bib: bibliography.bib(one-way.bib crypto.bib)
-bibliography.bib(one-way.bib): one-way.bib
-bibliography.bib(crypto.bib): crypto.bib
+
+
+.PHONY: all
+all: README.md
+
+README.md: video.md abstract.md
+	${CAT} $^ > $@
+
+TEX2MDFLAGS=	-s --bibliography bibliography.bib -t markdown_strict
+
+abstract.md: abstract.tex bibliography.bib
+	${CONVERT.tex.md}
 
 
 .PHONY: clean
@@ -27,6 +37,7 @@ clean:
 	${RM} one-way-slides.pdf
 	${RM} hashfunc-eps-converted-to.pdf surjection-eps-converted-to.pdf
 	${RM} bibliography.bib
+	${RM} abstract.md
 
 .PHONY: distclean
 distclean:
@@ -36,5 +47,6 @@ distclean:
 
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
 INCLUDE_BIBSP=../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
