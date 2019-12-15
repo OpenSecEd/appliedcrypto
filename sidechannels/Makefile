@@ -46,13 +46,25 @@ em-pita-detailed.png:
 
 
 bibliography.bib: bibliography.bib(sidechannels.bib)
-bibliography.bib(%): %
+
+
+.PHONY: all
+all: README.md
+
+README.md: video.md abstract.md
+	${CAT} $^ > $@
+
+TEX2MDFLAGS=	-s -t markdown_strict --bibliography bibliography.bib
+
+abstract.md: abstract.tex bibliography.bib
+	${CONVERT.tex.md}
 
 
 .PHONY: clean
 clean:
 	${RM} sidechannels-slides.pdf
 	${RM} bibliography.bib
+	${RM} abstract.md
 
 .PHONY: distclean clean-depends clean-figures
 clean-depends distclean: clean-figures
@@ -66,3 +78,4 @@ clean-figures:
 
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
