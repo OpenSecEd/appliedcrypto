@@ -1,5 +1,5 @@
 [![Side 
-Channels](https://img.youtube.com/vi/mVAWapvf33Y)](https://youtu.be/mVAWapvf33Y) 
+Channels](https://img.youtube.com/vi/mVAWapvf33Y/hqdefault.jpg)](https://youtu.be/mVAWapvf33Y) 
 
 *Summary:* When looking at secure systems it is easy to assume they are
 safe just because the secret keys are not directly reachable. This is

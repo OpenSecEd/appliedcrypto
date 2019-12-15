@@ -1,5 +1,5 @@
 [![Video: One-Way 
-Functions](https://img.youtube.com/vi/8IJv-HZxQ7I)](https://youtu.be/8IJv-HZxQ7I)
+Functions](https://img.youtube.com/vi/8IJv-HZxQ7I/hqdefault.jpg)](https://youtu.be/8IJv-HZxQ7I)
 
 *Summary:* One-way functions is a core building block in modern
 cryptography. This session covers the basic property, hash functions and
