@@ -16,14 +16,25 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 bibliography.bib: bibliography.bib(pub-key.bib crypto.bib)
-bibliography.bib(crypto.bib): crypto.bib
-bibliography.bib(pub-key.bib): pub-key.bib
+
+
+.PHONY: all
+all: README.md
+
+README.md: video.md abstract.md
+	${CAT} $^ > $@
+
+TEX2MDFLAGS=	-s -t markdown_strict --bibliography bibliography.bib
+
+abstract.md: abstract.tex
+	${CONVERT.tex.md}
 
 
 .PHONY: clean
 clean:
 	${RM} pub-key-slides.pdf
 	${RM} bibliography.bib
+	${RM} abstract.md
 
 .PHONY: distclean
 distclean:
@@ -34,5 +45,6 @@ distclean:
 
 INCLUDE_MAKEFILES=../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
 INCLUDE_BIBSP=../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
