@@ -26,7 +26,7 @@ README.md: video.md abstract.md
 
 TEX2MDFLAGS=	-s -t markdown_strict --bibliography bibliography.bib
 
-abstract.md: abstract.tex
+abstract.md: abstract.tex bibliography.bib
 	${CONVERT.tex.md}
 
 
