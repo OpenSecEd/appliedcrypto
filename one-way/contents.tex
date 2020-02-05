@@ -69,6 +69,29 @@
 \end{frame}
 
 \begin{frame}
+  \begin{definition}[Preimage resistance]
+    \begin{description}
+      \item[Input] hash function~\(H\), value~\(y\).
+      \item[Output] Any \(x\) such that \(H(x) = y\).
+    \end{description}
+  \end{definition}
+
+  \begin{definition}[Second preimage resistance]
+    \begin{description}
+      \item[Input] hash function~\(H\), value \(x\).
+      \item[Output] Any value \(x'\) such that \(H(x) = H(x')\).
+    \end{description}
+  \end{definition}
+
+  \begin{definition}[Collision resistance]
+    \begin{description}
+      \item[Input] hash function~\(H\).
+      \item[Output] Any two \(x, x'\) such that \(H(x) = H(x')\).
+    \end{description}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
   \begin{example}[Implementations you might've heard of]
     \begin{itemize}
       \item MD5
