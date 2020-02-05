@@ -6,9 +6,19 @@ all: slides.pdf
 SRC+=		preamble.tex
 SRC+=		abstract.tex contents.tex
 
-EXT_SRC+= 	../one-way/contents.tex
-EXT_SRC+= 	../pub-key/contents.tex
-EXT_SRC+= 	../zkp-smc/contents.tex
+EXT_SRC+= 	one-way.tex hashfunc.eps surjection.eps
+EXT_SRC+= 	pub-key.tex
+EXT_SRC+= 	zkp-smc.tex
+
+one-way.tex:	../one-way/contents.tex
+hashfunc.eps:	../one-way/hashfunc.eps
+surjection.eps: ../one-way/surjection.eps
+
+pub-key.tex:	../pub-key/contents.tex
+zkp-smc.tex:	../zkp-smc/contents.tex
+
+${EXT_SRC}:
+	${LN} $< $@
 
 DEPENDS+= 	bibsp.sty
 
@@ -30,6 +40,7 @@ bibliography.bib(../zkp-smc/bibliography.bib): ../zkp-smc/bibliography.bib
 clean:
 	${RM} slides.pdf
 	${RM} bibliography.bib
+	${RM} ${EXT_SRC}
 	for d in one-way pub-key zkp-smc; do ${MAKE} -C ../$$d $@; done
 
 .PHONY: distclean
