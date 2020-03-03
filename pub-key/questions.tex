@@ -1,0 +1,96 @@
+\question[3]
+% tags: crypto:pub-key
+% tags: A:C:E
+Briefly describe the problem of key exchange and in what way public-key 
+cryptography might help.
+
+\begin{solution}
+  For Alice and Bob to communicate securely (over an encrypted channel) they 
+  must agree on a secret key.
+  The trivial way is that they meet in person to agree on a key.
+  But this get inconvenient if Alice and Bob live on different continents or 
+  Bob runs a server farm and must communicate with many people.
+
+  Public-key crypto allows Alice and Bob to agree on a secret over a public 
+  channel without Eve learning it.
+  One example is the Diffie--Hellman key-exchange protocol.
+
+  However, Alice and Bob need digital signatures to be sure that they are 
+  indeed talking to each other.
+\end{solution}
+
+
+\question
+% tags: crypto
+% tags: E
+The security of many cryptographic constructions is based on
+\begin{choices}
+  \choice that the adversary doesn't know how the system works.
+
+  \CorrectChoice that a problem is hard for anyone who doesn't know the secret, 
+  but easy for everyone who knows the secret.
+
+  \choice a hard problem.
+\end{choices}
+
+\begin{solution}
+  The first option violates Kerckhoff's principle.
+  The second is correct.
+  The problem must have some easy aspect to make it easy for Alice and Bob but 
+  hard for Eve.
+\end{solution}
+
+
+\question[3]
+% tags: crypto:pub-key
+% tags: A:C:E
+The Diffie--Hellman key-exchange works as follows.
+Alice chooses \(x\) and sends \(g^x \mod p\) to Bob.
+Bob chooses \(y\) and sends \(g^y \mod p\) to Alice.
+Now, both Alice and Bob can compute a joint key~\(k = (g^x)^y = (g^y)^x\).
+
+According to the Diffie--Hellman problem, Eve cannot compute \(k = g^{xy}\) 
+since she only has \(g^x\) and \(g^y\).
+But Eve can do something else to eavesdrop on Alice and Bob, what?
+(Hint: can Alice and Bob tell who sent \(g^y\) and \(g^x\), respectively?)
+
+\begin{solution}
+  Eve can intercept Alice's \(g^x\), send \(g^x'\) to Bob.
+  Intercept Bob's \(g^y\), send \(g^y'\) to Alice.
+  Now Alice will have \(k = (g^y')^x\), Eve will have \(k = (g^x)^y'\),
+  Bob will have \(k' = (g^x')^y\), Eve will have \(k' = (g^y)^x'\).
+  Alice thinks she's talking to Bob, Bob thinks he's talking to Alice.
+  Eve can just relay the messages after reading them.
+\end{solution}
+
+
+\question[3]
+% tags: crypto:pub-key
+% tags: A:C:E
+What does it mean that an encryption scheme has a homomorphic property?
+Is that a good or a bad thing?
+
+\begin{solution}
+  It means that some operation on the ciphertext translates to an operation on 
+  the plaintext, similar to how \(\log x + \log y = \log xy\).
+
+  In general, it's a bad thing.
+  However, it can be a useful property too; for example, in electronic voting 
+  to shuffle votes, in multiparty computations to add or multiply without 
+  revealing the operands.
+\end{solution}
+
+
+\question[3]
+% tags: crypto:pub-key
+% tags: A:C:E
+Explain why it's really bad for a digital signature scheme to have a 
+homomorphism.
+
+\begin{solution}
+  For example, we have the following cheque system.
+  Alice issues a cheque of \(100\) by signing \(100\).
+  She gives the check to Bob.
+  Say that it's a multiplicative homomorphism, now Bob can square Alice's 
+  cheque and get a cheque worth \(10000\) instead.
+\end{solution}
