@@ -33,6 +33,13 @@ bibliography.bib(../one-way/bibliography.bib): ../one-way/bibliography.bib
 bibliography.bib(../pub-key/bibliography.bib): ../pub-key/bibliography.bib
 bibliography.bib(../zkp-smc/bibliography.bib): ../zkp-smc/bibliography.bib
 
+questions.tex: ../one-way/questions.tex
+questions.tex: ../pub-key/questions.tex
+questions.tex: ../zkp-smc/questions.tex
+
+questions.tex:
+	${CAT} $^ > $@
+
 ../%:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
@@ -42,6 +49,7 @@ clean:
 	${RM} bibliography.bib
 	${RM} ${EXT_SRC}
 	for d in one-way pub-key zkp-smc; do ${MAKE} -C ../$$d $@; done
+	${RM} questions.tex
 
 .PHONY: distclean
 distclean:
