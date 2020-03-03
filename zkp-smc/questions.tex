@@ -1,0 +1,53 @@
+\questions
+% tags: crypto:zkp
+% tags: E
+In a zero-knowledge proof-of-knowledge
+\begin{choices}
+  \choice the verifier learns nothing.
+
+  \CorrectChoice the verifier learns one bit, but cannot prove it to anyone 
+  else.
+
+  \choice the verifier learns the prover's secret.
+\end{choices}
+
+
+\question
+% tags: crypto:smc
+% tags: E
+In secure multiparty-computation
+\begin{checkboxes}
+  \choice no-one learns anything.
+  \CorrectChoice everyone learns the output.
+  \choice no-one learns anything about the inputs.
+  \CorrectChoice everyone learns about the inputs what can be inferred from the 
+  output.
+\end{checkboxes}
+(Select all that apply.)
+
+
+\question[3]
+% tags: crypto:zkp
+% tags: A:C:E
+Alice has a private key~\(x\) and corresponding public key~\(g^x \mod p\) (for 
+some prime~\(p\)).
+(This could be a key in the ElGamal encryption/signature scheme.)
+Eve knows \(g^x\) is Alice's public key.
+Alice wants to prove she's Alice to Eve by using her public--private key-pair.
+
+Why should Alice convince Eve with a zero-knowledge proof-of-knowledge?
+Or, why should Alice \emph{not} use a digital signature?
+
+\begin{solution}
+  If Alice uses a digital signature, then Eve has a signed message by Alice.
+  Eve can misuse this message.
+  Eve can forward the signature to Bob and he will be able to verify it's 
+  Alice's signature.
+  (Eve might actually be able to trick Bob that she's Alice.)
+
+  If Alice uses a zero-knowledge proof-of-knowledge, Eve learns only that 
+  Alice's knows the private key corresponding to the public key --- but nothing 
+  else.
+  Eve cannot prove this to Bob later on.
+  Actually, she has nothing to convince Bob that she has interacted with Alice.
+\end{solution}

@@ -1,0 +1,38 @@
+\question[3]
+% tags: crypto:one-way
+% tags: A:C:E
+State the important properties of a hash function and briefly explain them.
+
+\begin{solution}
+  It should be easy to compute, but hard to invert.
+
+  There should be collisions, but they should be hard to find.
+
+  It must be preimage resistant, second preimage resistant and collision 
+  resistant.
+\end{solution}
+
+
+\question
+% tags: crypto:one-way
+% tags: E
+MD5 is a good hash function.
+\begin{oneparchoices}
+  \choice Yes
+  \CorrectChoice No
+\end{oneparchoices}
+
+
+\question[3]
+% tags: crypto:one-way
+% tags: A:C:E
+Explain why we need message-authentication codes, what problem do they solve?
+
+\begin{solution}
+  Alice and Bob share a key (not through Diffie--Hellman key-exchange), they 
+  can encrypt their messages and they know Eve cannot read them.
+
+  Eve can drop them, modify them, replay them.
+  It's impossible to prevent Eve from dropping messages.
+  We can use message-authentication codes to detect modifications.
+\end{solution}
