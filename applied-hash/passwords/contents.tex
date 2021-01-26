@@ -1,7 +1,207 @@
 \mode*
 
-\input{../hash-review.tex}
+\mode<all>{\input{../hash-review.tex}}
 
 
-\section{Password hashing}
+\section{Something you know}
+
+\subsection{\enquote{Proof of knowledge}}
+
+\begin{frame}
+  \begin{idea}[Something you know]
+    \begin{itemize}
+      \item We have a prover and a verifier.
+      \item Prover must convince verifier he knows some 
+        secret.
+    \end{itemize}
+  \end{idea}
+
+  \begin{idea}[Password]
+    \begin{itemize}
+      \item Prover and verifier shares a secret value.
+
+      \item Prover tells verifier the value to convince the verifier.
+    \end{itemize}
+  \end{idea}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item If the adversary learns the secret, he can convince the verifier he 
+        is the prover.
+    \end{itemize}
+  \end{remark}
+
+  \begin{example}
+    \begin{itemize}
+      \item Adversary might \enquote{overhear the conversation}.
+      \item Adversary might \enquote{trick} the prover to reveal the secret.
+      \item Adversary might guess the secret.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\subsection{Online or offline guessing?}
+
+\begin{frame}
+  \begin{definition}[Online]
+    \begin{itemize}
+      \item The adversary must interact with the system for each guess.
+    \end{itemize}
+  \end{definition}
+
+  \pause
+
+  \begin{example}[Online]
+    \begin{itemize}
+      \item Guessing the password of a Google account.
+      \item Must submit each guess to Google.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Offline]
+    \begin{itemize}
+      \item The adversary can verify the guess himself.
+    \end{itemize}
+  \end{definition}
+
+  \pause
+
+  \begin{example}[Offline]
+    \begin{itemize}
+      \item Guessing the password of an encrypted file.
+      \item For each guess, try to decrypt.
+    \end{itemize}
+  \end{example}
+
+  \begin{example}[Offline]
+    \begin{itemize}
+      \item Guessing the password corresponding to a hash.
+      \item For each guess, hash and compare the result.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\subsection{Storing secrets}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item The user can store the secret in its mind.
+      \item This is assumed inaccessible (for now).
+    \end{itemize}
+  \end{remark}
+
+  \pause
+
+  \begin{question}
+    \begin{itemize}
+      \item The verifier is a machine.
+      \item The verifier must verify what the prover says.
+      \item This means that the verifier must have some data to check against.
+      \item How should this be stored?
+    \end{itemize}
+  \end{question}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item Our concern is that someone can read this data.
+      \item Password reuse for other services?
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{idea}[Password hashes]
+    \begin{itemize}
+      \item We want to compare user-entered and stored password.
+      \item We do an irreversible one-way transformation on both.
+      \item Then they are still comparable.
+      \item The preimage cannot be gained from storage.
+    \end{itemize}
+  \end{idea}
+
+  \pause{}
+
+  \begin{example}
+    \begin{itemize}
+      \item Cryptographic hash function \(h\colon \bin^*\to \bin^n\).
+      \item On registration, store \(y = h(p)\).
+      \item User authenticates with \(p'\), check if \(h(p') \stackrel{?}{=}  
+        y\) equals what we stored.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item Consider guessing again.
+      \item The used password space is small.
+      \item We only need to evaluate a subset: \(h\colon 
+          \bin^{\color{red}{m}}\to \bin^n\).
+      \item With faster computers we can guess a lot.
+    \end{itemize}
+  \end{remark}
+
+  \pause
+
+  \begin{solution}
+    \begin{itemize}
+      \item Choose \(h\) to be slow to compute.
+      \item \Eg iterate it over itself 10\,000 times (\(h^{10000}(p)\)).
+      \item This will slow down guessing attacks.
+    \end{itemize}
+  \end{solution}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item A list of password hashes reveals if two users have the same 
+        password.
+      \item Can guess the password for all users at once:
+        \begin{enumerate}
+          \item Make a guess, compute the hash.
+          \item Check if it matches \emph{any} user's password.
+        \end{enumerate}
+    \end{itemize}
+  \end{remark}
+
+  \pause
+
+  \begin{solution}
+    \begin{itemize}
+      \item Add a \emph{salt}: a small random value (\eg 128 bits) unique for 
+        each user.
+      \item Salt~\(s\rgets \bin^{128}\), change hash to \(h(s, p)\).
+      \item Now all hashes will be unique.
+    \end{itemize}
+  \end{solution}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    \begin{itemize}
+      \item The salt is not a secret, it just adds uniqueness.
+      \item It can be stored in plain text along with the password hash.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{example}
+    \begin{itemize}
+      \item There are many libraries.
+      \item bcrypt~\cite{bcrypt} implements all this functionality.
+      \item Argon2 is another, more recent technique.
+      \item They should also be available in most languages and libraries.
+    \end{itemize}
+  \end{example}
+\end{frame}
 
