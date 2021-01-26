@@ -7,6 +7,7 @@ SRC+=		preamble.tex
 SRC+=		abstract.tex contents.tex
 
 DEPENDS+=	bibsp.sty
+DEPENDS+=	crypto.bib
 
 FIGS+=		
 
