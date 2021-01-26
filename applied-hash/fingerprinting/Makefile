@@ -5,6 +5,7 @@ LATEXFLAGS+=	-shell-escape
 
 SRC+=		preamble.tex
 SRC+=		abstract.tex contents.tex
+SRC+=		../hash-review.tex
 
 DEPENDS+=	bibsp.sty
 DEPENDS+=	crypto.bib
@@ -28,6 +29,17 @@ $(addprefix fig/, ${FIGS}):
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 
+.PHONY: all
+all: README.md
+
+README.md: video.md abstract.md
+	${CAT} video.md abstract.md > $@
+
+.INTERMEDIATE: abstract.md
+abstract.md: abstract.tex
+	${CONVERT.tex.md}
+
+
 .PHONY: clean
 clean:
 	${RM} notes.pdf slides.pdf
@@ -39,5 +51,6 @@ distclean:
 
 INCLUDE_MAKEFILES=../../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
 INCLUDE_BIBSP=../../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
