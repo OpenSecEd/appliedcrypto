@@ -9,7 +9,15 @@ SRC+=		abstract.tex contents.tex
 DEPENDS+=	bibsp.sty
 DEPENDS+=	crypto.bib
 
-FIGS+=		
+FIG+=		bitcoin-powchain.png
+FIG+=		bitcoin-pow.png
+FIG+=		bitcoin-privacy.png
+FIG+=		bitcoin-stamp.png
+FIG+=		bitcoin-transaction.png
+FIG+=		bitcoin-transfer.png
+FIG+=		merkle-tree.png
+FIGS+=		pow.pdf
+FIGS+=		preimage.pdf
 
 notes.pdf: notes.tex
 notes.pdf: ${SRC} ${DEPENDS} $(addprefix fig/,${FIGS})
