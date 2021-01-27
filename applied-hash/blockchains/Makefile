@@ -18,6 +18,7 @@ FIG+=		bitcoin-transfer.png
 FIG+=		merkle-tree.png
 FIGS+=		pow.pdf
 FIGS+=		preimage.pdf
+FIGS+=		mining.pdf
 
 notes.pdf: notes.tex
 notes.pdf: ${SRC} ${DEPENDS} $(addprefix fig/,${FIGS})

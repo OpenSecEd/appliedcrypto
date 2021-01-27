@@ -109,8 +109,56 @@
   \end{remark}
 \end{frame}
 
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.7\textwidth]{fig/bitcoin-stamp.png}
+    \caption{A simple time-stamping mechanism.
+    Image:~\cite{Nakamoto2008bap}.}
+  \end{figure}
+
+  \vfill
+
+  \only<1>{%
+    \begin{exercise}
+      \begin{itemize}
+        \item What prevents me from forging a block and claim it was before 
+          another block in the time line?
+      \end{itemize}
+    \end{exercise}
+  }
+  \only<2>{%
+    \begin{solution}
+      \begin{itemize}
+        \item That block I forge must have the same hash.
+        \item I must find a collision.
+      \end{itemize}
+    \end{solution}
+  }
+\end{frame}
+
 
 \section{Proof-of-work}
+
+\begin{frame}
+  \begin{question}
+    \begin{itemize}
+      \item Then why do we need proof-of-work?
+    \end{itemize}
+  \end{question}
+
+  \begin{remark}
+    \begin{itemize}
+      \item Because the blocks chain is not fixed!
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.8\textheight]{fig/mining.pdf}
+    \caption{How a block chain is agreed upon.}
+  \end{figure}
+\end{frame}
 
 \begin{frame}
   \begin{remark}[Forgery]
