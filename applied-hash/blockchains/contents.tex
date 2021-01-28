@@ -16,23 +16,6 @@
   \end{idea}
 \end{frame}
 
-\begin{frame}
-  \begin{question}
-    \begin{itemize}
-      \item How to do consensus?
-      \item Why can't one person pretend to be many? (Sybil attack)
-    \end{itemize}
-  \end{question}
-
-  \begin{idea}[Proof-of-work]
-    \begin{itemize}
-      \item We require a difficult problem to be solved.
-      \item We only consider a block if this problem is solved.
-      \item All other details should also check out.
-    \end{itemize}
-  \end{idea}
-\end{frame}
-
 %\begin{frame}
 %  \begin{idea}
 %    \begin{itemize}
@@ -53,6 +36,7 @@
       \item A transaction is money.
     \end{itemize}
   \end{idea}
+
   \begin{figure}
     \includegraphics[width=0.7\textwidth]{fig/bitcoin-transfer.png}
     \caption{Transfer from Owner 1 to Owner 2 to Owner 3.
@@ -68,19 +52,40 @@
 %  \end{figure}
 %\end{frame}
 
-\subsection{Decentralization}
+\subsection{Problems}
 
 \begin{frame}
-  \begin{idea}[Piecing together all ideas]
-    \begin{itemize}
-      \item Every transaction is distributed to all participating nodes.
-      \item Each node collects transactions into a block.
-      \item Each node tries to solve the hard problem for the block.
-      \item A block with a solution to the problem is valid.
-      \item Other nodes accept such blocks as the new head of the chain.
-    \end{itemize}
-  \end{idea}
+  \begin{figure}
+    \includegraphics[height=0.8\textheight]{fig/distribute-tx.pdf}
+    \caption{Distributing transactions}
+  \end{figure}
 \end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.8\textheight]{fig/distribute-tx-malicious.pdf}
+    \caption{Maliciously distributing transactions}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[height=0.8\textheight]{fig/mining.pdf}
+    \caption{How a block chain is agreed upon.}
+  \end{figure}
+\end{frame}
+
+%\begin{frame}
+%  \begin{idea}[Piecing together all ideas]
+%    \begin{itemize}
+%      \item Every transaction is distributed to all participating nodes.
+%      \item Each node collects transactions into a block.
+%      \item Each node tries to solve the hard problem for the block.
+%      \item A block with a solution to the problem is valid.
+%      \item Other nodes accept such blocks as the new head of the chain.
+%    \end{itemize}
+%  \end{idea}
+%\end{frame}
 
 
 \section[Chaining]{Chaining and block chains}
@@ -96,7 +101,7 @@
 \begin{frame}
   \begin{figure}
     \includegraphics[width=0.7\textwidth]{fig/bitcoin-stamp.png}
-    \caption{A simple time-stamping mechanism.
+    \caption{A simple \enquote{time-stamping} mechanism.
     Image:~\cite{Nakamoto2008bap}.}
   \end{figure}
 
@@ -104,6 +109,7 @@
 
   \begin{remark}
     \begin{itemize}
+      \item It's an ordering of the set of transactions.
       \item This is similar to the commit objects in Git.
     \end{itemize}
   \end{remark}
@@ -148,10 +154,27 @@
 
   \begin{remark}
     \begin{itemize}
-      \item Because the blocks chain is not fixed!
+      \item Because the block chain is not fixed!
     \end{itemize}
   \end{remark}
 \end{frame}
+
+%\begin{frame}
+%  \begin{question}
+%    \begin{itemize}
+%      \item How to reach consensus about the chain?
+%      \item Why can't one person pretend to be many? (Sybil attack)
+%    \end{itemize}
+%  \end{question}
+%
+%  \begin{idea}[Proof-of-work]
+%    \begin{itemize}
+%      \item We require a difficult problem to be solved.
+%      \item We only consider a block if this problem is solved.
+%      \item All other details should also check out.
+%    \end{itemize}
+%  \end{idea}
+%\end{frame}
 
 \begin{frame}
   \begin{figure}
@@ -163,12 +186,18 @@
 \begin{frame}
   \begin{remark}[Forgery]
     \begin{itemize}
-      \item Must prevent malicious actor from changing old blocks.
       \item The time stamping above yields \(h_i = h(h_{i-1}\concat b_i)\).
       \item \(h\) is a collision-resistant hash function.
       \item But this can easily be recomputed.
+      \item Make the chain the longest and the others accept it as valid.
     \end{itemize}
   \end{remark}
+
+  \begin{question}
+    \begin{itemize}
+      \item How to fix this problem?
+    \end{itemize}
+  \end{question}
 \end{frame}
 
 \begin{frame}
@@ -197,15 +226,17 @@
 
 \begin{frame}
   \begin{figure}
-    \begin{subfigure}{0.8\columnwidth}
-      \includegraphics[width=\columnwidth]{fig/pow.pdf}
-      \caption{Proof-of-work problem}
-    \end{subfigure}
-    \vfill
-    \begin{subfigure}{0.8\columnwidth}
-      \includegraphics[width=\columnwidth]{fig/preimage.pdf}
-      \caption{Preimage problem}
-    \end{subfigure}
+    \centering
+    \includegraphics[width=0.8\columnwidth]{fig/pow.pdf}
+    \caption{Proof-of-work problem}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\columnwidth]{fig/preimage.pdf}
+    \caption{Preimage problem}
   \end{figure}
 \end{frame}
 

@@ -19,6 +19,8 @@ FIG+=		merkle-tree.png
 FIGS+=		pow.pdf
 FIGS+=		preimage.pdf
 FIGS+=		mining.pdf
+FIGS+=		distribute-tx.pdf
+FIGS+=		distribute-tx-malicious.pdf
 
 notes.pdf: notes.tex
 notes.pdf: ${SRC} ${DEPENDS} $(addprefix fig/,${FIGS})
@@ -27,7 +29,7 @@ slides.pdf: slides.tex
 slides.pdf: ${SRC} ${DEPENDS} $(addprefix fig/,${FIGS})
 
 
-$(addprefix fig/, ${FIGS}):
+$(addprefix fig/, ${FIGS})::
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 
