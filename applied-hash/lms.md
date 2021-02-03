@@ -9,7 +9,7 @@ Fingerprinting:
     [interactive video][fingerprinting],
     [slides][fingerprinting-slides]
   - [The BitTorrent specification][bittorrent]
-  - [Chapter 10 Git Internals of ProGit][git-objects]
+  - [Chapter 10 Git Internals of ProGit][git-objects] (interactive document)
 
 [fingerprinting]: https://eu.feedbackfruits.com/groups/activity-group/a30d941e-f038-4f2d-b128-61f287754a73
 [fingerprinting-slides]: https://canvas.kth.se/courses/22114/files/3827575/download?wrap=1
@@ -21,10 +21,10 @@ Block chains:
   - Blockchains and proof-of-work
     [interactive video][blockchains],
     [slides][blockchains-slides]
-  - [Bitcoin: A Peer-to-Peer Electronic Cash System][bitcoin-paper] interactive 
-    document
-  - [Bitcoin and Cryptocurrency Technologies][princeton-bitcoin] interactive 
-    document
+  - [Bitcoin: A Peer-to-Peer Electronic Cash System][bitcoin-paper] 
+    (interactive document)
+  - [Bitcoin and Cryptocurrency Technologies][princeton-bitcoin] (interactive 
+    document)
 
 [blockchains]: /dev/null
 [blockchains-slides]: https://canvas.kth.se/courses/22114/files/3827591/download?wrap=1
@@ -36,7 +36,7 @@ Hash functions and passwords:
   - Authentication and password hashing
     [interactive video][passwd-hashing],
     [slides][passwd-hashing-slides]
-  - [Argon2 specification and analysis][argon2] interactive document
+  - [Argon2 specification and analysis][argon2] (interactive document)
 
 [passwd-hashing]: https://eu.feedbackfruits.com/groups/activity-group/110307a1-c8f7-4441-99ad-36c152244330
 [passwd-hashing-slides]: https://canvas.kth.se/courses/22114/files/3827649/download?wrap=1
