@@ -1,6 +1,3 @@
-It's good if you watch these videos before the lecture, but it's not crucial, 
-you can watch them afterwards.
-
 The lecture will be interactive. We will work in groups to design two systems. 
 First, we'll (re)design a secure electronic postbox (think [Kivra][kivra]).
 Second, if time permits, we'll (re)design a secure and private [BankID][bankid] 
@@ -11,6 +8,9 @@ remake that fits our needs for our Kivra redesign.
 
 
 # Watching and reading to do
+
+It's good if you watch these videos and read the papers before the lecture, but 
+it's not crucial, you can watch and read them afterwards.
 
 These materials are provided as interactive learning material through 
 FeedbackFruits. Just register an account using any email address. (They require 
@@ -42,6 +42,4 @@ Another protocol (standard) and some discussion about groups:
 [dodis-signal]: https://eu.feedbackfruits.com/groups/activity-group/e9457ff2-aa4f-42bb-83e1-11fe0b099f48
 [mls-talk]: https://eu.feedbackfruits.com/groups/activity-group/6d09f4f4-ab0f-46b2-ac42-4e31daec7823
 [mls-spec]: https://eu.feedbackfruits.com/groups/activity-group/bc3448d5-9c1d-41e9-96d3-d8eff3613ea7
-
-
 
