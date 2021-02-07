@@ -1,3 +1,14 @@
+It's good if you watch these videos before the lecture, but it's not crucial, 
+you can watch them afterwards.
+
+The lecture will be interactive. We will work in groups to design two systems. 
+First, we'll (re)design a secure electronic postbox (think [Kivra][kivra]).
+Second, if time permits, we'll (re)design a secure and private [BankID][bankid] 
+remake that fits our needs for our Kivra redesign.
+
+[kivra]: https://kivra.se/en/private
+[bankid]: https://www.bankid.com/en/
+
 
 # Watching and reading to do
 
