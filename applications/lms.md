@@ -40,3 +40,12 @@ Another protocol (standard) and some discussion about groups:
 
 [website-oracles]: https://eu.feedbackfruits.com/groups/activity-group/bc865246-a460-4761-9122-2f9b1c9eee3c
 [website-oracles-paper]: https://eu.feedbackfruits.com/groups/activity-group/cb1d8fcb-1660-417f-969f-2787a8f80521
+
+
+## Zcash
+
+- An Empirical Analysis of Anonymity in Zcash (interactive [video][zcash-anon], 
+  [paper][zcash-anon-paper])
+
+[zcash-anon]: https://eu.feedbackfruits.com/groups/activity-group/39d8f08e-1cdf-463d-a013-0919af20ed39
+[zcash-anon-paper]: https://eu.feedbackfruits.com/groups/activity-group/1f4943d4-998f-4ceb-b25f-f22089e94bfd
