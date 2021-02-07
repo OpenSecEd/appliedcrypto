@@ -33,4 +33,10 @@ Another protocol (standard) and some discussion about groups:
 [mls-spec]: https://eu.feedbackfruits.com/groups/activity-group/bc3448d5-9c1d-41e9-96d3-d8eff3613ea7
 
 
+## Tor
 
+- Website Fingerprinting with Website Oracles (interactive 
+  [video][website-oracles], [paper][website-oracles-paper])
+
+[website-oracles]: https://eu.feedbackfruits.com/groups/activity-group/bc865246-a460-4761-9122-2f9b1c9eee3c
+[website-oracles-paper]: https://eu.feedbackfruits.com/groups/activity-group/cb1d8fcb-1660-417f-969f-2787a8f80521
