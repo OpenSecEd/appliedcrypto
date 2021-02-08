@@ -44,3 +44,9 @@ Another protocol (standard) and some discussion about groups:
 [mls-talk]: https://eu.feedbackfruits.com/groups/activity-group/6d09f4f4-ab0f-46b2-ac42-4e31daec7823
 [mls-spec]: https://eu.feedbackfruits.com/groups/activity-group/bc3448d5-9c1d-41e9-96d3-d8eff3613ea7
 
+
+## Tor and Onion Routing
+
+- Tor: The second generation onion router (interactive [paper][tor-paper])
+
+[tor-paper]: https://eu.feedbackfruits.com/groups/activity-group/07021bc5-60af-406f-9941-dfdfe1070f55
