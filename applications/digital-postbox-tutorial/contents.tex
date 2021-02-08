@@ -1,0 +1,133 @@
+\mode*
+
+\section{Digital Postbox}
+
+Traditionally we send paper mail by addressing a letter to a physical address 
+(including the recipient's name).
+We write the address on an envelope and send it.
+We want a digital transformation.
+You should design a digital postbox and delivery service.
+
+\mode<presentation>{%
+\begin{frame}
+  \begin{idea}[Digital mail]
+    \begin{itemize}
+      \item We send paper mail by writing an address on an envelope.
+      \item We want to have a digital version.
+    \end{itemize}
+  \end{idea}
+
+  \begin{remark}
+    \begin{itemize}
+      \item We have a few already: Kivra, eBoks, Digimail, Min myndighetspost.
+      \item Managed by DIGG\footnote{%
+          See \url{https://www.digg.se/digital-post}.
+        }
+    \end{itemize}
+  \end{remark}
+\end{frame}
+}
+
+We have the following requirements on the service:
+\begin{frame}
+\begin{description}
+  \item[Registration]
+    A user can register for a post box.
+    As this post service will replace physical mail, it must be tied to a real 
+    identity.
+
+    \pause
+
+  \item[Sending mail]
+    A sender should be able to send mail to a recipient.
+    This mail should not be readable by any intermediary.
+
+  \item[Reading mail]
+    The owner can read the mail.
+    Only the owner should be able to do this --- no one else, not even service 
+    staff!
+    Recipient must be able to verify the authenticity of mail.
+
+    \pause
+
+  \item[Anonymous mail] (Extra feature)
+    A sender can send a letter to a recipient, but neither the recipient nor 
+    the service will learn the identity of the sender.
+    The service will not learn the recipient either.
+\end{description}
+\end{frame}
+
+Solving this assignment will touch upon almost every topic in the course.
+Make sure to base your designs on the theory of the course, add references 
+(that will help you).
+\enquote{This feels secure} is not a convincing argument.
+Likewise, \enquote{all connections should use TLS} will not cut it either; why 
+do you want TLS, what properties do you need and which of those will TLS 
+provide and why?
+
+\mode<presentation>{%
+  \begin{frame}
+    \begin{exercise}[Design the digital mail service]
+      \begin{description}
+        \item[Registration]
+          A user can register for a post box.
+          This post service will replace physical mail.
+
+        \item[Sending mail]
+          A sender should be able to send mail to a recipient.
+          Mail should not be readable by any intermediary.
+
+        \item[Reading mail]
+          The owner can read all their mail.
+          Service staff should not be able to read mail!
+          Recipient must be able to verify the authenticity of mail.
+      \end{description}
+    \end{exercise}
+
+    \pause
+
+    \begin{block}{Organization}
+      \begin{itemize}
+        \item Groups of around three--four people.
+        \item Work for 45 minutes, take 15 min break (60 min incl break).
+        \item Group presentations and discussions.
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \begin{solution}
+      \begin{itemize}
+        \item Presentation from groups.
+      \end{itemize}
+    \end{solution}
+
+    \begin{question}
+      \begin{itemize}
+        \item Limitations?
+        \item Recovery from failure?
+      \end{itemize}
+    \end{question}
+  \end{frame}
+
+  \begin{frame}
+    \begin{exercise}[Adapt for anonymity]
+      \begin{description}
+        \item[Anonymous mail]
+          A sender can send a letter to a recipient, but neither the recipient 
+          nor the service will learn the identity of the sender.
+          The service will not learn the recipient either.
+      \end{description}
+    \end{exercise}
+
+    \pause
+
+    \begin{block}{Organization}
+      \begin{itemize}
+        \item Groups of around three--four people.
+        \item Work for 20 minutes.
+      \end{itemize}
+    \end{block}
+  \end{frame}
+}
+
