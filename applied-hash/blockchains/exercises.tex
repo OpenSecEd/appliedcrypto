@@ -1,0 +1,24 @@
+\begin{exercise}
+  Consider Git; if we let developers digitally sign each Git object name (i.e. 
+  a hash value) of the commits that they produce, what security 
+  property/properties does that give us? Why?
+\end{exercise}
+\begin{solution}
+  A restatement is that we sign each commit object, since the hash of that 
+  object is its name.
+
+  A commit object contains the hashes of the parent commits (can be several), 
+  the current state of the files (hashes).
+
+  By signing a commit, we tie that data together. We can be sure what the 
+  developer committed.
+
+  But we can also be sure of the entire history that the developer had in his 
+  repository. The commit refers to the parent commits, i.e. hashes. Those in 
+  turn contains hashes of their parents. So we have a hash chain. To change any 
+  part of history, we must find a desirable collision --- i.e. to solve the 
+  second preimage problem, where the other preimage is exactly the state we 
+  want. However, assume that parent commits are not signed. Then it's only the 
+  current commit's name (hash) that must stay intact. But if every commit is 
+  signed, then every parent's name must also remain fixed.
+\end{solution}
