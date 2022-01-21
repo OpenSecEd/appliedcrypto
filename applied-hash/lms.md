@@ -25,11 +25,14 @@ Block chains:
     (interactive document)
   - [Bitcoin and Cryptocurrency Technologies][princeton-bitcoin] (interactive 
     document)
+  - An older form of blockchains, Schneier--Kelsey logs
+    [interactive video][logging]
 
 [blockchains]: /dev/null
 [blockchains-slides]: https://canvas.kth.se/courses/22114/files/3827591/download?wrap=1
 [bitcoin-paper]: https://eu.feedbackfruits.com/groups/activity-group/e57105b0-5e45-42a2-bf71-1da8982bd7d4
 [princeton-bitcoin]: https://eu.feedbackfruits.com/groups/activity-group/23a23407-90ec-4701-a31a-710b3ea93237
+[logging]: https://eu.feedbackfruits.com/courses/activity-course/1765ba4a-4d45-4292-95a0-415890b2f7c6
 
 Hash functions and passwords:
 
