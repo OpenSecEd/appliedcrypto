@@ -1,3 +1,11 @@
+## Content
+
+Fingerprinting, commitments, chaining, block chains, tree hashing, keyed hash 
+functions, password hashing, proof-of-work, BitTorrent, Git.
+
+
+## Resources
+
 These materials are provided as interactive learning material through 
 FeedbackFruits. Just register an account using any email address. (They require 
 an account to keep track of who commented on what, notifications when someone 
