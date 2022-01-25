@@ -32,6 +32,12 @@ slides.pdf: ${SRC} ${DEPENDS} $(addprefix fig/,${FIGS})
 $(addprefix fig/, ${FIGS})::
 	${MAKE} -C $(dir $@) $(notdir $@)
 
+abstract.md: abstract.tex
+	pandoc -o $@ $^
+
+README.md: video.md abstract.md
+	${CAT} $^ > $@
+
 
 .PHONY: clean
 clean:
@@ -44,5 +50,6 @@ distclean:
 
 INCLUDE_MAKEFILES=../../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
+include ${INCLUDE_MAKEFILES}/doc.mk
 INCLUDE_BIBSP=../../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
