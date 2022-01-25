@@ -1,0 +1,2134 @@
+1
+00:00:00,509 --> 00:00:04,430
+OK, so now we're going
+to talk about applied hash
+
+2
+00:00:04,530 --> 00:00:08,509
+functions and particularly
+hash functions
+
+3
+00:00:08,609 --> 00:00:11,130
+applied in blockchains.
+
+4
+00:00:13,189 --> 00:00:17,469
+So we will
+first recap what a hash
+
+5
+00:00:17,569 --> 00:00:20,770
+function is, and then
+we'll start talking a bit
+
+6
+00:00:20,870 --> 00:00:25,180
+about cryptocurrencies
+and what
+
+7
+00:00:25,280 --> 00:00:28,449
+the main problems are there
+that we need to hash
+
+8
+00:00:28,549 --> 00:00:31,989
+functions to solve.
+And then we'll see changing
+
+9
+00:00:32,090 --> 00:00:35,170
+and blockchains and proof
+of work, which are two
+
+10
+00:00:35,270 --> 00:00:37,970
+solutions to two
+problems that we need.
+
+11
+00:00:38,630 --> 00:00:42,250
+And finally, we'll see
+three hashing, which is also
+
+12
+00:00:42,349 --> 00:00:46,210
+another solution
+to another problem that
+
+13
+00:00:46,310 --> 00:00:50,470
+we will see. So let's
+start talking
+
+14
+00:00:50,569 --> 00:00:52,790
+about hash
+function. So what are they?
+
+15
+00:00:54,380 --> 00:00:58,279
+So am hash functions
+
+16
+00:00:58,939 --> 00:01:02,740
+or other cryptographic
+hash functions are so-called
+
+17
+00:01:02,840 --> 00:01:06,410
+one way functions.
+This means that they have
+
+18
+00:01:06,980 --> 00:01:10,120
+some desirable property
+that you can go one way easily,
+
+19
+00:01:10,220 --> 00:01:14,139
+but it's very hard to go
+the other way. So what does
+
+20
+00:01:14,239 --> 00:01:18,379
+this mean,
+exactly? So. It's commonly
+
+21
+00:01:19,400 --> 00:01:22,550
+referred to as
+three different properties,
+
+22
+00:01:22,760 --> 00:01:26,590
+so premium
+resistance is the first
+
+23
+00:01:26,690 --> 00:01:31,569
+one. This means that
+if we have a hash function
+
+24
+00:01:31,669 --> 00:01:35,089
+edge and a value
+y, then we should
+
+25
+00:01:35,629 --> 00:01:39,550
+output any X such that
+each of X is equal
+
+26
+00:01:39,650 --> 00:01:42,520
+to Y. And that
+is, we are supposed
+
+27
+00:01:42,620 --> 00:01:46,270
+to find the inverse
+order, the pre
+
+28
+00:01:46,370 --> 00:01:49,900
+image. So why is there
+the image? And X
+
+29
+00:01:50,000 --> 00:01:52,400
+is the pre image that
+we are supposed to find.
+
+30
+00:01:53,180 --> 00:01:56,169
+And if a hash
+function is pre image
+
+31
+00:01:56,269 --> 00:01:59,930
+resistant, then
+this is very hard.
+
+32
+00:02:00,470 --> 00:02:04,779
+And this also
+and other another name
+
+33
+00:02:04,879 --> 00:02:08,289
+for this is one
+weightiness. So premature resistance
+
+34
+00:02:08,389 --> 00:02:10,729
+or hash
+function being one way.
+
+35
+00:02:12,460 --> 00:02:16,319
+And the second
+property is second pre-match
+
+36
+00:02:16,419 --> 00:02:20,559
+resistance, or also known
+as weak coalition resistance.
+
+37
+00:02:21,360 --> 00:02:24,539
+And so in this
+problem, we get the hash function
+
+38
+00:02:24,639 --> 00:02:28,529
+edge, we get the value
+x this time. So the pre
+
+39
+00:02:28,630 --> 00:02:31,709
+image and then
+we should find any x
+
+40
+00:02:31,809 --> 00:02:35,529
+prime such that X of h of X
+
+41
+00:02:35,770 --> 00:02:38,770
+is equal to each of x
+prime. And of course,
+
+42
+00:02:39,880 --> 00:02:43,210
+x prime should not be
+equal. It should be two different
+
+43
+00:02:43,660 --> 00:02:47,669
+values. So we should
+find a coalition. Given a pre
+
+44
+00:02:47,770 --> 00:02:50,199
+image, we should
+find a second pre image
+
+45
+00:02:51,729 --> 00:02:55,089
+that also
+hashes to the same value.
+
+46
+00:02:57,350 --> 00:03:01,360
+And the last
+property is the coalition
+
+47
+00:03:01,460 --> 00:03:04,940
+resistance or strong
+coalition resistance, as
+
+48
+00:03:05,059 --> 00:03:07,820
+it sometimes
+called. And in this case,
+
+49
+00:03:08,000 --> 00:03:10,910
+we get a hash function edge.
+
+50
+00:03:11,570 --> 00:03:14,869
+And our job is to find
+X and X prime.
+
+51
+00:03:16,000 --> 00:03:19,600
+Any one of those and we may
+choose them as we like.
+
+52
+00:03:20,199 --> 00:03:23,339
+And the only
+requirement is that each of X is equal
+
+53
+00:03:23,440 --> 00:03:25,649
+to each of them.
+They shouldn't be equal,
+
+54
+00:03:25,750 --> 00:03:29,799
+of course. And so two
+different X and X
+
+55
+00:03:29,899 --> 00:03:34,529
+prime and A to find any
+
+56
+00:03:34,630 --> 00:03:37,319
+one of these, then
+we we say that we find
+
+57
+00:03:37,419 --> 00:03:40,649
+a coalition. So if edge
+his coalition
+
+58
+00:03:40,750 --> 00:03:44,879
+resistance, then
+finding X and X prime is very
+
+59
+00:03:44,979 --> 00:03:49,899
+hard. So that's
+
+60
+00:03:50,000 --> 00:03:53,819
+a secure cryptographic
+hash function. It has these
+
+61
+00:03:53,919 --> 00:03:58,250
+properties.
+Now, let's proceed
+
+62
+00:03:58,350 --> 00:04:00,350
+to cryptocurrencies.
+
+63
+00:04:01,949 --> 00:04:05,639
+So the idea of a bitcoin,
+
+64
+00:04:06,210 --> 00:04:10,050
+the first
+cryptocurrency that while the first
+
+65
+00:04:11,550 --> 00:04:14,959
+modern
+cryptocurrency that we think of there,
+
+66
+00:04:15,059 --> 00:04:18,029
+there were some other
+cryptocurrencies
+
+67
+00:04:18,420 --> 00:04:21,420
+before which were digital
+cash,
+
+68
+00:04:21,959 --> 00:04:24,949
+but they are not the same
+as cryptocurrencies are same
+
+69
+00:04:25,049 --> 00:04:29,309
+bitcoin and Ethereum
+and others.
+
+70
+00:04:30,359 --> 00:04:32,059
+So the idea
+
+71
+00:04:32,160 --> 00:04:35,929
+of Nakamoto bitcoin was that
+
+72
+00:04:36,029 --> 00:04:38,809
+it's supposed to be
+decentralized. So we have no
+
+73
+00:04:38,910 --> 00:04:42,839
+central authority
+like a federal bank,
+
+74
+00:04:42,989 --> 00:04:47,269
+for instance, in in their normal
+and monetary
+
+75
+00:04:47,369 --> 00:04:50,799
+systems. And all
+
+76
+00:04:50,899 --> 00:04:54,260
+transactions
+are in a public log.
+
+77
+00:04:55,279 --> 00:04:58,609
+And this makes
+it sort of democracy
+
+78
+00:04:58,940 --> 00:05:02,709
+democratized
+because it relies on majority
+
+79
+00:05:02,809 --> 00:05:06,380
+consensus rather
+than an authoritative
+
+80
+00:05:07,339 --> 00:05:11,929
+national bank or a federal
+bank or whatever.
+
+81
+00:05:13,239 --> 00:05:15,559
+And so this was the idea.
+
+82
+00:05:16,700 --> 00:05:20,809
+And the key is in that
+all transactions
+
+83
+00:05:21,049 --> 00:05:24,820
+are in a public log.
+And that's the key idea
+
+84
+00:05:24,920 --> 00:05:28,779
+of this. And so because this
+means that
+
+85
+00:05:28,880 --> 00:05:32,589
+a transaction
+is money. So there
+
+86
+00:05:32,690 --> 00:05:36,399
+is no money because that's
+what digital cash
+
+87
+00:05:36,500 --> 00:05:40,820
+was or and normal
+currency that we use.
+
+88
+00:05:41,600 --> 00:05:44,690
+And then you actually
+have money. But here.
+
+89
+00:05:45,790 --> 00:05:49,350
+You actually don't
+have any money. You just have
+
+90
+00:05:49,450 --> 00:05:52,149
+transactions and you have
+
+91
+00:05:53,109 --> 00:05:56,529
+transactions
+saying that this public key
+
+92
+00:05:57,130 --> 00:06:00,989
+has this much value
+and then you can transfer
+
+93
+00:06:01,089 --> 00:06:04,619
+money from one transaction
+
+94
+00:06:04,720 --> 00:06:08,429
+to another,
+essentially. And so if we look at this
+
+95
+00:06:08,529 --> 00:06:12,419
+figure. We have that. Each
+
+96
+00:06:12,519 --> 00:06:15,640
+of these are transactions,
+
+97
+00:06:16,959 --> 00:06:20,279
+and then for a transaction
+here you have the owner
+
+98
+00:06:20,380 --> 00:06:24,059
+of the transaction,
+which is the recipient
+
+99
+00:06:24,160 --> 00:06:26,799
+of not from another
+transaction. So we see here
+
+100
+00:06:27,250 --> 00:06:29,820
+and that this
+transaction goes into the next
+
+101
+00:06:29,920 --> 00:06:33,750
+transaction.
+So this one goes
+
+102
+00:06:33,850 --> 00:06:36,429
+to another owner.
+
+103
+00:06:38,170 --> 00:06:40,829
+So it's this owner
+of a transaction that can
+
+104
+00:06:40,929 --> 00:06:44,759
+actually use it.
+So the way this works
+
+105
+00:06:44,859 --> 00:06:48,369
+is that this these figures
+
+106
+00:06:49,179 --> 00:06:52,109
+and transactions
+transferring from owner one
+
+107
+00:06:52,209 --> 00:06:55,299
+to another two and transfer
+them to owner three.
+
+108
+00:06:56,220 --> 00:06:59,369
+And so what happens
+is that you have the owners
+
+109
+00:06:59,470 --> 00:07:02,829
+and public key, which is stored
+in the transaction
+
+110
+00:07:03,489 --> 00:07:06,479
+and then the owner has
+their corresponding private key
+
+111
+00:07:06,579 --> 00:07:10,010
+and you need that
+to use a transaction.
+
+112
+00:07:11,140 --> 00:07:14,380
+And. What do you do is that
+
+113
+00:07:14,480 --> 00:07:17,889
+you compute a hash
+from there when there's
+
+114
+00:07:17,989 --> 00:07:21,369
+public key. And the previous
+transaction
+
+115
+00:07:21,470 --> 00:07:26,139
+that you are using
+and then you actually sign
+
+116
+00:07:26,239 --> 00:07:29,979
+this. This
+needs to be signed
+
+117
+00:07:30,079 --> 00:07:34,320
+by the previous owner.
+So an owner one here wants
+
+118
+00:07:34,420 --> 00:07:38,100
+to make a transfer to owner
+two. What happens is that
+
+119
+00:07:38,200 --> 00:07:41,709
+we have owner one's
+public key that can be used
+
+120
+00:07:42,010 --> 00:07:45,670
+to verify owner
+one's signature here.
+
+121
+00:07:46,179 --> 00:07:50,009
+So since Owner one
+has money, according to this
+
+122
+00:07:50,109 --> 00:07:53,820
+transaction,
+owner one can create
+
+123
+00:07:53,920 --> 00:07:57,440
+a signature to create
+this transaction and put
+
+124
+00:07:57,540 --> 00:08:01,489
+the owner to public
+key. So the recipient has
+
+125
+00:08:01,630 --> 00:08:04,979
+put that into the hash
+and put the actual transaction
+
+126
+00:08:05,079 --> 00:08:07,079
+into the hash
+and then you sign it.
+
+127
+00:08:07,540 --> 00:08:10,649
+And suddenly,
+whatever was in this
+
+128
+00:08:10,750 --> 00:08:14,369
+transaction now
+went over to owner
+
+129
+00:08:14,470 --> 00:08:17,609
+to because there
+is a signature
+
+130
+00:08:17,709 --> 00:08:21,359
+by owner one so everyone
+can verify here that
+
+131
+00:08:21,459 --> 00:08:24,779
+owner of one here has
+signed here, which means now it's
+
+132
+00:08:24,880 --> 00:08:29,399
+owner two who owns
+this and so a transfer
+
+133
+00:08:29,500 --> 00:08:33,000
+of ownership.
+And since there
+
+134
+00:08:33,099 --> 00:08:35,919
+is such a signature,
+there's nothing owner one can do
+
+135
+00:08:36,280 --> 00:08:40,920
+to retract this.
+And then it's it happens
+
+136
+00:08:41,020 --> 00:08:43,619
+the same. Same when Owner
+two wants to transfer
+
+137
+00:08:43,719 --> 00:08:47,340
+to owner three. That owner
+
+138
+00:08:47,440 --> 00:08:50,320
+to here creates a new
+transaction here
+
+139
+00:08:50,710 --> 00:08:54,450
+and uses the private key
+to sign the hashes from owner
+
+140
+00:08:54,549 --> 00:08:57,750
+3's public key and this
+transaction. So these
+
+141
+00:08:57,849 --> 00:09:01,200
+are linked and then
+it's Owner three
+
+142
+00:09:01,299 --> 00:09:06,480
+that owns this. And so this
+
+143
+00:09:06,580 --> 00:09:09,780
+is the idea, the main
+idea, we will get more details
+
+144
+00:09:09,880 --> 00:09:13,030
+later of how these
+cryptocurrencies work,
+
+145
+00:09:13,929 --> 00:09:15,969
+particularly
+blockchains are rather
+
+146
+00:09:16,299 --> 00:09:19,500
+an and decentralised ledger
+
+147
+00:09:19,599 --> 00:09:22,690
+technologies. Yes, they are more
+appropriately called
+
+148
+00:09:24,309 --> 00:09:28,220
+and. Another one of these
+
+149
+00:09:28,320 --> 00:09:31,130
+problems that we have
+that we must face in this system
+
+150
+00:09:31,229 --> 00:09:34,160
+is how to try and distribute
+
+151
+00:09:34,260 --> 00:09:38,010
+transactions in the network
+since, well,
+
+152
+00:09:38,460 --> 00:09:41,600
+there are going
+to be a lot of people
+
+153
+00:09:41,700 --> 00:09:43,730
+interested in these
+transactions and what
+
+154
+00:09:43,830 --> 00:09:46,430
+happens because if they are going
+to receive payment,
+
+155
+00:09:46,530 --> 00:09:50,270
+they need to know if the one
+who is actually paying me
+
+156
+00:09:50,369 --> 00:09:52,760
+has actually made the transaction.
+So I actually
+
+157
+00:09:52,859 --> 00:09:54,859
+have received
+the money or not.
+
+158
+00:09:55,599 --> 00:09:59,050
+And so if we.
+Look at this figure,
+
+159
+00:09:59,150 --> 00:10:03,260
+we have, Bob, here
+that has a transaction
+
+160
+00:10:03,859 --> 00:10:06,970
+that, yeah, maybe
+one of those transactions
+
+161
+00:10:07,070 --> 00:10:10,809
+that we just saw.
+And for everyone to know
+
+162
+00:10:10,909 --> 00:10:14,170
+about these
+transactions, Bob has to send them
+
+163
+00:10:14,270 --> 00:10:17,150
+to everyone else in the network,
+as we see here.
+
+164
+00:10:19,000 --> 00:10:21,880
+And that's pretty
+easy, it's just send them.
+
+165
+00:10:22,809 --> 00:10:25,299
+However, we focus
+on security here,
+
+166
+00:10:25,719 --> 00:10:29,610
+so of course, Bob
+can maliciously distribute
+
+167
+00:10:29,710 --> 00:10:33,309
+transactions. So while
+he did transfer
+
+168
+00:10:33,789 --> 00:10:37,989
+send this transaction to someone,
+he creates another
+
+169
+00:10:38,169 --> 00:10:41,610
+transaction where he tries
+to spend the same
+
+170
+00:10:41,710 --> 00:10:43,710
+money or the same
+transaction,
+
+171
+00:10:44,469 --> 00:10:47,580
+but on something else.
+So pay with the same money
+
+172
+00:10:47,679 --> 00:10:51,090
+twice. And of course,
+that shouldn't work
+
+173
+00:10:51,190 --> 00:10:57,150
+in a functioning
+monetary system. So in this
+
+174
+00:10:57,250 --> 00:11:00,039
+case, he he has a separate
+transaction that he sends
+
+175
+00:11:00,280 --> 00:11:04,230
+to this
+person. And then Bob will
+
+176
+00:11:04,330 --> 00:11:09,300
+attempt to get both
+his both these transactions
+
+177
+00:11:09,400 --> 00:11:13,630
+into the chain
+here. That is the idea.
+
+178
+00:11:14,469 --> 00:11:18,539
+And of course, that
+is not acceptable. And.
+
+179
+00:11:20,640 --> 00:11:23,190
+So that is one problem,
+
+180
+00:11:24,059 --> 00:11:27,380
+another problem that
+we have is. Yeah. Of course,
+
+181
+00:11:27,479 --> 00:11:31,880
+this can happen and even not
+
+182
+00:11:31,979 --> 00:11:35,660
+maliciously. And then
+the question is, how should
+
+183
+00:11:35,760 --> 00:11:38,930
+we agree on this
+chain because different people
+
+184
+00:11:39,030 --> 00:11:42,740
+receive and even
+if everyone receives all
+
+185
+00:11:42,840 --> 00:11:45,500
+the transactions, they might
+receive them in different
+
+186
+00:11:45,599 --> 00:11:49,040
+order. And then the question
+is what should
+
+187
+00:11:49,140 --> 00:11:51,500
+the transactions look
+like and in what order should
+
+188
+00:11:51,599 --> 00:11:54,030
+they be and what?
+
+189
+00:11:55,650 --> 00:11:58,340
+How can we agree on this?
+Because everyone
+
+190
+00:11:58,440 --> 00:12:01,700
+in the system must agree
+on exactly how this what this
+
+191
+00:12:01,799 --> 00:12:06,030
+log looks looks like.
+So in this case, we have
+
+192
+00:12:06,390 --> 00:12:10,270
+some the people
+running the it,
+
+193
+00:12:10,469 --> 00:12:12,680
+just storing the log.
+And since this
+
+194
+00:12:12,780 --> 00:12:16,400
+is a decentralized
+system, everyone participating
+
+195
+00:12:16,500 --> 00:12:19,250
+in the storming
+of the log. And this
+
+196
+00:12:19,349 --> 00:12:23,640
+is the visualization
+of the log. So these people
+
+197
+00:12:23,849 --> 00:12:27,320
+have one block that
+they want to submit. One block
+
+198
+00:12:27,419 --> 00:12:30,410
+each. This guy has
+managed to make two blocks that
+
+199
+00:12:30,510 --> 00:12:34,619
+he wants to get in here.
+And this guy has none.
+
+200
+00:12:35,340 --> 00:12:39,530
+And then we have
+these options. So this
+
+201
+00:12:39,630 --> 00:12:41,600
+is what the chain
+looks like. This
+
+202
+00:12:41,700 --> 00:12:45,559
+is an alternative
+to this and this
+
+203
+00:12:45,659 --> 00:12:48,660
+and this and this.
+These two are just
+
+204
+00:12:48,760 --> 00:12:51,740
+the alternatives to each
+other. And but we wanted
+
+205
+00:12:51,840 --> 00:12:54,719
+to to look like
+this. So how do we agree
+
+206
+00:12:55,020 --> 00:12:58,590
+which which bloc
+should be at the head this one,
+
+207
+00:12:58,710 --> 00:13:02,720
+this one or this one?
+And then if we agree on this
+
+208
+00:13:02,820 --> 00:13:05,460
+one, we should also
+replace this one by this one.
+
+209
+00:13:06,239 --> 00:13:09,760
+So how do we do
+this? There that is.
+
+210
+00:13:10,150 --> 00:13:13,770
+And the other problem that
+
+211
+00:13:13,869 --> 00:13:17,130
+we are facing. So let's go
+
+212
+00:13:17,229 --> 00:13:22,410
+to the solutions. So how
+
+213
+00:13:22,510 --> 00:13:25,570
+we can actually
+solve some of these problems.
+
+214
+00:13:28,260 --> 00:13:32,849
+And so let's get into training
+and blockchains.
+
+215
+00:13:33,900 --> 00:13:38,090
+So as we said, we must
+order the transactions
+
+216
+00:13:38,190 --> 00:13:41,540
+to prevent double
+spending and because we don't want
+
+217
+00:13:41,640 --> 00:13:44,880
+to allow anyone to pay
+with the same money twice,
+
+218
+00:13:45,630 --> 00:13:48,030
+and that's not appreciated.
+
+219
+00:13:49,320 --> 00:13:53,510
+So how do we solve
+this? So the idea
+
+220
+00:13:53,609 --> 00:13:56,960
+is to create a simple
+time stamping
+
+221
+00:13:57,059 --> 00:14:00,929
+mechanism, and I put
+time stamping in quotes
+
+222
+00:14:01,320 --> 00:14:04,040
+and because it doesn't
+really time stamp,
+
+223
+00:14:04,140 --> 00:14:06,450
+it just creates an ordering.
+
+224
+00:14:07,599 --> 00:14:10,679
+And so the idea here is that
+
+225
+00:14:10,919 --> 00:14:14,669
+we take a block
+with lots of items in them
+
+226
+00:14:15,150 --> 00:14:18,659
+and we put them into a hash
+and compute the hash.
+
+227
+00:14:19,140 --> 00:14:22,040
+And we also put in the hash
+value of the previous one.
+
+228
+00:14:22,140 --> 00:14:25,610
+So when we created such a block,
+we can create a new
+
+229
+00:14:25,710 --> 00:14:29,059
+one by adding new items
+and then hashing all of these
+
+230
+00:14:29,159 --> 00:14:31,880
+together, putting
+them in a hash and taking,
+
+231
+00:14:31,979 --> 00:14:34,880
+including the hash of the previous
+block. And this
+
+232
+00:14:34,979 --> 00:14:38,990
+way, we create an ordering
+because it's obvious that
+
+233
+00:14:39,090 --> 00:14:42,590
+these items must
+exist after these ones,
+
+234
+00:14:42,690 --> 00:14:46,340
+since these are included
+in the hash here that
+
+235
+00:14:46,440 --> 00:14:48,440
+is included in this
+hash with these.
+
+236
+00:14:49,020 --> 00:14:53,059
+So we create a sort
+of ordering. So this
+
+237
+00:14:53,159 --> 00:14:55,550
+is an ordering of the set
+of transactions, and it's
+
+238
+00:14:55,650 --> 00:14:58,960
+actually quite similar
+to the comet objects in gift.
+
+239
+00:14:59,460 --> 00:15:02,489
+So same idea
+that we have there.
+
+240
+00:15:04,530 --> 00:15:08,780
+And then the question
+is what prevents me
+
+241
+00:15:08,880 --> 00:15:11,390
+from forging
+a bloc and claim
+
+242
+00:15:11,489 --> 00:15:14,669
+it was before another
+block in the timeline?
+
+243
+00:15:15,750 --> 00:15:19,020
+So. Taking, for instance,
+
+244
+00:15:19,119 --> 00:15:22,739
+an item from here
+claiming it appeared
+
+245
+00:15:22,890 --> 00:15:27,059
+here. What prevents me
+
+246
+00:15:27,159 --> 00:15:33,440
+from actually
+doing that? So the.
+
+247
+00:15:35,030 --> 00:15:38,510
+Solution to that
+question is that the bloc
+
+248
+00:15:38,840 --> 00:15:42,380
+that I forge
+must have the same hash,
+
+249
+00:15:43,280 --> 00:15:46,600
+which means if I want
+to forge change,
+
+250
+00:15:46,700 --> 00:15:50,110
+make changes in one
+of these blocs. It needs
+
+251
+00:15:50,210 --> 00:15:53,710
+to arrive at exactly
+the same hash as it had
+
+252
+00:15:53,809 --> 00:15:57,770
+before, which means
+the edits I make here
+
+253
+00:15:58,609 --> 00:16:02,619
+must not change the hash.
+This means we must find
+
+254
+00:16:02,719 --> 00:16:06,280
+a coalition
+against this hash
+
+255
+00:16:06,380 --> 00:16:10,780
+function that we have.
+So, or rather,
+
+256
+00:16:10,880 --> 00:16:16,840
+find the second free
+image because we have one
+
+257
+00:16:16,940 --> 00:16:19,900
+image, we have the hash
+value it gets. And now
+
+258
+00:16:20,000 --> 00:16:23,020
+we need to find a second
+image, which gives exactly
+
+259
+00:16:23,119 --> 00:16:26,320
+the same image,
+but with the desired
+
+260
+00:16:26,419 --> 00:16:30,369
+modifications.
+And this was a hard
+
+261
+00:16:30,469 --> 00:16:32,890
+problem. If the hash
+function is a cryptographic
+
+262
+00:16:32,989 --> 00:16:35,809
+hash function, then
+this is difficult to achieve.
+
+263
+00:16:38,299 --> 00:16:41,320
+Now, let's get into proof
+of work, and this
+
+264
+00:16:41,419 --> 00:16:46,099
+is very interesting
+because this will actually
+
+265
+00:16:46,789 --> 00:16:50,680
+sort of violate
+what we just said, and that
+
+266
+00:16:50,780 --> 00:16:54,880
+was hard. But in a clever
+way. And so we'll
+
+267
+00:16:54,979 --> 00:16:58,720
+see. And so the question
+is, why do
+
+268
+00:16:58,820 --> 00:17:01,660
+we need proof
+of work? And that
+
+269
+00:17:01,760 --> 00:17:05,469
+is because the blockchain
+is not fixed and it's
+
+270
+00:17:05,569 --> 00:17:09,079
+never fixed. It's
+continuously extended
+
+271
+00:17:09,560 --> 00:17:13,660
+and someone can
+change the histories
+
+272
+00:17:13,760 --> 00:17:16,719
+just to just a matter
+of making. The others agree
+
+273
+00:17:16,819 --> 00:17:20,420
+that this one
+appeared before. So technically,
+
+274
+00:17:20,569 --> 00:17:23,290
+we can't rewrite the entire
+chain. But we need
+
+275
+00:17:23,390 --> 00:17:27,670
+to convince
+others that this should
+
+276
+00:17:27,770 --> 00:17:31,460
+happen.
+Remember, we had this
+
+277
+00:17:31,560 --> 00:17:35,780
+picture how
+blockchain is agreed
+
+278
+00:17:35,880 --> 00:17:40,160
+upon. So we need to convince
+people that this
+
+279
+00:17:40,260 --> 00:17:42,979
+is actually what it looks
+like and we want
+
+280
+00:17:43,079 --> 00:17:46,700
+to prevent people from this
+one to go back several
+
+281
+00:17:46,800 --> 00:17:50,690
+blocks to do edits
+and submit them and say
+
+282
+00:17:50,790 --> 00:17:53,969
+that, hey, this is what
+the blockchain should look like
+
+283
+00:17:54,810 --> 00:17:58,099
+and convince the others
+to change their view
+
+284
+00:17:58,199 --> 00:18:01,199
+from this or this
+into this one.
+
+285
+00:18:03,400 --> 00:18:07,119
+Yeah. So how do we do this?
+
+286
+00:18:07,479 --> 00:18:11,640
+So the idea is that
+we want to prevent
+
+287
+00:18:11,739 --> 00:18:15,540
+and this forgery
+because technically these are just
+
+288
+00:18:15,640 --> 00:18:17,680
+very complete and computed
+hash functions.
+
+289
+00:18:18,459 --> 00:18:22,300
+So if we we can just go back
+
+290
+00:18:22,900 --> 00:18:25,869
+and this is what
+it looks like,
+
+291
+00:18:26,079 --> 00:18:29,310
+we can just go back and redo
+these computations, but with
+
+292
+00:18:29,410 --> 00:18:31,890
+different
+different values and arrive
+
+293
+00:18:31,989 --> 00:18:35,739
+at a different
+head of the chain.
+
+294
+00:18:36,579 --> 00:18:38,829
+And then
+
+295
+00:18:40,239 --> 00:18:43,719
+we, yeah, we can
+make it the longest chain
+
+296
+00:18:44,560 --> 00:18:46,260
+and longer than the others
+
+297
+00:18:46,359 --> 00:18:50,050
+because the consensus
+algorithm
+
+298
+00:18:50,199 --> 00:18:53,820
+in bitcoin, for instance,
+that one says that it's
+
+299
+00:18:53,920 --> 00:18:56,380
+the longest chain
+that is the valid one.
+
+300
+00:18:57,310 --> 00:19:02,060
+So say that. And if this guy
+
+301
+00:19:02,160 --> 00:19:05,690
+adds one more here, then
+
+302
+00:19:05,790 --> 00:19:09,469
+it is the then
+it should be another
+
+303
+00:19:09,569 --> 00:19:12,349
+one here too.
+And then this one
+
+304
+00:19:12,449 --> 00:19:16,310
+is obviously the longest,
+and this means that
+
+305
+00:19:16,410 --> 00:19:18,930
+we should dump these two,
+which are actually the value
+
+306
+00:19:19,030 --> 00:19:21,030
+chain and change
+to this one.
+
+307
+00:19:22,300 --> 00:19:25,560
+And so this is easily doable
+
+308
+00:19:26,849 --> 00:19:28,310
+with just a construction
+that we saw
+
+309
+00:19:28,410 --> 00:19:32,339
+before and because we just
+need to re compute
+
+310
+00:19:33,689 --> 00:19:36,630
+these hashes and we can
+do that pretty instantly.
+
+311
+00:19:38,359 --> 00:19:41,440
+So how do we fix this
+problem? How do you make
+
+312
+00:19:41,540 --> 00:19:44,900
+it hard to change
+the history?
+
+313
+00:19:49,140 --> 00:19:51,140
+Well, we introduced
+proof of work.
+
+314
+00:19:52,829 --> 00:19:56,880
+So the idea
+here is that we adapt
+
+315
+00:19:57,930 --> 00:20:01,930
+the blocks that we saw
+before. So we had
+
+316
+00:20:02,030 --> 00:20:05,390
+the previous hash and we had
+the the items before,
+
+317
+00:20:06,449 --> 00:20:10,380
+but now we add
+a nonce value here.
+
+318
+00:20:11,130 --> 00:20:16,069
+So a number used
+ones. So we see here
+
+319
+00:20:16,910 --> 00:20:19,989
+that the next block
+here is based on the previous
+
+320
+00:20:20,089 --> 00:20:23,770
+block, plus the transactions
+and the nonce now, so this
+
+321
+00:20:23,869 --> 00:20:26,800
+end wasn't here
+before on the slide
+
+322
+00:20:26,900 --> 00:20:29,150
+before and.
+
+323
+00:20:30,699 --> 00:20:33,849
+And then we also
+introduce this
+
+324
+00:20:34,030 --> 00:20:37,469
+requirement. And this
+is what causes
+
+325
+00:20:37,569 --> 00:20:41,520
+their proof of work.
+And because this actually
+
+326
+00:20:41,619 --> 00:20:45,099
+causes quite
+some work. And so what
+
+327
+00:20:46,390 --> 00:20:50,189
+will happen here
+is that. We require
+
+328
+00:20:51,209 --> 00:20:55,160
+the hash, so the image
+to be less
+
+329
+00:20:55,260 --> 00:20:59,869
+than a particular
+value, which means we cannot have
+
+330
+00:20:59,969 --> 00:21:03,050
+just any hash.
+Can't just compute any hash
+
+331
+00:21:03,150 --> 00:21:05,189
+because that might
+not be less than cake.
+
+332
+00:21:06,579 --> 00:21:10,550
+So what we what we have
+to do here is to vary this
+
+333
+00:21:10,650 --> 00:21:14,310
+nonce and try
+to find a nonce
+
+334
+00:21:14,609 --> 00:21:18,500
+which with this
+edge I minus one and this
+
+335
+00:21:18,599 --> 00:21:22,460
+B.I will yield and be
+
+336
+00:21:22,560 --> 00:21:26,820
+less than K.
+And because this
+
+337
+00:21:26,920 --> 00:21:31,380
+is this K is the difficulty
+that
+
+338
+00:21:31,479 --> 00:21:35,550
+is adjusted so that if one
+of these problems can be
+
+339
+00:21:35,650 --> 00:21:37,900
+solved and like
+every ten minutes.
+
+340
+00:21:39,010 --> 00:21:42,930
+So if we set this k very
+
+341
+00:21:43,030 --> 00:21:46,440
+large, then of course
+this problem is going
+
+342
+00:21:46,540 --> 00:21:49,569
+to be much easier.
+If we said it very small,
+
+343
+00:21:49,839 --> 00:21:51,960
+then this problem is going
+to be really, really,
+
+344
+00:21:52,060 --> 00:21:55,320
+really hard. And so we have
+to at just this K
+
+345
+00:21:55,420 --> 00:21:58,589
+and in bitcoin's
+case, we adjust it so that one
+
+346
+00:21:58,689 --> 00:22:01,660
+of these problems can
+be solved every ten minutes.
+
+347
+00:22:01,869 --> 00:22:04,770
+And this is adapted
+because they're the size
+
+348
+00:22:04,869 --> 00:22:07,780
+of the network might
+change and there'd be be different.
+
+349
+00:22:09,239 --> 00:22:12,420
+So a different different
+amount of notes participate
+
+350
+00:22:12,989 --> 00:22:16,349
+in in the network
+and to solve this.
+
+351
+00:22:17,130 --> 00:22:21,770
+These
+problems. So the the idea
+
+352
+00:22:21,869 --> 00:22:26,150
+here is that we have
+the proof of work
+
+353
+00:22:26,250 --> 00:22:29,680
+problem. Which is this?
+
+354
+00:22:31,839 --> 00:22:34,839
+And then we have Kay,
+
+355
+00:22:36,069 --> 00:22:39,660
+which is a value so and a little
+bit. We assume
+
+356
+00:22:39,760 --> 00:22:42,570
+it's a little bit long.
+It's less than two to the power
+
+357
+00:22:42,670 --> 00:22:46,270
+of L. And so that
+makes it this long.
+
+358
+00:22:47,199 --> 00:22:48,599
+And then
+
+359
+00:22:48,699 --> 00:22:53,469
+if the the image
+so the hash value
+
+360
+00:22:53,569 --> 00:22:57,690
+y has to be
+less than K, that means
+
+361
+00:22:57,790 --> 00:23:01,329
+that this part is actually
+fixed to zeros.
+
+362
+00:23:03,670 --> 00:23:05,829
+And so then we have
+a fixed pretty image,
+
+363
+00:23:08,439 --> 00:23:11,979
+which means we don't have
+
+364
+00:23:12,339 --> 00:23:15,119
+such a difficult
+problem, after all. It's not like
+
+365
+00:23:15,219 --> 00:23:19,540
+finding a pre
+image, but rather somewhat
+
+366
+00:23:19,660 --> 00:23:23,489
+like that because we are still
+allowed to vary
+
+367
+00:23:23,589 --> 00:23:26,489
+here. And so if you compare
+this
+
+368
+00:23:26,589 --> 00:23:28,989
+to the pre-match problem,
+
+369
+00:23:29,920 --> 00:23:33,570
+then the entire
+thing is fixed. So we have
+
+370
+00:23:33,670 --> 00:23:36,920
+to find this. Exact one.
+
+371
+00:23:38,989 --> 00:23:42,020
+There is only one
+that we have to to to find
+
+372
+00:23:43,219 --> 00:23:47,200
+asks, which is one
+out of two to the power
+
+373
+00:23:47,300 --> 00:23:49,880
+of 256 possible ones.
+
+374
+00:23:51,390 --> 00:23:54,410
+But if we look at the problem,
+the proof of work
+
+375
+00:23:54,510 --> 00:23:57,270
+problem, we see that
+it's only this that is fixed.
+
+376
+00:23:57,510 --> 00:24:02,810
+So there are these
+many bits that we can actually
+
+377
+00:24:02,910 --> 00:24:05,699
+vary that
+are allowed to vary
+
+378
+00:24:07,229 --> 00:24:10,020
+for days to solve.
+So it's much easier
+
+379
+00:24:11,729 --> 00:24:16,550
+pre-match problem
+than the actual and pretty
+
+380
+00:24:16,650 --> 00:24:19,199
+much problem. And by.
+
+381
+00:24:20,390 --> 00:24:24,530
+Varying Kay,
+here we we vary the bits
+
+382
+00:24:25,010 --> 00:24:27,880
+that are here, which means
+we can control how difficult
+
+383
+00:24:27,979 --> 00:24:31,599
+it is safer shrink,
+and that means it shrinks
+
+384
+00:24:31,699 --> 00:24:34,270
+in this direction.
+That means the fixed pre image
+
+385
+00:24:34,369 --> 00:24:38,530
+is increasing.
+So if we set K to like
+
+386
+00:24:38,630 --> 00:24:42,219
+one or zero, then
+it's all the way down
+
+387
+00:24:42,319 --> 00:24:46,440
+here. So then we have the full
+scale and cryptographic
+
+388
+00:24:46,540 --> 00:24:52,780
+pre-match problem.
+Yeah, so we can control
+
+389
+00:24:52,880 --> 00:24:55,160
+how difficult the pre-match
+problem is supposed to be.
+
+390
+00:24:57,449 --> 00:25:00,599
+Now, let's go
+to three hashing.
+
+391
+00:25:02,089 --> 00:25:05,200
+And remember
+that we have this time
+
+392
+00:25:05,300 --> 00:25:08,890
+stamping mechanism,
+and this is to prevent
+
+393
+00:25:08,989 --> 00:25:12,050
+forgery, which means
+that we need to.
+
+394
+00:25:13,339 --> 00:25:16,000
+Verify
+whenever there is a new
+
+395
+00:25:16,099 --> 00:25:19,750
+transaction that uses an all
+transaction, we must go
+
+396
+00:25:19,849 --> 00:25:23,640
+back. And find
+that all transaction
+
+397
+00:25:24,420 --> 00:25:28,310
+in some block and then
+check that it has not been used
+
+398
+00:25:28,410 --> 00:25:30,410
+in any other
+block since then.
+
+399
+00:25:32,140 --> 00:25:35,550
+And so this is computing
+a lot of hashes
+
+400
+00:25:36,270 --> 00:25:38,939
+and we would like
+this to be efficient.
+
+401
+00:25:40,780 --> 00:25:43,780
+That's why we use a so-called
+Merkle tree.
+
+402
+00:25:44,500 --> 00:25:48,160
+So the idea here
+is we want to include
+
+403
+00:25:48,699 --> 00:25:53,280
+and we want to include
+these data blocks. So L1, L2,
+
+404
+00:25:53,380 --> 00:25:58,359
+L3, L4. And create
+a hash for them
+
+405
+00:25:58,459 --> 00:26:01,849
+and then be able to check
+if one was present.
+
+406
+00:26:02,869 --> 00:26:05,900
+So the way
+we do this is that
+
+407
+00:26:06,650 --> 00:26:10,670
+we hash each of them.
+This creates a hash value.
+
+408
+00:26:11,989 --> 00:26:14,750
+Then we hash
+these hash values
+
+409
+00:26:16,099 --> 00:26:19,520
+so we create a tree
+structure and then we hash
+
+410
+00:26:19,699 --> 00:26:21,699
+this so we get
+to the top hash.
+
+411
+00:26:23,010 --> 00:26:25,439
+And we can do
+this for transactions
+
+412
+00:26:26,280 --> 00:26:29,599
+at. In this way,
+
+413
+00:26:30,229 --> 00:26:33,369
+because the advantage
+here now, if you want
+
+414
+00:26:33,469 --> 00:26:36,339
+to verify that this
+transaction three actually
+
+415
+00:26:36,439 --> 00:26:40,450
+is in this block,
+then we take this compute
+
+416
+00:26:40,550 --> 00:26:42,790
+the hash of it.
+Then we get hash three,
+
+417
+00:26:42,890 --> 00:26:46,570
+which we don't need
+to have because we can
+
+418
+00:26:46,670 --> 00:26:50,770
+compute it. We need
+hash to, but we don't need
+
+419
+00:26:50,869 --> 00:26:54,190
+to have the transaction
+that comes that generated this
+
+420
+00:26:54,290 --> 00:26:57,520
+hash. And because that
+one might be much bigger
+
+421
+00:26:57,619 --> 00:27:00,729
+than the hash value. So this
+is saving us from space
+
+422
+00:27:00,829 --> 00:27:04,210
+because their hash
+value might be 256 bit or,
+
+423
+00:27:04,310 --> 00:27:07,670
+say, 512 instead
+of several megabytes
+
+424
+00:27:07,910 --> 00:27:09,910
+that the actual
+transaction might be.
+
+425
+00:27:11,150 --> 00:27:14,290
+So then we we have saved
+a lot of space by just having
+
+426
+00:27:14,390 --> 00:27:17,469
+the hash value here
+instead. We can hash this one. So now
+
+427
+00:27:17,569 --> 00:27:19,790
+we have the two hash
+values, we can compute this one.
+
+428
+00:27:20,449 --> 00:27:24,140
+And but we also need
+the other leg of this tree.
+
+429
+00:27:24,439 --> 00:27:27,489
+So we need this hash
+instead of all the transactions
+
+430
+00:27:27,589 --> 00:27:30,229
+and hash just that
+it represents. We can
+
+431
+00:27:31,010 --> 00:27:34,060
+hash these together. We get
+the root and we see that
+
+432
+00:27:34,160 --> 00:27:37,239
+everything competes.
+So this means that we need
+
+433
+00:27:37,339 --> 00:27:41,440
+to store much less data that
+
+434
+00:27:41,540 --> 00:27:44,510
+to do the verification
+than we would have
+
+435
+00:27:45,229 --> 00:27:49,719
+needed otherwise.
+So this helps us make
+
+436
+00:27:49,819 --> 00:27:57,640
+things a bit more
+efficient. And that was everything that
+
+437
+00:27:57,739 --> 00:28:01,390
+I wanted to say
+about applied hash functions
+
+438
+00:28:01,489 --> 00:28:02,780
+and blockchains.
+
