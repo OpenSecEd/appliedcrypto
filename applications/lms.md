@@ -47,6 +47,18 @@ Another protocol (standard) and some discussion about groups:
 
 ## Tor and Onion Routing
 
-- Tor: The second generation onion router (interactive [paper][tor-paper])
+- Tor: The second generation onion router (interactive [video][tor-video], 
+  [paper][tor-paper])
 
-[tor-paper]: https://eu.feedbackfruits.com/groups/activity-group/07021bc5-60af-406f-9941-dfdfe1070f55
+- Website Fingerprinting with Website Oracles (interactive 
+  [video][website-oracles], [paper][website-oracles-paper])
+
+[tor-paper]: 
+https://eu.feedbackfruits.com/groups/activity-group/07021bc5-60af-406f-9941-dfdfe1070f55
+
+[tor-video]: https://eu.feedbackfruits.com/courses/activity-course/8ec49fde-601e-4b72-9788-d2a5fc1cc256
+
+[website-oracles]: https://eu.feedbackfruits.com/groups/activity-group/bc865246-a460-4761-9122-2f9b1c9eee3c
+
+[website-oracles-paper]: https://eu.feedbackfruits.com/groups/activity-group/cb1d8fcb-1660-417f-969f-2787a8f80521
+
