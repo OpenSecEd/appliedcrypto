@@ -16,6 +16,7 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 	${MAKE} -C $(dir $@) $(notdir $@)
 
 bibliography.bib: bibliography.bib(pub-key.bib crypto.bib)
+bibliography.bib(crypto.bib): crypto.bib
 
 
 .PHONY: all
