@@ -5,7 +5,7 @@ high-level cryptography --- mechanisms and their properties --- such that the
 students are aware of the possibilities and (if desired) can apply them when 
 designing secure systems.
 
-Each subdirectory has a README. For lectures, it contains a link to the video 
+Each subdirectory has a README.md. For lectures, it contains a link to the video 
 recording, a short summary, the intended learning outcomes and reading 
 instructions. For assignments, it shortly describes the assignment. Apart from 
 this README, there are the sources for the material.
