@@ -28,13 +28,36 @@ You should design a digital postbox and delivery service.
 \end{frame}
 }
 
+\begin{frame}
+\begin{exercise}
+  What functionality do we need? (High level)
+\end{exercise}
+
+\begin{onlyenv}<2>
+  \begin{solution}
+    We'd need at least the following:
+    \begin{itemize}
+      \item Registration
+      \item Sending mail
+      \item Reading mail
+    \end{itemize}
+  \end{solution}
+\end{onlyenv}
+\end{frame}
+
+\begin{frame}
+\begin{exercise}
+  What are the requirements on the service?
+\end{exercise}
+\end{frame}
+
 We have the following requirements on the service:
 \begin{frame}
 \begin{description}
   \item[Registration]
     A user can register for a post box.
     As this post service will replace physical mail, it must be tied to a real 
-    identity.
+    identity with a physical address.
 
     \pause
 
@@ -47,13 +70,11 @@ We have the following requirements on the service:
     Only the owner should be able to do this --- no one else, not even service 
     staff!
     Recipient must be able to verify the authenticity of mail.
-
-    \pause
-
-  \item[Anonymous mail] (Extra feature)
-    A sender can send a letter to a recipient, but neither the recipient nor 
-    the service will learn the identity of the sender.
-    The service will not learn the recipient either.
+%
+%  \item[Anonymous mail] (Extra feature)
+%    A sender can send a letter to a recipient, but neither the recipient nor 
+%    the service will learn the identity of the sender.
+%    The service will not learn the recipient either.
 \end{description}
 \end{frame}
 
@@ -89,8 +110,9 @@ provide and why?
     \begin{block}{Organization}
       \begin{itemize}
         \item Groups of around three--four people.
-        \item Work for 20 minutes, take 10 min break (30 min incl break).
-        \item Group presentations and discussions (15--20 minutes).
+        \item Pick one of the three tasks functionalities.
+        \item Work for 20 minutes.
+        \item Group presentations and discussions (\(< 5\) minutes/group).
       \end{itemize}
     \end{block}
   \end{frame}
@@ -98,12 +120,13 @@ provide and why?
   \begin{frame}
     \begin{solution}
       \begin{itemize}
-        \item Presentation from groups (15--20 minutes).
+        \item Presentation from groups (\(< 5\) minutes/group).
       \end{itemize}
     \end{solution}
 
     \begin{question}
       \begin{itemize}
+        \item Obstacles?
         \item Limitations?
         \item Recovery from failure?
       \end{itemize}
