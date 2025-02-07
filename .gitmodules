@@ -16,3 +16,6 @@
 [submodule "applied-hash/modules/auth"]
 	path = applied-hash/.modules/auth
 	url = https://github.com/OpenSecEd/auth.git
+[submodule "protocols"]
+	path = protocols
+	url = https://github.com/OpenSecEd/protocols.git
