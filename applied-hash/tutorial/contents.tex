@@ -1,15 +1,49 @@
 \mode*
 
+\section{Difficult parts}
+
+\begin{frame}
+  \begin{question}
+    \begin{itemize}
+      \item What were the most difficult parts in the prep material?
+    \end{itemize}
+  \end{question}
+\end{frame}
+
 \section{A secure guessing game}
 
 \begin{frame}
-  \begin{exercise}[20 questions]
+  \begin{exercise}[Secure 20 questions]
     \begin{itemize}
       \item Eve says to Alice: \enquote{I'm thinking of something, guess what 
         it is.}
       \item Alice can't guess it in 20 questions, so she loses.
       \item Make a construction so that Alice can be sure Eve doesn't change 
         what she's thinking of.
+    \end{itemize}
+  \end{exercise}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}[Secure 20 questions]
+    \begin{itemize}
+      \item Eve says to Alice: \enquote{I'm thinking of something, guess what 
+        it is.}
+      \item Alice can't guess it in 20 questions, so she loses.
+      \item Make a construction so that Alice can be sure Eve doesn't change 
+        what she's thinking of.
+    \end{itemize}
+  \end{exercise}
+
+  \begin{exercise}[More secure 20 questions]
+    \begin{itemize}
+      \item Alice says: \enquote{I asked \(X\) and you answered \(Y\),
+        but should've answered \(Y'\).}
+      \item Eve says: \enquote{No, you asked \(X'\) and I answered \(Y\) 
+        correctly.}
+      \item Make a construction so that Alice can prove that she asked \(X\) 
+        and Eve replied \(Y\).
+      \item (And consequently, Alice can't cheat either.)
     \end{itemize}
   \end{exercise}
 \end{frame}
@@ -21,7 +55,8 @@
     \begin{itemize}
       \item Eve sent a love letter to Alice.
       \item In it, she confessed her love for Alice, but also included a proof 
-        of \(P = NP\) as a token of her sincerity.
+        of \(P = NP\) as a token of her sincerity. (And consequently that she 
+        could break all of Alice's crypto.)
 
         \pause
 
