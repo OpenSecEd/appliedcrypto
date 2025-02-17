@@ -86,14 +86,14 @@ We have the following requirements on the service:
   \end{remark}
 \end{frame}
 
-\begin{frame}[fragile]
-  \begin{remark}[Requirement]
-    \begin{itemize}
-      \item Must work with EIDAS\@.
-      \item Implementations from other countries might use other algorithms.
-    \end{itemize}
-  \end{remark}
-\end{frame}
+%\begin{frame}[fragile]
+%  \begin{remark}[Requirement]
+%    \begin{itemize}
+%      \item Must work with EIDAS\@.
+%      \item Implementations from other countries might use other algorithms.
+%    \end{itemize}
+%  \end{remark}
+%\end{frame}
 
 Solving this assignment will touch upon almost every topic in the course.
 Make sure to base your designs on the theory of the course, add references 
@@ -117,18 +117,27 @@ provide and why?
         \item[Reading mail]
           Bob can read all his received mail.
           Service staff should not be able to read mail!
-          Bob must be able to verify the authenticity of mail, \eg that it's 
-          from Alice.
+          Must be able to verify the authenticity.
       \end{description}
     \end{exercise}
+  \end{frame}
 
-    \pause
+  \begin{frame}
+    \begin{exercise}
+      \begin{itemize}
+        \item Registration
+        \item Sending mail
+        \item Reading mail
+      \end{itemize}
+    \end{exercise}
 
     \begin{block}{Organization}
       \begin{itemize}
         \item Groups of around three--four people.
-        \item Pick one of the three tasks functionalities.
-        \item Work for 15 minutes.
+        \item Pick one of the three functionalities.
+        \item \alert<2>{Design a solution: detail the crypto protocol.}
+        \item Document at \url{https://tinyurl.com/tilkry25-postbox}
+        \item Work for 20 minutes.
         \item Group presentations and discussions.
       \end{itemize}
     \end{block}
@@ -191,7 +200,8 @@ Notes from the session:
     \begin{block}{Organization}
       \begin{itemize}
         \item Groups of around three--four people.
-        \item Work for 20 minutes.
+        \item Work for 20 minutes, document: 
+          \url{https://tinyurl.com/tilkry25-anon-postbox}.
         \item Group presentations and discussions.
       \end{itemize}
     \end{block}
@@ -221,7 +231,11 @@ Notes from the session:
 
 \begin{frame}
   \begin{exercise}
-    What requirements do we have on digital identity for our postbox system?
-    How can we achieve those requirements?
+    \begin{itemize}
+      \item What requirements do we have on digital identity for our postbox 
+        system?
+        How can we achieve those requirements?
+      \item Document: \url{https://tinyurl.com/tilkry25-identity}.
+    \end{itemize}
   \end{exercise}
 \end{frame}
