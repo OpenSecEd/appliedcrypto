@@ -205,6 +205,24 @@ Hash Functions
    b. Their vulnerability to collision attacks.
    c. Their requirement for digital certificates.
    d. Their dependence on symmetric key algorithms.
+   
+   
+The main property of a hash function is that it is deterministic, easily 
+computable, but hard to invert. Create a questions with 10 true/false 
+statements about uses of hash functions. For example: to prevent the system 
+from leaking passwords, we hash them before storing them in the database.
+Then we can still verify them, but can't find them.
+
+1. Hash functions provide a deterministic transformation from input data to a fixed-size output. True
+2. Cryptographic hash functions are designed to be easily invertible so that the original input can be recovered from the output. False
+3. Hash functions are widely used to verify data integrity by comparing a computed hash with a known value. True
+4. One common use of hash functions is to securely store passwords by hashing them before saving in a database. True
+5. Collision resistance means that it is computationally infeasible for two different inputs to produce the same hash output. True
+6. Hash functions are primarily used for encrypting sensitive data, ensuring that the output can be decrypted later. False
+7. In blockchain technology, hash functions are used to link blocks together and secure the chain from tampering. True
+8. Digital signature schemes often rely on hash functions to create a digest of the message before signing. True
+9. Hash functions can be used to generate unique identifiers for large files, making it easier to detect duplicates. True
+10. A challenge in designing hash functions is that they must be slow to compute in order to resist brute-force attacks. False
 
 MACs (Message Authentication Codes)
 1. What does MAC stand for in cryptographic contexts?
@@ -237,6 +255,33 @@ MACs (Message Authentication Codes)
    c. Its use of public key infrastructure.
    d. Its variable output length.
 
+Message authentication codes (MACs) primarily provide two essential security guarantees:
+
+1. Authenticity: Only someone who knows the shared secret key can generate a valid MAC. This means that if a received MAC verifies correctly, the receiver can be confident that the message came from a legitimate sender with access to that key.
+
+2. Integrity: If any part of the message is altered during transit, the MAC computed by the receiver will not match the original MAC. This ensures that the message has not been tampered with.
+
+Additionally, MACs are typically designed to be computationally efficient and produce fixed-size outputs regardless of the input length. They are also structured to resist forgery; an adversary without knowledge of the secret key should not be able to produce a valid MAC for any new or modified message.
+
+MACs and hash functions share some cryptographic properties but are designed with different goals in mind. A hash function is a one‐way function that maps an arbitrary-length input into a fixed-length output and is expected to be collision resistant (hard to find two different inputs that produce the same output), preimage resistant (hard to invert), and second preimage resistant (hard to find a different input that produces the same output for any given input).
+
+A MAC (Message Authentication Code), on the other hand, is essentially a keyed function used to both ensure data integrity and authenticate the sender. While many MACs (such as HMAC) are built on underlying hash functions, a MAC requires additional properties beyond what is provided by the hash: it must be unforgeable (an adversary without the secret key should not be able to produce a valid MAC for any new message), even if they can compute MACs for messages of their choosing. In that sense, while hash functions focus on collision resistance and one-wayness, MACs focus on resisting forgery under chosen-message attacks.
+
+Thus, although MACs may leverage hash functions, the security properties required in the MAC context (authenticity and unforgeability via a secret key) are distinct from the basic properties (collision resistance, preimage resistance, and second preimage resistance) expected from a cryptographic hash function.
+
+
+1. MACs ensure both data integrity and sender authenticity when the correct secret key is used. (True)
+2. Anyone can generate a valid MAC for a message, regardless of whether they know the shared secret key. (False)
+3. Any alteration to a message will result in a MAC that does not match the original, thus detecting tampering. (True)
+4. A valid MAC guarantees that a message has not been altered and that it comes from a sender with knowledge of the secret key. (True)
+5. MACs produce a fixed-size output regardless of the length of the input message. (True)
+6. Although many MACs (like HMAC) are based on hash functions, they add the use of a secret key to provide unforgeability. (True)
+7. Cryptographic hash functions and MACs have identical security goals since both focus solely on collision resistance. (False)
+8. The security of a MAC depends on the secrecy of the shared key, not on keeping the algorithm itself secret. (True)
+9. An attacker with access to several valid message-MAC pairs can easily compute a valid MAC for a new message. (False)
+10. MACs are designed to be computationally efficient to generate and verify, making them suitable for real-time applications. (True)
+
+
 Digital Signatures
 1. What is the main purpose of a digital signature?
    a. To provide data encryption.
@@ -267,6 +312,50 @@ Digital Signatures
    b. The signer’s public key.
    c. The symmetric key used during signing.
    d. The hash function only.
+   
+
+Properties of digital signatures:
+
+Authenticity – a digital signature confirms the identity of the signer, 
+assuring the recipient that the message or document really originates from the 
+signer.
+
+Integrity – it guarantees that the signed data has not been altered in transit. Any modification to the original content will cause the signature verification to fail.
+
+Non-repudiation – once a digital signature is applied, the signer cannot deny having signed the document, providing evidence for later disputes.
+
+Additional aspects like efficiency and the robustness of the underlying cryptographic algorithms also play roles in ensuring that digital signatures are secure and practical in real-world applications.
+
+
+Digital signatures and MACs (Message Authentication Codes) both provide data integrity and authentication, but they do so in fundamentally different ways:
+
+1. Key Usage:  
+   • Digital signatures rely on asymmetric key cryptography, using a private key to sign and a public key to verify.  
+   • MACs use symmetric key cryptography, where the same secret key is shared between the sender and recipient for both creating and verifying the MAC.
+
+2. Public Verifiability:  
+   • Digital signatures allow any party to verify the signature using the signer’s public key.  
+   • With MACs, verification is only possible by someone who possesses the shared secret key, limiting verification to trusted parties.
+
+3. Non-repudiation:  
+   • Digital signatures provide non-repudiation, meaning the signer cannot deny having signed the message.  
+   • MACs do not offer non-repudiation since all parties who know the secret key could produce a valid MAC, leaving ambiguity about who exactly generated it.
+
+4. Application Scenarios:  
+   • Digital signatures are preferred in open environments where public verification and legal non-repudiation are desired.  
+   • MACs are typically used in closed systems where confidentiality of the key and performance efficiency are priorities.
+
+
+1. Digital signatures provide non-repudiation because they use asymmetric cryptography. True
+2. MACs provide non-repudiation since the same secret key is used by both the sender and the receiver. False
+3. Any party can verify a digital signature with the signer's public key, ensuring public verifiability. True
+4. MACs allow public verification of the message integrity and authenticity without the shared key. False
+5. A change in the digitally signed data will cause signature verification to fail, thus guaranteeing data integrity. True
+6. MACs can guarantee data integrity and authenticity only when the secret key remains confidential. True
+7. The security of a digital signature is based on robust asymmetric cryptographic algorithms, while the security of a MAC relies on the secrecy of a symmetric key. True
+8. Digital signature algorithms are typically less efficient on resource-constrained devices compared to MAC algorithms. True
+9. In open, untrusted environments where legal non-repudiation is required, MACs are preferred over digital signatures. False
+10. Digital signatures use a private key for signing and a corresponding public key for verification, whereas MACs use a single, shared key for both operations. True
 
 Public Key Infrastructure (PKI)
 1. What is Public Key Infrastructure (PKI)?
@@ -299,6 +388,50 @@ Public Key Infrastructure (PKI)
    c. Increasing the speed of digital signatures.
    d. Preventing hash collisions.
 
+
+PKI (Public Key Infrastructure) is built on several core properties that ensure secure communications and trust in digital environments. These include:
+
+1. Authentication – Verifies the identity of users or systems through digital certificates issued by trusted Certificate Authorities (CAs).
+
+2. Confidentiality – Uses public-key cryptography to encrypt data so that only intended recipients with the correct private key can decrypt and read the information.
+
+3. Integrity – Provides mechanisms for ensuring data is not tampered with during transmission. Digital signatures, for example, help recipients verify that the received data is exactly what was sent.
+
+4. Non-repudiation – Prevents individuals from denying their actions. Digital signatures and certificates provide proof of origin, ensuring that the sender cannot later repudiate the message.
+
+5. Trust and scalability – Relies on a hierarchical trust model with CAs and Registration Authorities (RAs), making it scalable to manage many users and systems. This model helps establish and maintain trusted relationships across large networks.
+
+6. Key management – Encompasses the processes for generating, distributing, storing, and revoking keys and certificates to maintain the overall security of the cryptographic system.
+
+These properties work together to create an environment in which secure, authenticated, and legally binding digital communications can take place.
+
+
+Symmetric key management relies on a single secret key used for both encryption and decryption. Because the same key is used on both ends, it requires a secure channel or mechanism to exchange the key before any secure communication can occur. In contrast, PKI uses asymmetric cryptography where each entity has a public key for encryption and a private key for decryption. This approach avoids the need for secure key exchange because the public key can be openly distributed, while the private key remains confidential.
+
+The key differences include:
+
+1. Key Distribution: With symmetric key systems, every pair of communicating parties needs a unique secret key, which can become impractical in large networks. PKI leverages trusted Certificate Authorities (CAs) to distribute and validate public keys, making it easier to manage keys on a large scale.
+
+2. Authentication: PKI provides a built-in method for authentication through digital certificates and signatures, ensuring that the entity on the other end is who they claim to be. In symmetric systems, authentication is typically achieved through additional mechanisms or protocols since the shared key does not inherently verify identity.
+
+3. Performance: Symmetric encryption is generally computationally faster and more efficient, making it well-suited for encrypting large volumes of data. Asymmetric operations in PKI are slower, so they are often used to exchange a symmetric session key, which then handles the bulk encryption.
+
+4. Scalability: Due to the exponential growth of shared keys needed in symmetric systems, key management becomes increasingly complex with more users. PKI, with its hierarchical trust model and certificate-based approach, scales more gracefully in environments with many users and devices.
+
+In summary, while symmetric key management offers efficiency and simplicity for smaller or more controlled environments, PKI provides robust authentication, scalability, and secure key distribution suited for larger and more dynamic digital ecosystems.
+
+
+1. PKI relies on asymmetric cryptography, which uses separate keys for encryption and decryption, making the public key safe for open distribution. True
+2. In symmetric key management, the same key is used for encryption and decryption, so a secure channel is required to share the key initially. True
+3. Digital certificates in a PKI system provide authentication by confirming the identity of the certificate holder. True
+4. In symmetric key systems, a single shared key can be used safely by all users in a large network without posing any security risks. False
+5. Digital signatures in PKI offer non-repudiation by ensuring that the sender cannot deny having sent the message. True
+6. Asymmetric operations in PKI are computationally slower than symmetric encryption, which is why a symmetric session key is often exchanged using PKI. True
+7. The hierarchical trust model of PKI, which includes Certificate Authorities (CAs), makes it scalable for managing secure communications in large networks. True
+8. PKI ensures confidentiality by encrypting data with the sender’s private key, allowing any recipient with the public key to decrypt it. False
+9. Effective symmetric key management requires a secure channel for key distribution since both encryption and decryption use the same key. True
+10. Authentication in symmetric key systems is inherently provided by the shared key without needing additional verification methods. False
+
 Random Number Generators
 1. What is the primary purpose of a random number generator in cryptographic applications?
    a. To generate predictable sequences for keys.
@@ -329,6 +462,46 @@ Random Number Generators
    b. Excessive consumption of memory.
    c. Overuse of symmetric encryption algorithms.
    d. Dependence on digital certificates.
+
+The Handbook of Applied Cryptography emphasizes that random number generators 
+(RNGs) are a critical component in cryptographic systems. It points out that 
+the security of many cryptographic algorithms depends on the quality of the 
+random numbers used—particularly their unpredictability and statistical 
+soundness. In the text, RNGs are discussed in the context of both 
+hardware‐based “true” random number generators and algorithmic (pseudorandom) 
+generators. The Handbook explains that while pseudorandom number generators 
+(PRNGs) can be engineered to mimic true randomness, they must be designed 
+carefully to be cryptographically secure; this means that even if part of their 
+internal state or output is revealed, an adversary should not be able to infer 
+past or future values.
+
+A key point the Handbook makes is the importance of proper seeding. Even a 
+cryptographically strong PRNG can be rendered insecure if its initial seed has 
+insufficient entropy or is predictable. The Handbook cautions against using 
+simple deterministic methods (such as elementary linear congruential 
+generators) that may pass basic statistical tests but lack the unpredictability 
+required in cryptographic applications.
+
+In summary, according to the Handbook of Applied Cryptography, a sound random 
+number generator for cryptographic use must:
+ • Produce outputs that are statistically indistinguishable from true randomness.
+ • Be unpredictable, even if partial information about previous outputs is known.
+ • Be carefully seeded using high-entropy inputs.
+ • Undergo thorough analysis to guard against subtle vulnerabilities that could 
+compromise the security of cryptographic protocols.
+
+1. True – Cryptographic RNGs include both hardware-based true random number generators and algorithmic pseudorandom number generators (PRNGs).
+2. True – A cryptographically secure PRNG is designed so that even if part of its internal state or output is revealed, its past and future values remain unpredictable.
+3. True – Even a strong, cryptographically secure PRNG can become insecure if 
+   it is seeded with insufficient entropy or predictable values.
+4. True – Simple deterministic methods, like elementary linear congruential generators, may pass basic statistical tests but are not considered secure for cryptographic applications.
+5. False – Statistical indistinguishability from true randomness is necessary but not sufficient; a secure RNG must also be unpredictable and properly seeded.
+6. True – Proper seeding using high-entropy inputs is critical; without it, even a well-designed PRNG can be compromised.
+7. True – The security of a cryptographic RNG depends on thorough analysis to guard against subtle vulnerabilities that could compromise cryptographic protocols.
+8. False – Hardware-based true RNGs and cryptographically secure PRNGs serve different roles, and both can be secure if appropriately implemented; neither is inherently the only secure option.
+9. True – The Handbook emphasizes that secure RNG outputs must be statistically indistinguishable from true randomness and remain secure even if partial internal state information is exposed.
+10. False – The unpredictability of cryptographic RNGs depends on both the design of the algorithm and the quality of its initial seeding; neither aspect alone guarantees security.
+
 
 ZKPK (Zero-Knowledge Proof of Knowledge)
 1. What is the primary goal of a Zero-Knowledge Proof of Knowledge (ZKPK)?
@@ -391,3 +564,41 @@ MPC (Multi-Party Computation)
    b. Enabling computation on private data without revealing sensitive inputs.
    c. Simplifying one-party computations.
    d. Increasing the speed of symmetric encryption processes.
+
+
+Zero-knowledge proofs of knowledge (ZKPK) are cryptographic protocols that 
+allow a prover to demonstrate knowledge of a secret without revealing the 
+secret itself. The main properties of ZKPK include:
+
+Completeness – If the statement is true and both prover and verifier follow the protocol, then the verifier will be convinced by the proof.
+
+Soundness – A cheating prover, who does not know a valid witness, will not be able to convince the verifier except with only negligible probability.
+
+Zero-knowledge – The verifier learns nothing beyond the fact that the statement is true; the proof reveals no additional information about the secret witness.
+
+Secure multiparty computation (MPC) is designed to let multiple parties jointly compute a function over their private inputs without revealing those inputs to each other. Its main properties include:
+
+1. Privacy – Each party’s input remains confidential, revealing nothing beyond the agreed-upon output.
+
+2. Correctness – The computed output is guaranteed to be correct as long as the protocol is followed properly, even under adversarial conditions.
+
+3. Independence of Inputs – Each participant's input is chosen independently and is not influenced by knowing the other inputs.
+
+4. Fairness – Ideally, all parties receive the output simultaneously; if one party does not receive the result, none do, although achieving full fairness can be challenging in practice.
+
+5. Robustness (or Guaranteed Output) – The protocol is designed to produce the correct output even if some parties deviate from the protocol, within certain adversarial models.
+
+6. Verifiability – In many protocols, parties can verify that the computation was performed correctly, providing a check against misbehavior.
+
+These properties work together to ensure that the joint computation is secure even in the presence of potentially adversarial participants.
+
+1. True or False: In a zero‐knowledge proof of knowledge protocol, the soundness property guarantees that a cheating prover cannot convince a verifier of a false statement with more than negligible probability. (True)
+2. True or False: The completeness property of a ZKPK protocol ensures that if the prover knows the secret and follows the protocol, the verifier will always be convinced that the statement is true. (True)
+3. True or False: The zero‐knowledge property in a ZKPK protocol permits the verifier to learn some partial information about the secret witness as long as the overall statement is verified. (False)
+4. True or False: In secure multiparty computation, the privacy property guarantees that aside from the agreed-upon output, no additional information about any party’s input is revealed to others. (True)
+5. True or False: The correctness property in an MPC protocol is maintained only if all participating parties are honest and strictly adhere to the protocol. (False)
+6. True or False: The fairness property in MPC protocols ensures that either every party receives the computed output simultaneously or none of them do. (True)
+7. True or False: In MPC, verifiability allows participants to confirm that the output was correctly computed according to the protocol, without exposing any party’s private input. (True)
+8. True or False: Cryptographic hash functions are often used in both ZKPK and MPC to create commitment schemes that provide binding and hiding properties during the protocol execution. (True)
+9. True or False: Asymmetric cryptography can be combined with zero‐knowledge proofs, enabling a prover to demonstrate knowledge of the private key corresponding to a public key without revealing the private key itself. (True)
+10. True or False: Unlike symmetric cryptography, which focuses on encrypting data to ensure confidentiality, zero‐knowledge proofs are designed to show possession of a secret without exposing any part of it, even though both approaches are fundamental to secure cryptographic systems. (True)
