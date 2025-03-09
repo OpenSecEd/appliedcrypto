@@ -1,3 +1,34 @@
+Wrong questions:
+
+22: Unlike symmetric cryptography, which focuses on encrypting data to ensure 
+confidentiality, ZKPKs are designed to show possession of a secret without 
+exposing any part of it, even though both approaches are fundamental to secure 
+cryptographic systems.
+
+9: If k_AB is chosen randomly, then no matter how the message m (which fits in 
+one block) is chosen, the ciphertext c will be just as random as k_AB.
+
+9: Clarified scenario:
+
+  "Alice sends a message c = Enc(k_AB, m) to Bob. Bob receives c', computes m' 
+  = Dec(k_AB, c'). Enc is an algorithm such as AES. Select all statements that 
+  are true."
+  
+Clarified statement:
+
+  "If Enc is a secure scheme, it ensures that when Alice sends her second 
+  message c_2 = Enc(k_AB, m_2), the ciphertext c_2 reveals no useful 
+  information about the plaintexts m and m_2 to an attacker."
+
+Clarified statement:
+
+  "Alice and Bob must have securely shared the key k_AB before Bob can run 
+  Dec."
+  
+16: Clarify by adding "be part of".
+
+# Quiz development
+
 The purpose of INL1Quiz is to establish a good intuition in line with Dolev-Yao 
 analysis in the protocols section.
 
