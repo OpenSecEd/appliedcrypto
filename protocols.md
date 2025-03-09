@@ -163,18 +163,6 @@ Must cover the topics
 - MPC
 
 Asymmetric Encryption
-1. Which statement is true regarding asymmetric encryption?
-   a. It uses the same key for encryption and decryption.
-   b. It uses a pair of keys: one public and one private.
-   c. It is inherently faster than symmetric encryption.
-   d. It does not require any form of key management.
-
-2. What is a widely used asymmetric encryption algorithm?
-   a. DES
-   b. AES
-   c. RSA
-   d. Blowfish
-
 3. What is one key benefit of asymmetric encryption?
    a. It simplifies key distribution in large networks.
    b. It removes the need for any encryption keys.
@@ -186,12 +174,6 @@ Asymmetric Encryption
    b. A symmetric key.
    c. A randomly generated key.
    d. The corresponding private key.
-
-5. One major drawback of asymmetric encryption is:
-   a. It requires extensive key distribution.
-   b. It is generally slower than symmetric encryption.
-   c. It does not support secure key exchange.
-   d. It relies solely on hash functions.
 
 Hash Functions
 1. What is the primary purpose of a hash function in cryptographic applications?
