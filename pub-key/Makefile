@@ -15,6 +15,7 @@ beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
 ../beamer-didactic/beamer-didactic.sty:
 	${MAKE} -C $(dir $@) $(notdir $@)
 
+bibliography.bib: crypto.bib
 bibliography.bib: bibliography.bib(pub-key.bib crypto.bib)
 
 
