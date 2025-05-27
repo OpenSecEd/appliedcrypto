@@ -19,3 +19,6 @@
 [submodule "protocols"]
 	path = protocols
 	url = https://github.com/OpenSecEd/protocols.git
+[submodule "didactic"]
+	path = didactic
+	url = https://github.com/dbosk/didactic.git

@@ -1,0 +1,74 @@
+\chapter{Cryptographically verifying photographic images}\label{CameraSignature}
+\chapterprecis{%
+  This chapter is from DD2520 Applied Crypto, spring 2024, at KTH\@.
+}
+
+People often have difficulty distinguishing between AI-generated images and photographs captured by an actual camera. To address this, any photographic output from a camera should be digitally signed by the camera. It should not be possible for an adversary to obtain a valid camera signature on an image or video that was not truly captured by the device. In practice, this means that the image sensor should output raw data that is immediately signed by the camera’s secure hardware before being written to storage.
+
+An image viewer or video player (for example, a web browser) should be capable of verifying this signature. If the signature is missing or invalid, the viewer can warn the user by highlighting the image (e.g., with a red border) to indicate that the image might be AI-generated.
+
+\begin{exercise}
+Outline the cryptographic primitives and protocols needed for this system. Discuss the properties required and any potential obstacles.
+\end{exercise}
+
+To implement this system, the following cryptographic measures must be incorporated:
+\begin{itemize}
+  \item Each camera is provisioned with a unique private/public key pair during manufacturing.
+  \item The secure hardware in the camera uses the private key to sign the raw image data produced by the image sensor.
+  \item The resulting digital signature is embedded in the image metadata. This signature is publicly verifiable using the corresponding public key.
+  \item Digital signatures provide properties such as non-repudiation and unforgeability, ensuring that images can only be authenticated if they were truly captured by the camera.
+\end{itemize}
+
+Key challenges and obstacles include:
+\begin{itemize}
+  \item \textbf{Key Management and Revocation:} In an adversarial environment, leaked keys must be revoked promptly. Mechanisms need to be established for deactivating compromised cameras, as well as for secure key recovery or replacement.
+  \item \textbf{Hardware Security:} It must not be possible to extract the cryptographic hardware from the camera or to use it to sign data unrelated to the captured images. Side-channel attacks should be mitigated, and the secure element must protect against physical and software tampering.
+  \item \textbf{Randomness and Entropy:} Sufficient secure randomness must be available for key generation and for any nonces used during the signing process. Reusing randomness (especially in schemes such as Schnorr) can lead to key recovery.
+  \item \textbf{Image Editing and Compression:} The signature should ideally be applied to the raw image. If image editing or compression takes place, the secure system should support signing the processed output to ensure that modifications are detectable.
+  \item \textbf{Data Fusion:} For additional assurance, supplementary data (for instance, from a depth sensor) can be signed together with the image data to tie them together, making it even harder for AI-generated content to mimic real captures.
+  \item \textbf{Privacy Concerns:} As signatures uniquely identify the camera, there is a risk of tracking the origin of the image, potentially infringing on privacy. Alternative designs may involve intermediary signing (e.g., by the camera manufacturer) to help balance authenticity with user privacy.
+\end{itemize}
+
+
+\chapter{Detecting bot networks via digital signatures}\label{TwitterSignature}
+\chapterprecis{%
+  This chapter is from DD2520 Applied Crypto, spring 2024, at KTH\@.
+}
+
+In modern social media platforms such as Twitter (now rebranded as X), there is an increasing challenge in distinguishing between genuine human users and bot-driven accounts. A single adversary might control thousands of bot accounts to create an illusion of widespread support for a particular opinion. To counteract this, a solution is proposed where all users are required to digitally sign their tweets and other interactions (such as likes). This cryptographic requirement ensures that if a person operates multiple bot accounts, all of their activity is linked via the same digital signature.
+
+\begin{exercise}
+Outline the cryptographic primitives required to implement this system. Discuss the necessary properties and potential obstacles.
+\end{exercise}
+
+A viable system to detect bot networks should include the following features:
+\begin{itemize}
+  \item Each user is assigned or generates a unique private/public key pair upon registration.
+  \item Every tweet, like, or interaction is digitally signed using the user's private key, ensuring that all actions are cryptographically bound to the originating user.
+  \item The digital signature is attached to the message data, and any observer can verify if multiple messages are signed by the same key.
+  \item A trusted certificate authority or similar mechanism may be used to bind public keys to verified user identities, although this must be balanced with privacy considerations.
+\end{itemize}
+
+Digital signatures provide several important properties:
+\begin{itemize}
+  \item \textbf{Non-Repudiation:} Users cannot later deny having signed a tweet or other interaction.
+  \item \textbf{Unforgeability:} Only the owner of the private key can produce a valid signature.
+\end{itemize}
+
+Obstacles that must be addressed include:
+\begin{itemize}
+  \item \textbf{Key Revocation:} In the case of a private key compromise, the key must be swiftly revoked to prevent misuse. However, this may temporarily disable a user's account.
+  \item \textbf{Privacy Implications:} While the system helps detect bot networks by linking actions to a specific key, it also risks compromising user privacy by making it possible to track all actions of a single user.
+  \item \textbf{Scalability:} Given the high volume of interactions on platforms like Twitter, the system must ensure efficient signature verification.
+\end{itemize}
+
+\begin{exercise}
+Discuss alternative solutions for mitigating bot network issues while considering user privacy.
+\end{exercise}
+
+An alternative approach could involve using Message Authentication Codes (MACs) signed by the camera or device manufacturer. In this variant:
+\begin{itemize}
+  \item The manufacturer attests to the validity of the cryptographic token associated with the user.
+  \item Users’ actions are authenticated via the manufacturer’s signature, providing a trusted link while anonymizing the underlying raw keys.
+  \item This approach can help maintain user privacy while still allowing the identification of bot networks by detecting repeated use of the same manufacturer-signed token.
+\end{itemize}

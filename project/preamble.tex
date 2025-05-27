@@ -1,0 +1,64 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[swedish,british]{babel}
+
+\usepackage{noweb}
+\usepackage{booktabs}
+
+\usepackage[%
+  natbib,
+  citestyle=verbose,singletitle=false,
+  style=verbose,
+  maxbibnames=99,%
+  isbn=false,doi=false,url=false
+]{biblatex}
+\addbibresource{bibliography.bib}
+
+\usepackage[all]{foreign}
+\renewcommand{\foreignfullfont}{}
+\renewcommand{\foreignabbrfont}{}
+
+%\usepackage{newclude}
+\usepackage{import}
+
+\usepackage[strict]{csquotes}
+\usepackage[single]{acro}
+
+\usepackage{subcaption}
+
+\usepackage[noend]{algpseudocode}
+\usepackage{xparse}
+
+\let\email\texttt
+
+\usepackage[outputdir=ltxobj]{minted}
+\setminted{autogobble,linenos}
+
+\usepackage{pythontex}
+\setpythontexoutputdir{.}
+\setpythontexworkingdir{..}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{thmtools}
+\usepackage[unq]{unique}
+\DeclareMathOperator{\powerset}{\mathcal{P}}
+
+\usepackage{msc}
+\let\mscaction\action
+\let\action\relax
+\tikzset{/msc/instance distance=0.5\linewidth,
+         /msc/draw frame=none}
+
+\usepackage[binary-units]{siunitx}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage{cleveref}
+
+\usepackage{didactic}
+\ProvideSemanticEnv{lo}{Learning Objective}
+  {learning objective}{learning objectives}
+  {Learning objective}{Learning objectives}
+\usepackage{bibsp}
