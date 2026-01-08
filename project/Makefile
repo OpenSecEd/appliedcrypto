@@ -5,7 +5,8 @@ LATEXFLAGS+=	-shell-escape
 
 SRC+=		preamble.tex
 SRC+=		abstract.tex contents.tex
-SRC+=		2025.tex
+SRC+=		2025a.tex 2025b.tex
+SRC+=		2024.tex
 SRC+=		bibsp.sty
 
 FIGS+=		figs/Tux.pdf
