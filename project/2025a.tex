@@ -1,0 +1,1363 @@
+\chapter{Police body cams}\label{PoliceCamStatement}
+\chapterprecis{%
+  This chapter is from DD2520 Applied Crypto, spring 2025, at KTH\@.
+}
+
+Law enforcement agencies increasingly rely on body-worn cameras to log 
+interactions with the public.
+
+\ltnote{%
+  The idea is to use more open form of pQBL~\parencite{pQBL}.
+  This means that we start with a question.
+  This lets the reader think about the problem, try to explore it based on what 
+  they currently know.
+  When we later tell them, the knowledge will be more 
+  reinforced~\parencite{Szekely1950}.
+  This also helps the reader to discern relevant 
+  aspects~\parencite{NecessaryConditionsOfLearning}.
+
+  The intention of \cref{BenefitsDrawbacks,AlleviateDrawbacks} is to let the 
+  reader discover the relevant properties that we want to capture in the coming 
+  protocol design.
+}
+\begin{exercise}\label{BenefitsDrawbacks}
+  What are the benefits and drawbacks of using body-worn cameras?
+\end{exercise}
+
+With concerns over tampering, withholding of critical parts or realistic fake 
+footage, there is a need to cryptographically verify the authenticity of these 
+recordings.
+
+These videos are also strictly confidential, due to many people's privacy is 
+violated (whoever is captured in the videos).
+The video material is only partially released as evidence in a trial after 
+review.
+
+\begin{exercise}\label{AlleviateDrawbacks}
+  What can we do to alleviate the drawbacks while enjoying the benefits?
+\end{exercise}
+
+The cameras will inevitably have to capture video material.
+We can assure the authenticity and integrity of the videos by cryptography and 
+we can limit who can access it by cryptography as well (confidentiality).
+
+Only a special joint group within the police and the attorney's office can 
+access, review and share parts of the video material.
+The material can be used as evidence in court, both in ordinary criminal cases 
+and in cases of police misconduct.
+
+\begin{exercise}
+  Think about how you would design a system using cryptographic primitives to 
+  ensure the confidentiality, integrity, authenticity and availability of the 
+  video material.
+\end{exercise}
+
+\ltnote{%
+  The idea is to create the simplest solution possible.
+  Then we will focus one aspect at a time by making one small change to the 
+  solution at a time.
+  This will introduce the contrast necessary to bring the aspect into 
+  focus \parencite[as dictated by][]{NecessaryConditionsOfLearning}.
+  We will do this until we have touched on all aspects and arrived at the 
+  perfect solution.
+  (One could also think of this as a sequence of games, as used in cryptography 
+  \parencite{Shoup2004Sequences}.
+  Arguably, the reason why the sequences of games method by 
+  \citeauthor{Shoup2004Sequences} is good for humans is explained by 
+  \citeauthor{NecessaryConditionsOfLearning}.)
+}
+
+In this chapter, we will iteratively develop a cryptographic solution, 
+refining it step by step.
+\chapterminitoc
+\section{A first solution}\label{FirstSolution}
+
+Now we'll start with a first solution to the problem.
+We see in \cref{PoliceCamStatement} that we have a few entities that we're 
+interested in:
+\begin{itemize}
+  \item the police officer~\(P\) that wears the camera,
+  \item the camera~\(C\) that records the video,
+  \item the reviewers~\(R\) who check the video material,
+  \item the court that uses the video material as evidence.
+\end{itemize}
+
+\begin{exercise}
+  What is the goal of the system, in terms of these entities?
+\end{exercise}
+
+The goal is that the camera~\(C\) captures the context of the police 
+officer~\(P\) so that the reviewers~\(R\) can filter them out and supply the 
+court with evidence.
+
+\begin{exercise}
+  Design the cryptographic system that ensures the confidentiality, integrity 
+  and authenticity of the video material as it is captured and transferred 
+  between these entities.
+\end{exercise}
+
+The simplest design is to use a shared symmetric key between the camera~\(C\) 
+and the reviewers~\(R\).
+The police officer~\(P\) doesn't need access and doesn't need to be involved 
+more than wearing the camera and returning it to the police station.
+That's both more secure and more usable.
+
+With that shared key, the camera~\(C\) can encrypt (confidentiality) and MAC 
+(integrity and authentication) the video material as it is captured.
+
+\subsection{Managing the keys}
+
+\NewVariable{\KCR}{k_{CR}}
+
+We have a shared symmetric key~\(\KCR\) between the camera~\(C\) and the 
+reviewers~\(R\).
+(This means that we need one such key for each camera.)
+
+\begin{exercise}
+  How should these keys be stored?
+\end{exercise}
+
+This key must be stored in a secure way in each camera.
+We can use some form of secure element to store the key, \eg a TPM (Trusted 
+Platform Module) or an HSM (Hardware Security Module) or a smart card (think 
+SIM card).
+
+We let the reviewers~\(R\) be represented by a server.
+The server is much more physically secure and must store many more keys,
+so the keys can be stored in a database on the server.
+However, we can make this an encrypted database and the key to the database is 
+stored in a secure element.
+
+Whenever a reviewer in \(R\) needs to access the database, they must 
+authenticate themselves to the server which then decrypts the key~\(\KCR\) to 
+decrypt the video material by camera~\(C\).
+
+\subsection{Encrypting video for \(R\)}
+
+\NewAlgorithm{\Enc}{Enc}
+\NewAlgorithm{\Dec}{Dec}
+\NewAlgorithm{\KDF}{KDF}
+\NewVariable{\KENC}{k_{CR}^{\Enc}}
+
+\begin{exercise}
+  What algorithm should we use to encrypt the video material?
+  How do we choose parameters for instantiation (\eg key size)?
+\end{exercise}
+
+We will use AES to do encryption.
+Due to the privacy aspects of the problem, we need to choose the key size based 
+on how long the data must be confidential.
+This should probably be related to some regulation or law.
+We will use a key size of 256 bits, until we can motivate a smaller key.
+
+\begin{exercise}
+  How exactly should we do this encryption?
+  The entire video (many megabytes, even gigabytes) will not fit into one block 
+  of AES (128 bits\footnote{The block size should not to be confused with the 
+  key size.}).
+\end{exercise}
+
+We can see in \cref{fig:EncModes} that it is very important to pick a good mode 
+of operation in this context (videos).
+We will use GCM (Galois/Counter Mode) to get authenticated encryption.
+This mode has a built-in MAC\@.
+We will need a random IV (initialization vector).
+We can use a key-derivation function to derive the encryption key from 
+\(\KCR\):
+\begin{align*}
+  \KENC &= \KDF[\Enc, \KCR]. \\
+  \intertext{For \(m = m_1, m_2, \ldots, m_n\), we let}
+  c &= \Enc[\KENC, m]
+  \text{ denote the encryption of message~\(m\) under key \(\KENC\).}\\
+  m &= \Dec[\KENC, c]
+  \text{ is the decryption.}
+  \intertext{However, what happens under the hood is that}
+  c &= c_1, c_2, \ldots, c_n, t \text{ where each} \\
+  c_i &\text{ depends on \(m_i\) and \(c_{i-1}\) in line with GCM,} \\
+  t &\text{ is the built-in MAC tag.}
+\end{align*}
+The decryption fails if the built-in MAC is invalid---that is, \(c_i\) has been 
+tampered with.
+Tampered with, in this context, includes bit modifications and that someone has 
+dropped a few bits the entire block.
+Running the decryption on \(c' = c_1, c_3, \ldots, c_n,\) will fail.
+
+\begin{figure}
+  \begin{sidecaption}[Tux encrypted using different modes.]{%
+    Tux encrypted using different block modes of operation.
+    When using ECB mode (\cref{fig:EncModes:TuxECB}), we can still distinguish 
+    Tux.
+    But we expect encryption to have the effect as shown in 
+    \cref{fig:EncModes:TuxCTR}.
+  }[fig:EncModes]
+  \hfill
+  \begin{subfigure}[t]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{figs/Tux.pdf}
+    \caption{Original Tux.
+    Image by: Larry Ewing, Simon Budig, Garrett LeSage.}
+    \label{fig:EncModes:Tux}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{figs/Tux_encrypted_ecb.png}
+    \caption{ECB-encrypted Tux.
+    Image by: RFL890.}
+    \label{fig:EncModes:TuxECB}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.3\linewidth}
+    \includegraphics[width=\linewidth]{figs/Tux_encrypted_ctr.png}
+    \caption{CTR-encrypted Tux.
+    Image by: RFL890.}
+    \label{fig:EncModes:TuxCTR}
+  \end{subfigure}
+  \hspace{\fill}
+  \end{sidecaption}
+\end{figure}
+
+\begin{exercise}
+  We must initialize the camera for this to work.
+  What do we need to do?
+\end{exercise}
+
+\NewVariable{\IV}{IV}
+
+We can initialize the camera with the key~\(\KCR\) and the IV~\(\IV\).
+(The IV was implicit in the function~\Enc\ above.)
+Now the camera needs no own source of randomness.
+That simplifies the camera's design and makes it cheaper to produce.
+
+We need to rotate the keys in all the cameras at regular time intervals.
+We'll have to do that by hand.
+Whenever we replace a key, we also replace the IV\@.
+
+However, an alternative would be to use a key-derivation function to derive the 
+next key (and IV):
+\begin{align*}
+  k_{CR}^{(i+1)} &= \KDF[\text{next key}, k_{CR}^{(i)}]. \\
+  \IV_{i+1} &= \KDF[\text{next IV}, \IV_i].
+\end{align*}
+
+\subsection{Uploading data to \(R\)}
+
+\begin{exercise}
+  How should we get the encrypted video material from the camera~\(C\) to the 
+  reviewers~\(R\)?
+\end{exercise}
+
+There are two options.
+First option:
+When the police officer~\(P\) returns to the station with the camera~\(C\), the 
+camera is connected to a docking station.
+Then it automatically uploads all the video material to the reviewers~\(R\) and 
+removes it from its own memory.
+See \cref{fig:TransferCR} for the protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Transfer data from \(C\) to \(R\).]{%
+    The camera~\(C\) uploads video material to the reviewers~\(R\).
+    It first encrypts the video \(m\) as it is captured.
+    So that it stores only \(c\).
+    It identifies as \(C\) so that that \(R\) knows where the video material 
+    comes from, but more importantly so that \(R\) knows which key to use 
+    (\(\KCR\)).
+    Once the encrypted video material \(c\) is uploaded, the reviewers can 
+    decrypt it.
+    Due to authenticated encryption, any modifications will be detected.
+    And \(R\) will know that the material was produced by \(C\).
+    The camera then drops the video material to free space.
+  }[fig:TransferCR]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Transfer data from \(C\) to \(R\)}
+      \declinst{cam}{Camera \(C\)}{\(\KCR\)}
+      \declinst{rev}{Reviewers \(R\)}{\(\KCR\)}
+      \mscaction{\(c = \Enc[\KENC, m]\)}{cam}
+      %\mscaction{$c = \Enc[\KENC, m]$}{cam}
+      \nextlevel[4]
+      \mess{I'm camera \(C\).}{cam}{rev}
+      \nextlevel[2]
+      \mess{Upload video material \(c\).}{cam}{rev}
+      \nextlevel
+      \mscaction{\(m = \Dec[\KENC, c]\)}{rev}
+      \mscaction{Drop \(c\)}{cam}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Consequences of the design}\label{ConsequencesFirst}
+
+\begin{exercise}
+  Evaluate the design.
+  What are its consequences (advantages and disadvantages) that we must 
+  consider?
+\end{exercise}
+
+The design has a few consequences:
+\begin{enumerate}
+  \item The camera~\(C\) needs no own source of randomness.
+    This makes it cheaper to manufacture.
+  \item A corrupt police officer~\(P\) can trick the camera to drop video 
+    material.
+    If the camera believes that it has uploaded the video material, it will 
+    drop it.
+    However, the reviewers~\(R\) will notice that the video material is missing 
+    because the IV and key will be out of sync.
+  \item The courts must trust the reviewers~\(R\) to have the correct video 
+    material.
+    The reviewers~\(R\) can tamper with the video material.
+    The reviewers~\(R\) can also withhold video material.
+\end{enumerate}
+
+
+\section{Manually dealing with integrity}\label{HMAC}
+
+Now we will use CTR mode (instead of GCM) and use HMAC separately to ensure 
+integrity.
+We will use CTR (counter) mode as this mode is light-weight and highly 
+parallellizable (same benefit as in GCM).
+This requires a random IV (initialization vector) in addition to the key, same 
+as for GCM\@.
+
+Similarly to above, we let
+\begin{align*}
+  c &= \Enc[\KENC, m]\text{, where} \\
+  c &= c_1, c_2, \ldots, c_n \text{, and} \\
+  c_i &= c_i' \oplus m_i \text{ for each block of plaintext \(m_i\) and} \\
+  c_i' &= \Enc[\KENC, \IV \concat i] \text{ is the encryption of the counter}.
+\end{align*}
+
+\NewAlgorithm{\MAC}{HMAC}
+\NewVariable{\KMAC}{k_{CR}^{\MAC}}
+
+We also need to ensure integrity.
+We will use HMAC-SHA256 for this.
+We use another key-derivation function to derive the HMAC key from \(\KCR\):
+\begin{align*}
+  \KMAC &= \KDF[\MAC, \KCR].
+\end{align*}
+We will compute a MAC value for every minute of video material (ciphertext).
+Say that we have \(N\) blocks of ciphertext for every minute of video material.
+That MAC value contains the previous MAC and the current section of ciphertext 
+blocks (\(N\) blocks).
+\begin{align*}
+  t_0 &= \MAC[\KMAC, c_0, \ldots, c_{N-1}] \text{ and} \\
+  t_i &= \MAC[\KMAC, t_{i-1}, c_{i\cdot N}, \ldots, c_{(i+1)\cdot N-1}]
+  \text{ for all \(i\geq 1\)}.
+\end{align*}
+This way, if something interrupts the camera, we have everything MACed properly 
+on a regular basis.
+
+This gives us the protocol in \cref{fig:TransferCRHMAC}.
+
+\begin{figure}
+  \begin{sidecaption}[Transfer data from \(C\) to \(R\) using HMAC]
+    {%
+      The camera~\(C\) uploads video material to the reviewers~\(R\).
+      It first encrypts the video \(m = m_0, \ldots, m_n\) as it is captured.
+      So that it stores only \(c = c_0, \ldots, c_{N-1}, t1, c_{N}, \ldots\).
+      It identifies as \(C\) so that that \(R\) knows where the video material 
+      comes from, but more importantly so that \(R\) knows which key to use 
+      (\(\KCR\)).
+      Once the encrypted video material \(c\) is uploaded, the reviewers can 
+      decrypt it.
+      Due to HMAC, any modifications will be detected.
+      The camera computes a MAC (all \(t_j\)) for every \(N\) blocks of 
+      ciphertext.
+      And \(R\) will know that the material was produced by \(C\).
+      The camera then drops the video material to free space.
+    }[fig:TransferCRHMAC]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Transfer data from \(C\) to \(R\) using HMAC}
+      \declinst{cam}{Camera \(C\)}{\(\KCR\)}
+      \declinst{rev}{Reviewers \(R\)}{\(\KCR\)}
+      \mscaction[/msc/action width=0.55\linewidth]{%
+        \begin{align*}
+          c_i &= c_i' \oplus m_i \\
+          t_j &= \MAC[\KMAC, t_{j-1}, c_{j\cdot N}, \ldots, c_{(j+1)\cdot N-1}]
+        \end{align*}
+      }{cam}
+      \nextlevel[6]
+      \mess{I'm camera \(C\).}{cam}{rev}
+      \nextlevel[2]
+      \mess{\(c = c_0, \ldots, c_{N-1}, t_1, \ldots, c_N, \ldots, c_{2\cdot 
+      N-1}, t_2, \ldots\)}{cam}{rev}
+      \nextlevel
+      \mscaction[/msc/action width=10em]{\(m = \Dec[\KENC, c]\)}{rev}
+      \mscaction[/msc/action width=8em]{Drop \(c\)}{cam}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Consequences of the design}
+
+Since \(t_i\) depends on \(t_{i-1}\), we will detect if someone would try to 
+drop \(N\) blocks.
+Or if someone would try to insert \(N\) blocks.
+Or reorder them.
+Or modify them.
+We would detect exactly where the problem is and we would see that other parts 
+are intact---this we couldn't do with GCM.
+
+It would cause synchronization problems if someone would drop \emph{one} block.
+Or insert one block.
+(Or anything that is not a multiple of \(N\) blocks.)
+However, we can test if someone has dropped or inserted a block, by trying the 
+opposite.
+It's not that efficient though, but then we could detect what is still usable 
+and in which \(N\)-block that blocks are missing.
+
+This change improves the situation over GCM\@.
+However, the consequences above (\cref{ConsequencesFirst}) still apply.
+
+
+\section{Switching to digital signatures}\label{DigitalSignatures}
+
+%Now we want to replace HMAC with digital signatures.
+
+So far, we have used symmetric primitives: encryption (\(\Enc\)) and
+authentication (\(\MAC\)), both based on a shared key \(\KCR\) between
+the camera \(C\) and reviewers \(R\).
+
+\begin{exercise}
+  What is the disadvantage of using symmetric authentication (MACs) in this 
+  way?
+  What is the advantage of switching to asymmetric authentication (digital 
+  signatures)?
+\end{exercise}
+
+MACs allow reviewers to verify authenticity but also to \enquote{forge} valid 
+MACs, which weakens our guarantee of authenticity and integrity---anyone who 
+can verify authenticity can also fake it.
+
+% Define camera asymmetric key pair
+\NewVariable{\sk}{sk}
+\NewVariable{\vk}{vk}
+\NewVariable{\SKC}{\sk_C}
+\NewVariable{\VKC}{\vk_C}
+
+To address this, we switch to digital signatures, \ie asymmetric
+authentication.
+Now, the camera \emph{alone} possesses a private signing key (\SKC), and anyone 
+(reviewers, court, public) can verify authenticity using the corresponding 
+public key (\VKC).
+\emph{Only the camera can sign; nobody else can forge a signature.}
+The private signing keys are unique to each camera \(C\) and are not shared 
+with reviewers \(R\).
+
+The public key \(\VKC\) is registered with the reviewers \(R\), and (for full 
+transparency) can be stored in a public registry accessible by courts.
+
+We keep using a symmetric encryption key \(\KENC\) between camera and reviewers 
+(derived as before).
+
+\subsection{Signing and encrypting the video material}
+
+\begin{exercise}
+  How should we sign the video material?
+\end{exercise}
+
+% Define signature scheme
+\NewAlgorithm{\Sign}{Sign}
+\NewAlgorithm{\Ver}{Ver}
+
+Suppose, as before, that the video is divided into chunks \((m_1,\ldots, 
+m_n)\).
+We also have some signature algorithm \(\Sign\) and verification algorithm 
+\(\Ver\).
+For chunk \(i\):
+\begin{align*}
+  c_i     &= \Enc[\KENC, m_i]
+          &&\text{(encrypt the chunk)} \\
+  \sigma_0 &= 0^*
+           &&\text{(start with empty previous signature for first chunk)} \\
+  \sigma_i &= \Sign[\SKC, c_i \concat \sigma_{i-1}]
+           &&\text{(camera's digital signature)}
+\end{align*}
+
+The camera stores and transmits each \((c_i, \sigma_{i-1}, \sigma_i)\) tuple.
+Possibly, we can skip sending \(\sigma_{i-1}\), since it was sent in the 
+previous message.
+This will save us some bandwidth.
+However, including it will make verification of \(\sigma_i\) work even if 
+\(\sigma_{i-1}\) was dropped by the adversary.
+Without it, we can't verify \(\sigma_i\) if \(\sigma_{i-1}\) is missing.
+
+Anyone can verify \(\sigma_i\) using \(\VKC\) as \(\Ver[\VKC, c_i \concat 
+\sigma_{i-1}, \sigma_i]\).
+Confidentiality is still protected by the symmetric key \(\KENC\).
+
+\subsection{Signature algorithm}
+
+\begin{exercise}
+  What signature algorithm should we use?
+  How do we choose parameters for instantiation?
+\end{exercise}
+
+We want to use a signature algorithm that is efficient, as we must run it on a 
+camera.
+This means that an elliptic curve signature algorithm is a good choice,
+then we get short keys.
+We will use ECDSA (Elliptic Curve Digital Signature Algorithm) with a curve 
+that is secure for the key size we choose.
+
+We should look at the recommendations from NIST or similar standards, but the 
+curves \texttt{P-256} or \texttt{P-384} are probably good choices.
+We must consider the key size in relation to how long we want the authenticity 
+to be valid---for how many years into the future should anyone be able to 
+verify the signatures?
+
+\subsection{Consequences of the design}
+
+We note that we get the following advantages from changing to digital 
+signatures:
+\begin{description}
+    \item[Authenticity] Only the camera can sign, not reviewers, so no reviewer 
+      can forge or modify video without detection.
+    \item[Verifiability] The chain can be checked by anyone with 
+      \(\VKC\)---reviewer, court, or third party.
+    \item[Chain integrity] Chaining prevents cut-and-paste, deletion, or 
+      reordering without breaking signatures.
+    \item[Confidentiality] Still enforced by the encryption under \(\KENC\).
+\end{description}
+
+So we improve on the third point in \cref{ConsequencesFirst}: trust is 
+redistributed.
+Now the courts don't have to trust the reviewers (\(R\)) that the video 
+material was created by a camera, they must trust the admin who sets up the 
+cameras.
+But they must still trust the reviewers to make proper selections and not 
+withhold material.
+
+On the downside, we note the following complications:
+\begin{description}
+  \item[Secure key storage] \(\SKC\) must be stored in a secure element in the 
+    camera (e.g., TPM/HSM); any compromise must be reported and new key issued.
+    However, this was already true for \(\KCR\) in the previous design.
+  \item[Revocation] Registry must track valid/expired public keys \(\VKC\) 
+    (e.g., when a camera is lost or compromised).
+  \item[Performance] Digital signatures are costlier than HMAC; chunking 
+    interval should be chosen with this in mind.
+  \item[Randomness] The signatures require randomness.
+    The camera must have a good source of randomness to generate the nonces 
+    required by the signature scheme.
+    However, one could use constructions such as RFC 6979 to deterministically 
+    calculate the nonce in a secure way, and thus avoid the need for generating 
+    randomness.
+  \item[Key management] Each camera needs its own key pair; this complicates 
+    key management, especially in large systems.
+    However, this is similar to the previous design where each camera had its 
+    own symmetric key \(\KCR\).
+\end{description}
+
+So now we almost lost the property of the camera not needing a source of 
+randomness.
+We also still have the problem of the corrupt police officer~\(P\) who can 
+trick the camera~\(C\) to drop video material.
+
+
+\section{Switching to asymmetric encryption}\label{AsymmetricEncryption}
+
+So far, our system uses \emph{symmetric} encryption (\(\KENC\)) to assure 
+confidentiality: the camera and reviewers share a symmetric key \(\KCR\) used 
+to derive \(\KENC\) for \(\Enc\) and \(\Dec\).
+
+\begin{exercise}
+  What are the disadvantages of using symmetric encryption in this way?
+\end{exercise}
+Symmetric encryption presents some limitations:
+\begin{itemize}
+  \item Key distribution and secure storage of the symmetric key \(\KENC\) in 
+    the camera is sensitive; if the camera \emph{or} any reviewer is 
+    compromised, all previously captured video can be decrypted.
+  \item In a large system, key management quickly becomes a challenge---each 
+    camera must have a unique key shared with the reviewers, or else all 
+    cameras must share a master key---if that is compromised, the whole system 
+    is compromised.
+  \item If we ever want to allow independent review or future decryption by the 
+    court or a newly authorized party, we must arrange for secure symmetric key 
+    transfer.
+\end{itemize}
+
+\NewVariable{\pk}{pk}
+\NewVariable{\PKR}{\pk_R}
+\NewVariable{\SKR}{\sk_R}
+\NewAlgorithm{\AsymEnc}{AsymEnc}
+\NewAlgorithm{\AsymDec}{AsymDec}
+
+To address these concerns, we consider \emph{asymmetric} encryption.
+Now, each reviewer (or the reviewers' secure server) possesses an asymmetric 
+key pair (public key \(\PKR\), private key \(\SKR\)) for encryption.
+
+\subsection{Encrypting the video material}
+
+We now have a key pair \((\PKR, \SKR)\) for the reviewers \(R\) instead of the  
+shared symmetric key \(\KENC\).
+This means that we must use
+\begin{align*}
+  \AsymEnc[\PKR, m] && \text{as a drop-in replacement for}
+                    && \Enc[\KENC, m] \\
+  \intertext{and}
+  \AsymDec[\SKR, c] && \text{as a drop-in replacement for}
+                    && \Dec[\KENC, c].
+\end{align*}
+But there are a few details hiding in the abstraction here.
+
+\begin{exercise}
+  What are the important details to consider when switching from \(\Enc\) to 
+  \(\AsymEnc\)?
+\end{exercise}
+
+Just as the abstraction \(\Enc\) includes a block mode of operation,
+the abstraction \(\AsymEnc\) includes a \emph{nonce} and a \emph{padding 
+scheme}.
+
+In this case we can't get away with computing the nonce deterministically, we 
+must generate it randomly.
+So now the camera must be able to generate good-quality random numbers.
+
+\begin{exercise}
+  Why can't we use a deterministic nonce?
+\end{exercise}
+
+\begin{solution}
+  We want the encryption system to be (at least) \emph{semantically secure}.
+  This means that the ciphertext must not leak any information about the 
+  plaintext.
+  (In the symmetric case, we achieve this by choosing a block mode other than 
+  ECB and a truly random IV.)
+  If the nonce would be deterministic, then the same plaintext would always 
+  produce the same ciphertext.
+  But semantic security requires that if we encrypt the same message~\(m\) 
+  twice, \ie \(c_1 = \AsymEnc[\PKR, m]\)
+  and \(c_2 = \AsymEnc[\PKR, m]\), then
+  \(c_1 \neq c_2\) but \(\AsymDec[\SKR, c_1] = \AsymDec[\SKR, c_2] = m\).
+\end{solution}
+
+\begin{exercise}
+  Why is this not a problem in the case of the digital signature?
+\end{exercise}
+
+\begin{solution}
+  In the case of digital signatures, we do not require semantic security.
+  The signature is not meant to hide the message---all inputs to verify the 
+  signature are publicly known.
+  In the signature scheme, we \emph{must not reuse the same nonce twice}.
+  If a nonce is reused, an attacker can (usually) compute the signing key.
+\end{solution}
+
+The algorithm and padding can be chosen by looking at the PKCS standards, \eg 
+PKCS\ \#1 to use RSA with OAEP\@.
+It's worth noting that the version of RSA used here is not the same as RSA 
+presented in textbooks---ciphertexts must be randomized to be secure.
+This means that we now need the camera to generate good-quality randomness.
+
+Another aspect is efficiency.
+\(\AsymEnc\) is typically much slower than \(\Enc\).
+So if we did just drop-in replace \(\Enc\) with \(\AsymEnc\), the camera would 
+drain the battery very quickly---not particularly useful.
+
+\begin{exercise}
+  How can we make encrypting the video chunks more efficient?
+\end{exercise}
+
+\subsection{Hybrid (envelope) encryption for efficiency}
+
+Direct asymmetric encryption of large video data is inefficient and 
+impractical; most public-key schemes are only suitable for encrypting short 
+messages (\eg symmetric keys).
+So instead, we let \(\AsymEnc\) (and \(\AsymDec\)) use \emph{hybrid 
+encryption}:
+
+\NewVariable{\Kn}{k_{CR}^{(n)}}
+\NewVariable{\Cn}{c_{\text{env}}^{(n)}}
+
+\begin{enumerate}
+  \item For session \(n\), the camera generates a fresh, random symmetric key 
+    \(\Kn\) (a session key for session \(n\)).
+  \item Encrypt the key \(\Kn\) using the reviewers' public key \(\PKR\):
+    \[
+      \Cn = \AsymEnc[\PKR, \Kn].
+    \]
+  \item Encrypt the video chunks \(m_1^{(n)}, m_2^{(n)}, \ldots, m_l^{(n)}\) 
+    using the session key \(\Kn\) in the same way as in 
+    \cref{DigitalSignatures}.
+    For each \(m_i^{(n)}\), we get \((c_i^{(n)}, \sigma_{i-1}^{(n)}, 
+    \sigma_i^{(n)})\) where
+    \begin{align*}
+      c_i^{(n)}      &= \Enc[\Kn, m_i^{(n)}] \\
+      \sigma_0^{(n)} &= 0^* \\
+      \sigma_i^{(n)} &= \Sign[\SKC, c_i^{(n)} \concat \sigma_{i-1}^{(n)}].
+    \end{align*}
+  \item The camera transmits \[
+      \Cn, c_1^{(n)}, \sigma_0^{(n)}, \sigma_1^{(n)},
+      \ldots,
+      c_l^{(n)}, \sigma_{l-1}^{(n)}, \sigma_l^{(n)}
+    \] to the reviewers~\(R\).
+  \item The reviewers use their private key \(\SKR\) to retrieve the session 
+    key \(\Kn\) from the ciphertext \(\Cn\),
+    and can then decrypt the video chunks as in \cref{DigitalSignatures}:
+    \begin{align*}
+      \Kn &= \AsymDec[\SKR, \Cn] \\
+      m_i^{(n)} &= \Dec[\Kn, c_i^{(n)}] \\
+      \{\top, \bot\} &\ni
+        \Ver[\VKC, c_i^{(n)} \concat \sigma_{i-1}^{(n)}, \sigma_i^{(n)}]
+                && \text{(success or failure)}
+    \end{align*}
+\end{enumerate}
+
+This means that we add one asymmetric encryption operation per session, and 
+then keep the same efficiency as before.
+
+\subsection{Consequences of the design}
+
+We do gain some advantages:
+\begin{description}
+  \item[Forward secrecy] Session keys are ephemeral---compromise of a single 
+    session key does not expose earlier material.
+    If a camera is lost or physically attacked, previous footage remains secure 
+    (no persistent symmetric key stored).
+    Only the current session can be decrypted.
+  \item[Flexible access control] Video chunks can, in principle, be encrypted 
+    to multiple authorized public keys (\eg both police reviewers and an 
+    independent authority).
+    We just need one envelope per public key, and will use the same encryption 
+    of the data for all.
+  \item[Key management] Each camera must be provisioned with the reviewers’ (or 
+    authority’s) public key \(\PKR\) during manufacturing or issuing.
+    And each camera's digital signature public key \(\VKC\) must be registered 
+    with the reviewers \(R\).
+    We must also manage which keys are revoked and when.
+    We can use a public-key infrastructure (PKI) to manage the public/private 
+    key pairs.
+    This simplifies the key management problem compared to the fully symmetric 
+    case.
+    We use certificates.
+\end{description}
+
+However, this design also comes with some disadvantages and considerations:
+\begin{description}
+  \item[Requires randomness] The camera must generate good-quality random 
+    session keys.
+    This means cameras must possess a hardware random source or be very 
+    carefully initialized.
+    We can't get away with deterministic nonce generation as we did with 
+    digital signatures.
+  \item[Potential future access] If the reviewers' private key \(\SKR\) is lost 
+    (or destroyed, or the responsible entity disappears), it may be impossible 
+    to decrypt any past footage---so backup and escrow procedures must be 
+    carefully designed.
+    Fortunately, encrypting for more than one public key was easy.
+\end{description}
+
+\subsection{Implementation security: side-channel attacks}
+
+\ltnote{%
+  We introduce implementation-level attacks to create contrast with the 
+  protocol-level security we have focused on so far.
+  Students should discern that correct cryptographic protocols can still be 
+  broken through implementation weaknesses.
+  This follows the variation pattern: we keep the protocol invariant while 
+  varying the attack surface (protocol vs implementation).
+}
+
+\begin{exercise}
+  Even with mathematically secure cryptographic protocols, what 
+  implementation-level attacks could compromise the camera's security?
+\end{exercise}
+
+The camera performs cryptographic operations (signing, encrypting) using its 
+secure element.
+These operations can leak information through \emph{side channels}:
+\begin{description}
+  \item[Timing attacks] If the time to compute a signature depends on the 
+    secret key bits, an attacker measuring operation times can reconstruct the 
+    key.
+  \item[Power analysis] The power consumption of a chip varies depending on 
+    which operations it performs.
+    By measuring power traces during cryptographic operations, attackers can 
+    extract secret keys.
+  \item[Electromagnetic emanations] Similar to power analysis, but measuring 
+    electromagnetic radiation from the chip.
+\end{description}
+
+\begin{exercise}
+  How can we protect against these side-channel attacks?
+\end{exercise}
+
+Countermeasures include:
+\begin{itemize}
+  \item \emph{Constant-time implementations}: Ensure all operations take the 
+    same time regardless of key bits.
+    This is standard practice in modern cryptographic libraries.
+  \item \emph{Power filtering and noise injection}: Add capacitors and noise 
+    generators to mask power consumption patterns.
+  \item \emph{Shielding}: Metal enclosures reduce electromagnetic emanations.
+  \item \emph{Randomized execution}: Add random delays and dummy operations to 
+    decorrelate power traces from actual computations.
+\end{itemize}
+
+Using a certified secure element (such as a TPM or smartcard meeting Common 
+Criteria EAL4+ or FIPS 140-2 Level 3) provides hardware-level protection 
+against these attacks.
+The secure element should perform all operations involving \(\SKC\) and 
+\(\SKR\).
+
+
+\section{Improved uploading}
+
+Currently, the camera uploads the video material to the reviewers~\(R\) when 
+the police officer~\(P\) returns to the station and connects the camera to its 
+docking station.
+Another option would be to continuously upload the video material, essentially 
+stream it.
+This would require a constant connection to the reviewers~\(R\).
+This isn't realistic, as connections might break when an officer goes into a 
+basement or similar situation.
+So a hybrid of continuous upload and local storage would be necessary in this 
+case.
+
+However, we have the problem that a corrupt police officer~\(P\) (or even 
+another adversary) can trick the camera into believing that it has uploaded the 
+video material and then remove it.
+This leads to data loss.
+
+\begin{exercise}
+  How can the upload process be secured to make it robust against both 
+  accidental and malicious deletion of footage before it is securely received 
+  by reviewers (\(R\))?
+\end{exercise}
+
+\subsection{Secure upload protocol: explicit verifiability and redundancy}
+
+We consider addressing this by designing a protocol where the camera only 
+deletes footage from its local storage after receiving explicit, 
+cryptographically verifiable confirmation that the reviewers (\(R\)) have 
+received and correctly stored the data:
+
+\begin{enumerate}
+  \item The camera (\(C\)) collects and stores encrypted video chunks 
+    \((c_i, \sigma_{i-1}, \sigma_i)\), as previously described, in local 
+    non-volatile memory.
+  \item Upon reaching a docking station or establishing a reliable connection, the camera initiates an upload session with the reviewers’ server (\(R\)).
+  \item The camera transmits each chunk to the reviewers’ server.
+  \item For each chunk (or batch of chunks), the reviewers’ server computes a cryptographic hash digest (\(h\)) of the received data and returns a server-generated digital signature (\(\tau\)) on the tuple (camera identifier, chunk indices, received hashes, timestamp, etc.):
+    \[
+      \tau_i = \Sign[\SKR, (\text{camera ID}, i, h(c_i), t)]
+    \]
+  \item The camera verifies \(\tau_i\) using the reviewers’ public verification key.
+  \item Only after the camera has received and verified all the relevant signatures (\(\tau\)) for the uploaded data, does it mark those chunks as safely received and deletes them from local storage.
+\end{enumerate}
+
+This ensures that until receipt has been cryptographically acknowledged, the footage remains on the camera, making accidental (or deliberate) removal much harder.
+
+\begin{figure}
+  \begin{sidecaption}[Robust upload protocol with explicit receipt]
+    {%
+      The enhanced upload protocol ensures the camera does not erase stored 
+      video until verifiable server confirmation is received.
+      Each uploaded chunk is only deleted after the reviewers’ server returns a 
+      digital signature acknowledging receipt and integrity.
+    }[fig:TransferCRReceipt]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Robust upload from \(C\) to \(R\) with explicit receipt}
+      \declinst{cam}{Camera \(C\)}{\(\SKC, \VKC\)}
+      \declinst{rev}{Reviewers \(R\)}{\(\SKR, \PKR\)}
+      \mscaction{For each chunk \(c_i, \sigma_{i-1}, \sigma_i\) in local storage}{cam}
+      \nextlevel[2]
+      \mess{Send chunk \((c_i, \sigma_{i-1}, \sigma_i)\)}{cam}{rev}
+      \mscaction{Compute \(h = H(c_i, \sigma_{i-1}, \sigma_i)\)}{rev}
+      \mscaction{Generate receipt signature \(\tau_i = \Sign[\SKR, (\text{camera ID}, i, h, t)]\)}{rev}
+      \nextlevel[2]
+      \mess{Receipt signature \(\tau_i\)}{rev}{cam}
+      \mscaction{Verify signature \(\Ver[\PKR, (\text{camera ID}, i, h, t), \tau_i]\)}{cam}
+      \mscaction{Delete \(c_i, \sigma_{i-1}, \sigma_i\) if receipt valid}{cam}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Additional redundancy: external backup and delayed deletion}
+
+For even greater assurance, cameras could be configured to maintain a rolling buffer, retaining a fixed period (e.g., one week) of footage locally, regardless of receipt acknowledgements, unless specifically commanded otherwise over a secure management interface. This further reduces the risk that footage is lost due to mistakes, local storage failures at reviewers, or other exceptional events.
+
+Additionally, upload could be performed to multiple geographically separated servers (georedundancy), requiring acknowledgements from each before permitting deletion.
+
+\subsection{Detection of missing or tampered uploads}
+
+Because each chunk (and its associated signatures and hashes) forms a cryptographically linked chain (as in \cref{DigitalSignatures}), reviewers (or external auditors) can easily detect gaps, missing data, or reordering in the server-side archives---and these will be detectable by the camera’s deletion logic as well.
+
+\subsection{Consequences and limitations}
+
+The improved protocol has the following consequences:
+
+\begin{itemize}
+  \item \emph{Strong non-repudiation}: The server’s signed receipt forms a 
+    durable record confirming which data was received, when, and by whom.
+  \item \emph{Reduced opportunity for tampering or data loss}: A corrupt police officer \(P\) cannot cause premature deletion of footage by faking uploads or disrupting connectivity, nor can a rogue server operator delete evidence without leaving a cryptographically accountable trail.
+  \item \emph{Storage management tradeoff}: Cameras need sufficient non-volatile storage to buffer footage awaiting upload and receipt; storage limits might delay full deletion of old material.
+  \item \emph{Server private key sensitivity}: Loss or compromise of the reviewers’ server’s signing key would affect trust in receipts; this key must be tightly managed and, ideally, backed with hardware security controls.
+  \item \emph{Operational complexity}: More sophisticated protocols increase system complexity and introduce the need for robust handling of communication failures, partial uploads, or out-of-order receipt handling.
+\end{itemize}
+
+Overall, this enhancement makes the system much more robust to both accidental and malicious data loss during the upload process. The protocol also leaves an accountable, auditable chain of custody for all video material from capture to deletion.
+
+\begin{exercise}
+  Propose potential mitigations for the scenario where both the camera and the 
+  reviewers' server are compromised. Are there protocol or system-level 
+  approaches that would limit the scope of such a catastrophic event?
+\end{exercise}
+
+
+\section{Audit logging and chain of custody}\label{AuditLogging}
+
+\ltnote{%
+  We introduce audit logging as a separate concern from the upload protocol.
+  This creates contrast between \emph{data integrity} (ensuring video is 
+  unmodified) and \emph{access accountability} (recording who accessed what and 
+  when).
+  Students should discern that both are necessary for a complete evidence 
+  management system.
+  The variation pattern is generalization: we extend the chain of signatures 
+  from video chunks to all system events.
+}
+
+The previous sections ensure that video material is authentic and that uploads 
+are acknowledged.
+However, a complete evidence management system also requires an \emph{audit 
+trail}: a tamper-evident record of all access to the video material.
+
+\begin{exercise}
+  What events should be logged for a complete chain of custody?
+  How can we ensure the logs themselves are tamper-evident?
+\end{exercise}
+
+\subsection{Events to log}
+
+A comprehensive audit log should record:
+\begin{itemize}
+  \item Video capture events: when recording started and stopped.
+  \item Upload events: when chunks were transmitted and receipts received.
+  \item Access events: when reviewers accessed or decrypted video material.
+  \item Sharing events: when video was shared with courts or other parties.
+  \item Deletion events: when video was deleted and by whose authorization.
+\end{itemize}
+
+Each log entry should include a timestamp, the identity of the actor, the 
+action performed, and a reference to the affected data.
+
+\subsection{Tamper-evident logging with hash chains}
+
+\NewVariable{\LogEntry}{L}
+\NewVariable{\LogHash}{h}
+
+To make the audit log tamper-evident, we use a hash chain.
+Each log entry~\(\LogEntry_i\) includes a hash of the previous entry:
+\begin{align*}
+  \LogHash_0 &= H(\LogEntry_0) \\
+  \LogHash_i &= H(\LogEntry_i \concat \LogHash_{i-1}) \text{ for } i \geq 1.
+\end{align*}
+
+Any modification to an earlier entry would change its hash, which would 
+propagate through the chain and be detected when verifying subsequent entries.
+
+\begin{exercise}
+  The hash chain protects against modification, but what if an attacker with 
+  access to the logging system simply appends false entries?
+\end{exercise}
+
+To prevent unauthorized log entries, each entry should be signed by the entity 
+that generated it:
+\[
+  \sigma_i = \Sign[\sk_{\text{actor}}, \LogEntry_i \concat \LogHash_{i-1}].
+\]
+
+The reviewers' server maintains the master log and periodically publishes 
+\emph{checkpoints}---signed commitments to the current log state---to an 
+external timestamp authority or public bulletin board.
+This prevents even the server operator from rewriting history undetected.
+
+See \cref{fig:AuditLog} for the logging protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Audit logging protocol]{%
+    Each action generates a signed log entry that includes a hash of the 
+    previous entry, forming a tamper-evident chain.
+    Periodic checkpoints are published to an external authority.
+  }[fig:AuditLog]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Audit logging}
+      \declinst{actor}{Actor}{Performs action}
+      \declinst{server}{Server \(R\)}{Maintains log}
+      \declinst{tsa}{Timestamp Authority}{External}
+      \mscaction{Action on video material}{actor}
+      \nextlevel[2]
+      \mess{Log entry \(\LogEntry_i\), signature \(\sigma_i\)}{actor}{server}
+      \nextlevel
+      \mscaction{Verify \(\sigma_i\), compute \(\LogHash_i\)}{server}
+      \mscaction{Append to log}{server}
+      \nextlevel[2]
+      \condition{Periodic checkpoint}{server}
+      \nextlevel
+      \mess{Checkpoint: \(\LogHash_i\), timestamp request}{server}{tsa}
+      \nextlevel
+      \mess{Signed timestamp}{tsa}{server}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate this audit logging design.
+  What are its advantages and limitations?
+\end{exercise}
+
+\begin{description}
+  \item[Non-repudiation] Every access is signed by the accessor, providing 
+    accountability.
+  \item[Tamper evidence] The hash chain ensures any modification is detectable.
+  \item[External verification] Timestamp authority checkpoints prevent even 
+    server administrators from silently modifying history.
+  \item[Storage overhead] The audit log grows with every action; retention 
+    policies must balance accountability with storage costs.
+  \item[Privacy tension] Detailed logs of who accessed what may themselves be 
+    sensitive; access to the audit log must be controlled.
+\end{description}
+
+
+\section{Post-quantum considerations}\label{PostQuantum}
+
+\ltnote{%
+  We introduce the threat of quantum computers to create contrast with our 
+  implicit assumption that current cryptographic algorithms remain secure 
+  indefinitely.
+  Students should discern that long-term security requires planning for 
+  cryptographic transitions.
+  The variation pattern is generalization: we consider the security model 
+  across time, not just at deployment.
+}
+
+Our system uses ECDSA for signatures and RSA or elliptic-curve cryptography for 
+asymmetric encryption.
+These algorithms are secure against classical computers, but would be broken by 
+a sufficiently powerful quantum computer running Shor's algorithm.
+
+\begin{exercise}
+  Body camera footage may be used as evidence decades after capture.
+  What are the implications if quantum computers become practical during this 
+  time?
+\end{exercise}
+
+\subsection{Threats to current cryptography}
+
+\begin{description}
+  \item[Signatures (ECDSA)] A quantum computer could forge signatures, but this 
+    only matters if the attacker needs to create new signatures.
+    Existing signatures on stored video remain valid evidence of what the 
+    camera recorded---the signature was created before quantum computers 
+    existed.
+  \item[Encryption (RSA, ECDH)] An attacker could record encrypted traffic 
+    today and decrypt it later when quantum computers are available 
+    (\enquote{harvest now, decrypt later}).
+    This is the more serious threat for confidential video material.
+\end{description}
+
+\subsection{Migration strategies}
+
+\begin{exercise}
+  How can we protect against future quantum attacks while maintaining 
+  compatibility with current systems?
+\end{exercise}
+
+Several approaches exist:
+\begin{description}
+  \item[Hybrid encryption] Use both a classical algorithm (RSA/ECDH) and a 
+    post-quantum algorithm (such as ML-KEM, formerly Kyber) for key 
+    encapsulation.
+    The session key is derived from both, so an attacker must break both 
+    algorithms.
+  \item[Larger symmetric keys] AES-256 provides 128-bit security against 
+    quantum attacks (due to Grover's algorithm), which is considered 
+    sufficient.
+    Our system already uses AES-256.
+  \item[Post-quantum signatures] For new deployments, use post-quantum 
+    signature algorithms such as ML-DSA (formerly Dilithium) or SLH-DSA 
+    (formerly SPHINCS+).
+    These have larger signatures, which increases storage and bandwidth 
+    requirements.
+\end{description}
+
+For a system being deployed today with a 30-year evidence retention 
+requirement, hybrid encryption is prudent.
+The envelope encryption (\cref{AsymmetricEncryption}) can be modified to 
+encrypt the session key under both \(\PKR\) (classical) and a post-quantum 
+public key.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Future-proofing] Hybrid encryption protects against harvest-now, 
+    decrypt-later attacks.
+  \item[Increased complexity] Supporting multiple algorithms requires more 
+    code, more key management, and careful implementation.
+  \item[Performance impact] Post-quantum algorithms generally have larger keys 
+    and signatures.
+    ML-KEM adds minimal overhead for encryption, but ML-DSA signatures are 
+    larger than ECDSA (several kilobytes vs. 64 bytes).
+  \item[Standards evolution] Post-quantum standards are still maturing; the 
+    system must be designed for cryptographic agility.
+\end{description}
+
+
+\section{Video redaction workflow}\label{Redaction}
+
+\ltnote{%
+  We introduce the problem of editing video while maintaining authenticity.
+  This creates contrast with our earlier assumption that video must remain 
+  completely unmodified.
+  Students should discern the tension between privacy (requiring redaction) and 
+  integrity (requiring immutability), and how cryptographic techniques can 
+  balance these concerns.
+}
+
+Before releasing video as evidence or to the public, reviewers often need to 
+redact sensitive content: blur faces of bystanders, mute private conversations, 
+or remove segments unrelated to the case.
+However, our signature chain ensures any modification is detected.
+
+\begin{exercise}
+  How can we allow authorized redaction while maintaining cryptographic 
+  assurance that non-redacted portions are authentic?
+\end{exercise}
+
+\subsection{The redaction problem}
+
+If reviewers simply edit the video and re-sign it, we lose the guarantee that 
+the content came from the camera.
+The court must now trust that reviewers didn't fabricate or alter the 
+non-redacted portions.
+
+Two approaches address this:
+\begin{description}
+  \item[Redactable signatures] Use a signature scheme that allows designated 
+    portions to be removed while the signature on remaining portions stays 
+    valid.
+    This is an active research area with schemes based on chameleon hashes.
+  \item[Dual-signature workflow] The original camera signature proves 
+    authenticity of the original.
+    A separate reviewer signature on the redacted version proves the chain of 
+    custody and that redaction was performed by an authorized party.
+\end{description}
+
+\subsection{Dual-signature redaction protocol}
+
+We adopt the dual-signature approach as it uses standard cryptographic 
+primitives.
+
+\NewVariable{\SKRev}{sk_{\text{rev}}}
+\NewVariable{\VKRev}{vk_{\text{rev}}}
+
+Each reviewer has a personal signing key pair \((\SKRev, \VKRev)\) certified by 
+the police authority.
+When redacting video:
+\begin{enumerate}
+  \item The reviewer retrieves the original encrypted video and its camera 
+    signature chain.
+  \item The reviewer decrypts, performs redaction (blur, mute, cut), and 
+    re-encodes the video.
+  \item The reviewer creates a \emph{redaction manifest} describing what was 
+    changed (timestamps, type of redaction) without revealing the redacted 
+    content.
+  \item The reviewer signs the redacted video and manifest:
+    \[
+      \sigma_{\text{redacted}} = \Sign[\SKRev, H(\text{redacted video}) \concat 
+      H(\text{manifest}) \concat H(\text{original})].
+    \]
+  \item Both the original (with camera signatures) and the redacted version 
+    (with reviewer signature) are preserved.
+\end{enumerate}
+
+See \cref{fig:Redaction} for the protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Video redaction protocol]{%
+    The reviewer performs redaction and signs the result along with a manifest.
+    The original video with camera signatures is preserved for verification.
+  }[fig:Redaction]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Video redaction}
+      \declinst{storage}{Storage}{Original video}
+      \declinst{rev}{Reviewer}{\(\SKRev\)}
+      \declinst{court}{Court / Public}{}
+      \mess{Retrieve original \((c, \sigma_C)\)}{storage}{rev}
+      \nextlevel[2]
+      \mscaction{Decrypt, redact video}{rev}
+      \mscaction{Create manifest}{rev}
+      \mscaction{\(\sigma_R = \Sign[\SKRev, \ldots]\)}{rev}
+      \nextlevel[4]
+      \mess{Store redacted version}{rev}{storage}
+      \nextlevel[2]
+      \mess{Release redacted + \(\sigma_R\) + manifest}{rev}{court}
+      \nextlevel
+      \mscaction{Verify \(\sigma_R\), optionally request original for audit}{court}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate this redaction workflow.
+  What assurances does it provide, and what are its limitations?
+\end{exercise}
+
+\begin{description}
+  \item[Authenticity of original] The camera's signature chain proves the 
+    original video is unmodified.
+  \item[Accountability for redaction] The reviewer's signature proves who 
+    performed the redaction and when.
+  \item[Auditability] The original can be compared against the redacted version 
+    to verify that only declared redactions were made.
+  \item[Trust in reviewers] The court must trust that reviewers didn't redact 
+    exculpatory evidence.
+    The manifest and audit log provide some accountability, but cannot fully 
+    prevent malicious redaction.
+  \item[Storage cost] Both versions must be retained, doubling storage 
+    requirements for redacted videos.
+\end{description}
+
+
+\section{Future work and open problems}\label{FutureWork}
+
+Several aspects of body camera systems remain active areas of research and 
+development:
+
+\begin{description}
+  \item[Deepfake detection and prevention] As synthetic media becomes more 
+    convincing, additional countermeasures may be needed.
+    Frame-by-frame signing with hardware attestation, content authenticity 
+    watermarks (such as C2PA), and AI-based tampering detection are being 
+    explored.
+  \item[Threshold cryptography] To reduce trust in any single reviewer, 
+    threshold schemes could require multiple parties to collaborate for 
+    decryption or signing.
+    This distributes trust but increases operational complexity.
+  \item[Secure boot and firmware integrity] The camera's software must be 
+    protected against tampering.
+    Secure boot chains, remote attestation, and firmware signing are standard 
+    techniques but add implementation complexity.
+  \item[Blockchain-based audit logs] Distributed ledger technology could 
+    provide a more decentralized and tamper-evident audit trail, removing the 
+    need to trust a central timestamp authority.
+  \item[Automated GDPR compliance] Tools for automatic face detection, consent 
+    management, and retention policy enforcement could reduce the burden on 
+    reviewers while ensuring legal compliance.
+  \item[Real-time streaming with end-to-end encryption] For situations 
+    requiring immediate oversight, secure real-time streaming to reviewers 
+    presents additional challenges around key management and bandwidth.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach designing a 
+  solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
+\end{exercise}
+
+
+\section*{Acknowledgements}
+
+This chapter was written by Daniel Bosk with the assistance of Dan-Claude van 
+Thropic.
+The following students from DD2520 Applied Cryptography, Spring 2025, 
+contributed additional perspectives through their solutions to the INL1Written 
+assignment:
+Albin Durfors,
+Alexander Skalski,
+Alexander Wigren,
+Alex Shariat Zadeh,
+Amin Nouiser,
+Anass Inani,
+Anica Krüger,
+Anna Akopyan,
+Anton Brömster,
+Ayah Babiker,
+Azeez Daoud,
+Baltzar Lagerros,
+Birger Karlsson,
+Christoffer Eklund,
+Christoforos Seas,
+Deniel Kenadid Saskin,
+Eduardo Santos Rodriguez,
+Edwin Ahlstrand,
+Elias Nygren,
+Ellen Sigurðardóttir,
+Emil Göransson,
+Emil Hultcrantz,
+Emil Kanerva,
+Emil Wallgren,
+Eva Sophia Schreyer,
+Ferran Solanes Serrat,
+Fredrik Blomqvist,
+Giovanni Prete,
+Gustav Jenner,
+Hassan El Ghamri,
+Jakub Rybak,
+Jannis Alexander Wunderlich,
+Joakim Sundman,
+Jonas Dåderman,
+Jonathan Shahi,
+Juan Trillo Carreras,
+Kenan Dizdarevic,
+Kinan Haj Rashid,
+Lage Hahn Linusson,
+Leo Hansson Åkerberg,
+Leonard Lindgren,
+Linda Widell,
+Ludvig Alhanko,
+Lukas Lannge,
+Manjot Kaur Lidher,
+Måns Abrahamsson,
+Mathias Grindsäter,
+Mathias Magnusson,
+Mattias Ritze,
+Max Andersson,
+Melvin Sandberg,
+Miguel Pinheiro Coelho,
+Miguel Valgañon Soria,
+Nils Eric Jordan,
+Oscar George Judd,
+Oskar Vesterlund,
+Paula Sopena Coello,
+Pontus Hashmi Hector,
+Praveen Kannappan Manikandan,
+Sever Mihai Nastase,
+Shreyas Sawai,
+Simon Michel Jean-Noël Hamelin,
+Stella Carlsson,
+Thi Huyen Trang Nguyen,
+Timothy Lindquist Marongiu,
+Tim Rundström,
+Tomás Silva da Fonseca,
+Tony Kiplagat Cheptoo,
+Victor Österman,
+William Hedenskog,
+Woojin Kim,
+Yan Zhi Bryan Lim,
+Zhichao Zhou,
+and
+Zhi Yong Lim.

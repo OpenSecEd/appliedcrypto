@@ -1,0 +1,35 @@
+\documentclass[a4paper,article,oneside]{memoir}
+\let\subsubsection\subsection
+\let\subsection\section
+\let\section\chapter
+
+\usepackage[noamsthm,notheorems]{beamerarticle}
+\setjobnamebeamerversion{slides}
+
+\usepackage[hyphens]{url}
+\usepackage[hidelinks]{hyperref}
+
+\input{preamble.tex}
+
+%\usepackage{authblk}
+%\let\institute\affil
+
+\begin{document}
+\title{%
+  Tutorial: Digital Postbox and Identity
+}
+\author{Daniel Bosk}
+\institute{%
+  KTH EECS
+}
+
+\maketitle
+
+\begin{abstract}
+  \input{abstract.tex}
+\end{abstract}
+
+\input{contents.tex}
+
+\printbibliography
+\end{document}
