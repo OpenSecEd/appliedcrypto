@@ -751,6 +751,59 @@ However, this design also comes with some disadvantages and considerations:
     Fortunately, encrypting for more than one public key was easy.
 \end{description}
 
+\subsection{Implementation security: side-channel attacks}
+
+\ltnote{%
+  We introduce implementation-level attacks to create contrast with the 
+  protocol-level security we have focused on so far.
+  Students should discern that correct cryptographic protocols can still be 
+  broken through implementation weaknesses.
+  This follows the variation pattern: we keep the protocol invariant while 
+  varying the attack surface (protocol vs implementation).
+}
+
+\begin{exercise}
+  Even with mathematically secure cryptographic protocols, what 
+  implementation-level attacks could compromise the camera's security?
+\end{exercise}
+
+The camera performs cryptographic operations (signing, encrypting) using its 
+secure element.
+These operations can leak information through \emph{side channels}:
+\begin{description}
+  \item[Timing attacks] If the time to compute a signature depends on the 
+    secret key bits, an attacker measuring operation times can reconstruct the 
+    key.
+  \item[Power analysis] The power consumption of a chip varies depending on 
+    which operations it performs.
+    By measuring power traces during cryptographic operations, attackers can 
+    extract secret keys.
+  \item[Electromagnetic emanations] Similar to power analysis, but measuring 
+    electromagnetic radiation from the chip.
+\end{description}
+
+\begin{exercise}
+  How can we protect against these side-channel attacks?
+\end{exercise}
+
+Countermeasures include:
+\begin{itemize}
+  \item \emph{Constant-time implementations}: Ensure all operations take the 
+    same time regardless of key bits.
+    This is standard practice in modern cryptographic libraries.
+  \item \emph{Power filtering and noise injection}: Add capacitors and noise 
+    generators to mask power consumption patterns.
+  \item \emph{Shielding}: Metal enclosures reduce electromagnetic emanations.
+  \item \emph{Randomized execution}: Add random delays and dummy operations to 
+    decorrelate power traces from actual computations.
+\end{itemize}
+
+Using a certified secure element (such as a TPM or smartcard meeting Common 
+Criteria EAL4+ or FIPS 140-2 Level 3) provides hardware-level protection 
+against these attacks.
+The secure element should perform all operations involving \(\SKC\) and 
+\(\SKR\).
+
 
 \section{Improved uploading}
 
@@ -854,6 +907,369 @@ Overall, this enhancement makes the system much more robust to both accidental a
 
 \begin{exercise}
   Propose potential mitigations for the scenario where both the camera and the 
-  reviewers’ server are compromised. Are there protocol or system-level 
+  reviewers' server are compromised. Are there protocol or system-level 
   approaches that would limit the scope of such a catastrophic event?
+\end{exercise}
+
+
+\section{Audit logging and chain of custody}\label{AuditLogging}
+
+\ltnote{%
+  We introduce audit logging as a separate concern from the upload protocol.
+  This creates contrast between \emph{data integrity} (ensuring video is 
+  unmodified) and \emph{access accountability} (recording who accessed what and 
+  when).
+  Students should discern that both are necessary for a complete evidence 
+  management system.
+  The variation pattern is generalization: we extend the chain of signatures 
+  from video chunks to all system events.
+}
+
+The previous sections ensure that video material is authentic and that uploads 
+are acknowledged.
+However, a complete evidence management system also requires an \emph{audit 
+trail}: a tamper-evident record of all access to the video material.
+
+\begin{exercise}
+  What events should be logged for a complete chain of custody?
+  How can we ensure the logs themselves are tamper-evident?
+\end{exercise}
+
+\subsection{Events to log}
+
+A comprehensive audit log should record:
+\begin{itemize}
+  \item Video capture events: when recording started and stopped.
+  \item Upload events: when chunks were transmitted and receipts received.
+  \item Access events: when reviewers accessed or decrypted video material.
+  \item Sharing events: when video was shared with courts or other parties.
+  \item Deletion events: when video was deleted and by whose authorization.
+\end{itemize}
+
+Each log entry should include a timestamp, the identity of the actor, the 
+action performed, and a reference to the affected data.
+
+\subsection{Tamper-evident logging with hash chains}
+
+\NewVariable{\LogEntry}{L}
+\NewVariable{\LogHash}{h}
+
+To make the audit log tamper-evident, we use a hash chain.
+Each log entry~\(\LogEntry_i\) includes a hash of the previous entry:
+\begin{align*}
+  \LogHash_0 &= H(\LogEntry_0) \\
+  \LogHash_i &= H(\LogEntry_i \concat \LogHash_{i-1}) \text{ for } i \geq 1.
+\end{align*}
+
+Any modification to an earlier entry would change its hash, which would 
+propagate through the chain and be detected when verifying subsequent entries.
+
+\begin{exercise}
+  The hash chain protects against modification, but what if an attacker with 
+  access to the logging system simply appends false entries?
+\end{exercise}
+
+To prevent unauthorized log entries, each entry should be signed by the entity 
+that generated it:
+\[
+  \sigma_i = \Sign[\sk_{\text{actor}}, \LogEntry_i \concat \LogHash_{i-1}].
+\]
+
+The reviewers' server maintains the master log and periodically publishes 
+\emph{checkpoints}---signed commitments to the current log state---to an 
+external timestamp authority or public bulletin board.
+This prevents even the server operator from rewriting history undetected.
+
+See \cref{fig:AuditLog} for the logging protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Audit logging protocol]{%
+    Each action generates a signed log entry that includes a hash of the 
+    previous entry, forming a tamper-evident chain.
+    Periodic checkpoints are published to an external authority.
+  }[fig:AuditLog]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Audit logging}
+      \declinst{actor}{Actor}{Performs action}
+      \declinst{server}{Server \(R\)}{Maintains log}
+      \declinst{tsa}{Timestamp Authority}{External}
+      \mscaction{Action on video material}{actor}
+      \nextlevel[2]
+      \mess{Log entry \(\LogEntry_i\), signature \(\sigma_i\)}{actor}{server}
+      \nextlevel
+      \mscaction{Verify \(\sigma_i\), compute \(\LogHash_i\)}{server}
+      \mscaction{Append to log}{server}
+      \nextlevel[2]
+      \condition{Periodic checkpoint}{server}
+      \nextlevel
+      \mess{Checkpoint: \(\LogHash_i\), timestamp request}{server}{tsa}
+      \nextlevel
+      \mess{Signed timestamp}{tsa}{server}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate this audit logging design.
+  What are its advantages and limitations?
+\end{exercise}
+
+\begin{description}
+  \item[Non-repudiation] Every access is signed by the accessor, providing 
+    accountability.
+  \item[Tamper evidence] The hash chain ensures any modification is detectable.
+  \item[External verification] Timestamp authority checkpoints prevent even 
+    server administrators from silently modifying history.
+  \item[Storage overhead] The audit log grows with every action; retention 
+    policies must balance accountability with storage costs.
+  \item[Privacy tension] Detailed logs of who accessed what may themselves be 
+    sensitive; access to the audit log must be controlled.
+\end{description}
+
+
+\section{Post-quantum considerations}\label{PostQuantum}
+
+\ltnote{%
+  We introduce the threat of quantum computers to create contrast with our 
+  implicit assumption that current cryptographic algorithms remain secure 
+  indefinitely.
+  Students should discern that long-term security requires planning for 
+  cryptographic transitions.
+  The variation pattern is generalization: we consider the security model 
+  across time, not just at deployment.
+}
+
+Our system uses ECDSA for signatures and RSA or elliptic-curve cryptography for 
+asymmetric encryption.
+These algorithms are secure against classical computers, but would be broken by 
+a sufficiently powerful quantum computer running Shor's algorithm.
+
+\begin{exercise}
+  Body camera footage may be used as evidence decades after capture.
+  What are the implications if quantum computers become practical during this 
+  time?
+\end{exercise}
+
+\subsection{Threats to current cryptography}
+
+\begin{description}
+  \item[Signatures (ECDSA)] A quantum computer could forge signatures, but this 
+    only matters if the attacker needs to create new signatures.
+    Existing signatures on stored video remain valid evidence of what the 
+    camera recorded---the signature was created before quantum computers 
+    existed.
+  \item[Encryption (RSA, ECDH)] An attacker could record encrypted traffic 
+    today and decrypt it later when quantum computers are available 
+    (\enquote{harvest now, decrypt later}).
+    This is the more serious threat for confidential video material.
+\end{description}
+
+\subsection{Migration strategies}
+
+\begin{exercise}
+  How can we protect against future quantum attacks while maintaining 
+  compatibility with current systems?
+\end{exercise}
+
+Several approaches exist:
+\begin{description}
+  \item[Hybrid encryption] Use both a classical algorithm (RSA/ECDH) and a 
+    post-quantum algorithm (such as ML-KEM, formerly Kyber) for key 
+    encapsulation.
+    The session key is derived from both, so an attacker must break both 
+    algorithms.
+  \item[Larger symmetric keys] AES-256 provides 128-bit security against 
+    quantum attacks (due to Grover's algorithm), which is considered 
+    sufficient.
+    Our system already uses AES-256.
+  \item[Post-quantum signatures] For new deployments, use post-quantum 
+    signature algorithms such as ML-DSA (formerly Dilithium) or SLH-DSA 
+    (formerly SPHINCS+).
+    These have larger signatures, which increases storage and bandwidth 
+    requirements.
+\end{description}
+
+For a system being deployed today with a 30-year evidence retention 
+requirement, hybrid encryption is prudent.
+The envelope encryption (\cref{AsymmetricEncryption}) can be modified to 
+encrypt the session key under both \(\PKR\) (classical) and a post-quantum 
+public key.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Future-proofing] Hybrid encryption protects against harvest-now, 
+    decrypt-later attacks.
+  \item[Increased complexity] Supporting multiple algorithms requires more 
+    code, more key management, and careful implementation.
+  \item[Performance impact] Post-quantum algorithms generally have larger keys 
+    and signatures.
+    ML-KEM adds minimal overhead for encryption, but ML-DSA signatures are 
+    larger than ECDSA (several kilobytes vs. 64 bytes).
+  \item[Standards evolution] Post-quantum standards are still maturing; the 
+    system must be designed for cryptographic agility.
+\end{description}
+
+
+\section{Video redaction workflow}\label{Redaction}
+
+\ltnote{%
+  We introduce the problem of editing video while maintaining authenticity.
+  This creates contrast with our earlier assumption that video must remain 
+  completely unmodified.
+  Students should discern the tension between privacy (requiring redaction) and 
+  integrity (requiring immutability), and how cryptographic techniques can 
+  balance these concerns.
+}
+
+Before releasing video as evidence or to the public, reviewers often need to 
+redact sensitive content: blur faces of bystanders, mute private conversations, 
+or remove segments unrelated to the case.
+However, our signature chain ensures any modification is detected.
+
+\begin{exercise}
+  How can we allow authorized redaction while maintaining cryptographic 
+  assurance that non-redacted portions are authentic?
+\end{exercise}
+
+\subsection{The redaction problem}
+
+If reviewers simply edit the video and re-sign it, we lose the guarantee that 
+the content came from the camera.
+The court must now trust that reviewers didn't fabricate or alter the 
+non-redacted portions.
+
+Two approaches address this:
+\begin{description}
+  \item[Redactable signatures] Use a signature scheme that allows designated 
+    portions to be removed while the signature on remaining portions stays 
+    valid.
+    This is an active research area with schemes based on chameleon hashes.
+  \item[Dual-signature workflow] The original camera signature proves 
+    authenticity of the original.
+    A separate reviewer signature on the redacted version proves the chain of 
+    custody and that redaction was performed by an authorized party.
+\end{description}
+
+\subsection{Dual-signature redaction protocol}
+
+We adopt the dual-signature approach as it uses standard cryptographic 
+primitives.
+
+\NewVariable{\SKRev}{sk_{\text{rev}}}
+\NewVariable{\VKRev}{vk_{\text{rev}}}
+
+Each reviewer has a personal signing key pair \((\SKRev, \VKRev)\) certified by 
+the police authority.
+When redacting video:
+\begin{enumerate}
+  \item The reviewer retrieves the original encrypted video and its camera 
+    signature chain.
+  \item The reviewer decrypts, performs redaction (blur, mute, cut), and 
+    re-encodes the video.
+  \item The reviewer creates a \emph{redaction manifest} describing what was 
+    changed (timestamps, type of redaction) without revealing the redacted 
+    content.
+  \item The reviewer signs the redacted video and manifest:
+    \[
+      \sigma_{\text{redacted}} = \Sign[\SKRev, H(\text{redacted video}) \concat 
+      H(\text{manifest}) \concat H(\text{original})].
+    \]
+  \item Both the original (with camera signatures) and the redacted version 
+    (with reviewer signature) are preserved.
+\end{enumerate}
+
+See \cref{fig:Redaction} for the protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Video redaction protocol]{%
+    The reviewer performs redaction and signs the result along with a manifest.
+    The original video with camera signatures is preserved for verification.
+  }[fig:Redaction]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Video redaction}
+      \declinst{storage}{Storage}{Original video}
+      \declinst{rev}{Reviewer}{\(\SKRev\)}
+      \declinst{court}{Court / Public}{}
+      \mess{Retrieve original \((c, \sigma_C)\)}{storage}{rev}
+      \nextlevel[2]
+      \mscaction{Decrypt, redact video}{rev}
+      \mscaction{Create manifest}{rev}
+      \mscaction{\(\sigma_R = \Sign[\SKRev, \ldots]\)}{rev}
+      \nextlevel[4]
+      \mess{Store redacted version}{rev}{storage}
+      \nextlevel[2]
+      \mess{Release redacted + \(\sigma_R\) + manifest}{rev}{court}
+      \nextlevel
+      \mscaction{Verify \(\sigma_R\), optionally request original for audit}{court}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate this redaction workflow.
+  What assurances does it provide, and what are its limitations?
+\end{exercise}
+
+\begin{description}
+  \item[Authenticity of original] The camera's signature chain proves the 
+    original video is unmodified.
+  \item[Accountability for redaction] The reviewer's signature proves who 
+    performed the redaction and when.
+  \item[Auditability] The original can be compared against the redacted version 
+    to verify that only declared redactions were made.
+  \item[Trust in reviewers] The court must trust that reviewers didn't redact 
+    exculpatory evidence.
+    The manifest and audit log provide some accountability, but cannot fully 
+    prevent malicious redaction.
+  \item[Storage cost] Both versions must be retained, doubling storage 
+    requirements for redacted videos.
+\end{description}
+
+
+\section{Future work and open problems}\label{FutureWork}
+
+Several aspects of body camera systems remain active areas of research and 
+development:
+
+\begin{description}
+  \item[Deepfake detection and prevention] As synthetic media becomes more 
+    convincing, additional countermeasures may be needed.
+    Frame-by-frame signing with hardware attestation, content authenticity 
+    watermarks (such as C2PA), and AI-based tampering detection are being 
+    explored.
+  \item[Threshold cryptography] To reduce trust in any single reviewer, 
+    threshold schemes could require multiple parties to collaborate for 
+    decryption or signing.
+    This distributes trust but increases operational complexity.
+  \item[Secure boot and firmware integrity] The camera's software must be 
+    protected against tampering.
+    Secure boot chains, remote attestation, and firmware signing are standard 
+    techniques but add implementation complexity.
+  \item[Blockchain-based audit logs] Distributed ledger technology could 
+    provide a more decentralized and tamper-evident audit trail, removing the 
+    need to trust a central timestamp authority.
+  \item[Automated GDPR compliance] Tools for automatic face detection, consent 
+    management, and retention policy enforcement could reduce the burden on 
+    reviewers while ensuring legal compliance.
+  \item[Real-time streaming with end-to-end encryption] For situations 
+    requiring immediate oversight, secure real-time streaming to reviewers 
+    presents additional challenges around key management and bandwidth.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach designing a 
+  solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
 \end{exercise}

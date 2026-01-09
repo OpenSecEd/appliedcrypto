@@ -203,6 +203,71 @@ To prevent this, the box can cache recently used tokens and reject duplicates.
 A better approach: include a nonce in the token that the box marks as
 \enquote{used} after the first access.
 
+\subsection{Securing the BLE channel}
+
+\ltnote{%
+  We introduce BLE security to highlight that the wireless channel itself is an 
+  attack surface.
+  This creates contrast with the token-level security discussed above.
+  Students should discern that secure tokens transmitted over an insecure 
+  channel can still be intercepted.
+  The variation pattern: we keep the token security invariant while varying the 
+  channel security.
+}
+
+\begin{exercise}
+  The token and HMAC are transmitted via Bluetooth Low Energy (BLE).
+  What attacks are possible on this wireless channel, and how can we protect 
+  against them?
+\end{exercise}
+
+BLE communication between the customer's phone and the parcel box is vulnerable 
+to:
+\begin{description}
+  \item[Eavesdropping] An attacker within range (typically 10--100 meters) can 
+    capture the BLE packets containing the token.
+  \item[Man-in-the-middle (MITM)] An attacker can impersonate the box to the 
+    phone and vice versa, relaying and potentially modifying messages.
+  \item[Replay] Even with a secure channel, if the attacker records a session, 
+    they might replay it later (addressed by nonces, as above).
+\end{description}
+
+\begin{exercise}
+  How does BLE establish a secure channel?
+  What are the different pairing modes and their security properties?
+\end{exercise}
+
+BLE provides several pairing methods with different security levels:
+\begin{description}
+  \item[Just Works] No user interaction; vulnerable to MITM attacks.
+    Should not be used for security-critical applications.
+  \item[Passkey Entry] User enters a 6-digit code displayed on one device into 
+    the other.
+    Provides MITM protection but requires user interaction.
+  \item[Numeric Comparison] Both devices display a 6-digit number; user 
+    confirms they match.
+    Provides MITM protection with less user burden than passkey entry.
+  \item[Out-of-Band (OOB)] Uses a separate channel (NFC, QR code) to exchange 
+    pairing information.
+    Strongest protection when implemented correctly.
+\end{description}
+
+For parcel boxes, we can use a hybrid approach:
+\begin{enumerate}
+  \item The box displays a QR code containing its BLE address and a pairing 
+    key.
+  \item The customer's app scans the QR code (out-of-band channel).
+  \item The app establishes an encrypted BLE connection using the OOB pairing 
+    data.
+  \item The token is transmitted over this encrypted channel.
+\end{enumerate}
+
+Alternatively, since our tokens are already authenticated with HMAC (or 
+signatures in later designs), we can accept that the BLE channel provides only 
+transport---the token's authenticity doesn't depend on BLE security.
+However, encrypting the channel prevents eavesdroppers from learning which box 
+and compartment a customer is accessing, protecting privacy.
+
 \subsection{Key management}
 
 \begin{exercise}
@@ -520,6 +585,70 @@ Mitigations:
     download a revocation list.
 \end{itemize}
 
+\subsection{App and device attestation}
+
+\ltnote{%
+  We introduce the concept of trusting the client device and app.
+  This creates contrast with our previous focus on trusting tokens and servers.
+  Students should discern that even with perfect token security, a compromised 
+  or malicious app can undermine the system.
+  The variation pattern: we keep the cryptographic protocol invariant while 
+  varying the trust model for the client.
+}
+
+\begin{exercise}
+  Our security relies on the customer's app correctly handling tokens and 
+  communicating with the box.
+  What if the app has been modified by an attacker, or the phone is 
+  compromised?
+\end{exercise}
+
+A malicious or compromised app could:
+\begin{itemize}
+  \item Leak tokens to attackers who then access parcels.
+  \item Manipulate the user interface to trick users into authorizing 
+    unintended actions.
+  \item On a rooted/jailbroken phone, extract secrets from the app's storage.
+\end{itemize}
+
+\begin{exercise}
+  How can the server verify that the customer is using a legitimate, 
+  unmodified app on an uncompromised device?
+\end{exercise}
+
+Mobile platforms provide attestation mechanisms:
+\begin{description}
+  \item[Android: Play Integrity API] The app requests an integrity verdict from 
+    Google's servers.
+    The verdict indicates whether the app is the genuine version from the Play 
+    Store, and whether the device passes integrity checks (not rooted, bootloader 
+    locked, etc.).
+  \item[iOS: App Attest] Apple's DeviceCheck framework allows the server to 
+    verify that requests come from a legitimate instance of the app on a 
+    genuine Apple device.
+\end{description}
+
+The attestation can be incorporated into token requests:
+\begin{enumerate}
+  \item The app requests an attestation token from the platform.
+  \item The app sends the attestation along with the token request to our 
+    server.
+  \item The server verifies the attestation with Google/Apple before issuing 
+    the access token.
+  \item Optionally, the attestation result can be encoded in the access token, 
+    allowing the box to apply different policies (e.g., reject tokens from 
+    unverified apps for high-value compartments).
+\end{enumerate}
+
+Limitations:
+\begin{itemize}
+  \item Attestation requires network connectivity to Google/Apple servers, 
+    conflicting with offline operation goals.
+  \item Determined attackers can sometimes bypass attestation on rooted 
+    devices.
+  \item Privacy-conscious users may object to platform attestation.
+\end{itemize}
+
 \subsection{Consequences of the design}
 
 \begin{exercise}
@@ -742,4 +871,326 @@ Our complete system combines:
   Propose potential improvements or alternative approaches to this design.
   Consider scenarios such as: What if both the customer's phone and the
   box are compromised? What if the delivery company is the adversary?
+\end{exercise}
+
+
+\section{Fallback and recovery mechanisms}\label{FallbackMechanisms}
+
+\ltnote{%
+  We introduce failure modes to create contrast with our assumption that the 
+  primary system always works.
+  Students should discern that real-world systems need graceful degradation 
+  when components fail.
+  The variation pattern is generalization: we keep the security requirement 
+  invariant while varying the access method.
+}
+
+Our system relies on the customer having a working smartphone with the app 
+installed, Bluetooth enabled, and (for some designs) network connectivity.
+What happens when these assumptions fail?
+
+\begin{exercise}
+  What could prevent a customer from accessing their parcel using the standard 
+  app-based method?
+  How should the system handle these situations?
+\end{exercise}
+
+\subsection{Failure scenarios}
+
+Common failure scenarios include:
+\begin{description}
+  \item[Dead phone battery] The customer arrives at the box but their phone has 
+    died.
+  \item[App crash or corruption] The app fails to start or has lost its 
+    credentials.
+  \item[BLE failure] The phone's Bluetooth is broken, or radio interference 
+    prevents communication.
+  \item[Lost or stolen phone] The customer no longer has access to the device 
+    with their credentials.
+  \item[No smartphone] Some customers (elderly, children receiving parcels) may 
+    not have smartphones.
+\end{description}
+
+\subsection{Fallback authentication methods}
+
+\begin{exercise}
+  Design alternative authentication methods that maintain security while 
+  providing fallback access.
+\end{exercise}
+
+Several fallback options exist, each with different security/usability 
+trade-offs:
+
+\begin{description}
+  \item[SMS one-time code] The server sends a 6-digit code via SMS.
+    The customer enters it on a keypad on the box.
+    Requires the box to have a keypad and network connectivity, and the 
+    customer to have their phone number.
+    Vulnerable to SIM-swapping attacks.
+  \item[Email backup code] When the parcel is assigned, the customer receives 
+    an email with a backup code.
+    Lower security (email accounts are often poorly protected), but works 
+    without a phone.
+  \item[Physical keypad with pre-generated code] The delivery notification 
+    includes a printed or emailed one-time code.
+    The box has a keypad; entering the code grants access.
+    The code must be long enough to prevent guessing (e.g., 8--12 digits) and 
+    rate-limited.
+  \item[Customer service override] A human operator can remotely authorize 
+    access after verifying the customer's identity through alternative means.
+    Requires the box to be online; introduces human factors into security.
+\end{description}
+
+See \cref{fig:FallbackAccess} for the fallback protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Fallback access protocol]{%
+    When app-based access fails, the customer can request an SMS code or use a 
+    pre-generated backup code on the box's keypad.
+    The box verifies the code against its stored hash or contacts the server.
+  }[fig:FallbackAccess]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.35\linewidth]
+    {Fallback access}
+      \declinst{cust}{Customer \(C\)}{No app access}
+      \declinst{serv}{Server \(S\)}{}
+      \declinst{box}{Box \(B\)}{Keypad}
+      \mess{Request fallback code (via web/phone)}{cust}{serv}
+      \nextlevel[2]
+      \mscaction{Generate OTP, store hash}{serv}
+      \nextlevel[2]
+      \mess{Send OTP via SMS/email}{serv}{cust}
+      \nextlevel[2]
+      \mess{Enter OTP on keypad}{cust}{box}
+      \nextlevel
+      \condition{Box online?}{box}
+      \nextlevel
+      \mess{Verify OTP with server}{box}{serv}
+      \nextlevel
+      \mess{Valid/invalid}{serv}{box}
+      \nextlevel
+      \mess{Access granted/denied}{box}{cust}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Security considerations for fallback}
+
+\begin{exercise}
+  Fallback methods are often weaker than primary authentication.
+  How can we limit the risk they introduce?
+\end{exercise}
+
+Mitigations for fallback risks:
+\begin{itemize}
+  \item \emph{Rate limiting}: Lock out after a few failed attempts on the 
+    keypad.
+  \item \emph{Time limits}: Fallback codes expire quickly (e.g., 30 minutes).
+  \item \emph{Audit logging}: All fallback access attempts are logged and 
+    flagged for review.
+  \item \emph{Notification}: The primary phone (if reachable) receives a 
+    notification when fallback access is used.
+  \item \emph{Value-based restrictions}: High-value parcels may not allow 
+    fallback access; customer must use primary authentication or visit 
+    customer service.
+\end{itemize}
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Improved availability] Customers can access parcels even when primary 
+    methods fail.
+  \item[Increased attack surface] Each fallback method is a potential attack 
+    vector.
+  \item[Hardware requirements] Keypads add cost and maintenance requirements to 
+    boxes.
+  \item[Complexity] Multiple authentication paths increase system complexity 
+    and testing burden.
+\end{description}
+
+
+\section{Multi-provider architecture}\label{MultiProvider}
+
+\ltnote{%
+  We introduce the complexity of multiple delivery companies sharing 
+  infrastructure.
+  This creates contrast with our implicit assumption of a single operator.
+  Students should discern that multi-tenant systems introduce trust boundaries 
+  and data separation challenges.
+  The variation pattern is generalization: we keep the security primitives 
+  invariant while varying the organizational structure.
+}
+
+In practice, parcel boxes may be shared among multiple delivery companies 
+(PostNord, DHL, Budbee, Instabox, etc.).
+A box operator (such as a property management company) may want to offer box 
+access to any delivery service.
+
+\begin{exercise}
+  What challenges arise when multiple competing delivery companies share the 
+  same parcel boxes?
+\end{exercise}
+
+\subsection{Trust and data separation}
+
+Key challenges include:
+\begin{description}
+  \item[Competitive sensitivity] PostNord should not learn which compartments 
+    DHL is using, or how many parcels they deliver.
+  \item[Customer data] A customer's delivery history with one provider should 
+    not be visible to others.
+  \item[Access control] Each provider should only be able to open compartments 
+    assigned to their deliveries.
+  \item[Accountability] If a parcel goes missing, logs should identify which 
+    provider's delivery person last accessed the compartment.
+\end{description}
+
+\subsection{Federated architecture}
+
+\begin{exercise}
+  Design an architecture where multiple delivery providers can use shared boxes 
+  while maintaining data separation.
+\end{exercise}
+
+\NewVariable{\SKProv}{sk_{\text{prov}}}
+\NewVariable{\PKProv}{pk_{\text{prov}}}
+
+We introduce a \emph{box operator} as a trusted intermediary:
+\begin{enumerate}
+  \item The box operator manages the physical boxes and their keys.
+  \item Each delivery provider has a contractual relationship with the box 
+    operator.
+  \item Providers are issued credentials (key pairs certified by the operator) 
+    to authorize their delivery personnel.
+  \item The operator's server mediates compartment allocation without revealing 
+    which provider is using which compartment.
+\end{enumerate}
+
+Token structure for multi-provider access:
+\[
+  \text{token} = (\text{box\_id}, \text{compartment}, \text{provider\_id}, 
+  \text{user\_id}, t_{\text{start}}, t_{\text{end}}, \text{permission})
+\]
+The provider signs tokens for their users:
+\[
+  \sigma_{\text{prov}} = \Sign[\SKProv, \text{token}].
+\]
+The box verifies both:
+\begin{itemize}
+  \item The provider's signature using their certified public key.
+  \item That the provider is authorized for this compartment (via a separate 
+    authorization from the box operator).
+\end{itemize}
+
+See \cref{fig:MultiProvider} for the multi-provider protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Multi-provider access protocol]{%
+    The box operator allocates compartments to providers.
+    Each provider issues tokens to their customers, signed with the provider's 
+    key.
+    The box verifies both the provider's authorization and the customer's 
+    token.
+  }[fig:MultiProvider]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.32\linewidth]
+    {Multi-provider access}
+      \declinst{prov}{Provider}{PostNord, DHL, \ldots}
+      \declinst{oper}{Operator}{Box keys}
+      \declinst{box}{Box \(B\)}{\(\PKProv\) for all providers}
+      \mess{Request compartment}{prov}{oper}
+      \nextlevel[2]
+      \mscaction{Allocate, create authorization}{oper}
+      \nextlevel
+      \mess{Compartment ID + authorization token}{oper}{prov}
+      \nextlevel[2]
+      \mscaction{Provider issues customer token}{prov}
+      \nextlevel[2]
+      \mess{Customer presents token (via BLE)}{prov}{box}
+      \nextlevel
+      \mscaction{Verify provider authorization}{box}
+      \mscaction{Verify customer token signature}{box}
+      \nextlevel
+      \mess{Access granted/denied}{box}{prov}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Privacy between providers}
+
+\begin{exercise}
+  How can we prevent the box operator from learning sensitive business 
+  information about each provider's operations?
+\end{exercise}
+
+To minimize what the operator learns:
+\begin{itemize}
+  \item Compartment allocation can be anonymized: providers request 
+    \enquote{a compartment at location X} without revealing the customer or 
+    parcel details.
+  \item Access logs on the box record only that \enquote{provider P accessed 
+    compartment C}, not customer identity.
+  \item Providers encrypt any customer-identifying information in their tokens 
+    so only they can read it.
+\end{itemize}
+
+Full privacy from the operator is difficult: they control the boxes and can 
+observe physical access patterns.
+The trust model must acknowledge that the operator has some visibility.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Scalability] Multiple providers can share infrastructure, reducing 
+    costs.
+  \item[Complexity] Three-party trust relationships are harder to manage than 
+    two-party.
+  \item[Single point of failure] The box operator becomes a critical 
+    dependency; if compromised, all providers are affected.
+  \item[Competitive concerns] Providers must trust the operator not to favor 
+    competitors or leak business intelligence.
+  \item[Standardization] Requires agreement on token formats, APIs, and 
+    security requirements across providers.
+\end{description}
+
+
+\section{Future work and open problems}\label{ParcelFutureWork}
+
+Several aspects of parcel box systems remain active areas of development:
+
+\begin{description}
+  \item[Denial-of-service protection] How do we prevent attackers from 
+    exhausting compartments, flooding the server with requests, or jamming BLE 
+    communications?
+    Rate limiting, proof-of-work, and physical design (tamper-resistant radios) 
+    are partial solutions.
+  \item[Supply chain security] How do we ensure boxes haven't been tampered 
+    with during manufacturing or installation?
+    Hardware attestation, secure boot chains, and physical inspection 
+    procedures are relevant.
+  \item[Post-quantum migration] Like body cameras, parcel box systems should 
+    plan for the transition to post-quantum cryptography, especially for 
+    long-lived keys.
+  \item[Location privacy] Even with encrypted tokens, network observers can see 
+    which boxes customers approach.
+    Techniques like dummy traffic or location obfuscation could help, at the 
+    cost of complexity.
+  \item[Smart home integration] Customers may want parcels delivered to 
+    connected lockers in their buildings, integrated with home automation 
+    systems.
+    This introduces new trust relationships and attack surfaces.
+  \item[Environmental sensors] Boxes could include temperature, humidity, or 
+    shock sensors to prove parcels were stored correctly.
+    Cryptographically signed sensor logs would extend the chain of custody.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach designing a 
+  solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
 \end{exercise}
