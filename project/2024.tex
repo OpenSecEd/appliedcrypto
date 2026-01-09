@@ -555,7 +555,8 @@ Concerns:
   This creates contrast with the implicit assumption that signed images are
   truthful.
   Students should discern that cryptographic authenticity differs from content
-  truthfulness.
+  truthfulness---but also that cryptography provides the \emph{foundation} that
+  makes environmental sensing trustworthy.
   Several students and peer reviewers discussed this attack in their
   submissions.
 }
@@ -581,6 +582,44 @@ An attacker can:
 
 This is a fundamental limitation of cryptographic signatures: they authenticate
 the signing process, not the semantic content.
+However, cryptography remains essential---it provides the trusted foundation
+upon which additional verification techniques can build.
+
+\subsection{The role of cryptography in environmental verification}
+
+\begin{exercise}
+  Environmental sensors (depth, GPS, accelerometer) can detect fake scenes.
+  But what prevents an attacker from simply fabricating the sensor data?
+\end{exercise}
+
+The key insight is that environmental data is only trustworthy if it comes from
+a \emph{trusted platform}---and cryptographic signatures provide this trust:
+\begin{enumerate}
+  \item The camera's secure element holds a private key that cannot be
+    extracted.
+  \item All sensor data (image, depth map, GPS coordinates, accelerometer
+    readings) flows through the secure element.
+  \item The secure element signs the \emph{combined} sensor data atomically.
+  \item An attacker cannot selectively modify one sensor's data without
+    invalidating the signature.
+\end{enumerate}
+
+This creates a chain of trust from hardware to end-user:
+\begin{description}
+  \item[Hardware attestation] The manufacturer certifies that the secure
+    element correctly captures and signs sensor data.
+  \item[Sensor binding] The signature covers all sensors simultaneously,
+    preventing mix-and-match attacks.
+  \item[Tamper evidence] Any modification to sensor data (even by the camera's
+    own software) breaks the signature.
+  \item[End-user verification] The viewer verifies the signature, trusting the
+    certificate chain back to the manufacturer.
+\end{description}
+
+Without cryptographic signatures, environmental sensor data would be trivially
+forgeable.
+With signatures, forging sensor data requires compromising the secure
+element---a much harder attack.
 
 \subsection{Depth sensing}
 
@@ -592,6 +631,10 @@ cameras) that capture 3D information:
   \item The depth data is signed alongside the image, allowing viewers to detect
     flat subjects.
 \end{itemize}
+
+Critically, the depth sensor must be integrated into the trusted signing path:
+the secure element signs both the image and the depth map together, ensuring an
+attacker cannot substitute a fake depth map for a real one.
 
 \begin{exercise}
   What are the limitations of depth sensing as a countermeasure?
@@ -611,28 +654,42 @@ Limitations:
 
 \subsection{Environmental sensor fusion}
 
-Cameras can include additional sensors whose data is signed with the image:
+Cameras can include additional sensors whose data is signed with the image.
+The cryptographic signature binds all sensor readings to a single capture event:
 \begin{description}
   \item[Accelerometer and gyroscope] Record camera motion during capture.
     A static tripod shot of a print differs from handheld photography.
+    The signature proves these readings came from the same device at capture
+    time.
   \item[GPS and compass] Record location and orientation.
     Metadata can be cross-referenced with known geography.
+    The signature prevents after-the-fact location spoofing.
   \item[Ambient light sensor] Record lighting conditions.
     Flash photography of a print may produce distinctive reflections.
+    Signed sensor data proves the lighting reading accompanied the capture.
   \item[Microphone] Record ambient audio during video capture.
     Audio can corroborate location and environment.
+    The signature binds audio to video, preventing substitution.
 \end{description}
 
 \begin{exercise}
   How might an attacker defeat environmental sensor fusion?
 \end{exercise}
 
-Environmental sensors raise the bar but are not foolproof:
+Environmental sensors raise the bar but are not foolproof.
+However, the attacker must now defeat the \emph{physical} sensors at capture
+time---they cannot simply edit the data afterward:
 \begin{itemize}
-  \item An attacker could simulate camera motion while photographing a print.
-  \item GPS coordinates can be spoofed on compromised devices.
-  \item Sophisticated setups could match environmental conditions.
+  \item An attacker could simulate camera motion while photographing a print,
+    but this requires physical effort during the attack.
+  \item GPS spoofing requires specialized equipment and affects the actual GPS
+    receiver, not just the metadata.
+  \item Sophisticated setups could match environmental conditions, but this
+    increases attack complexity and cost.
 \end{itemize}
+
+The cryptographic signature transforms the attack from a software problem
+(editing metadata) to a physical problem (fooling sensors in real-time).
 
 \subsection{AI-based authenticity detection}
 
@@ -650,18 +707,28 @@ depth.
 However, as AI generation improves, the arms race between generation and
 detection continues.
 
+Unlike sensor-based approaches, AI detection does not benefit directly from
+cryptographic signatures---it analyzes the image content itself.
+However, signatures still play a role: they ensure the image being analyzed is
+the same image that was captured, preventing an attacker from running detection
+on one image and substituting another.
+
 \subsection{Consequences}
 
 \begin{enumerate}
-  \item Cryptographic signatures alone cannot guarantee content truthfulness.
-  \item Depth sensors and environmental sensors raise the attack cost but add
-    hardware complexity.
-  \item AI-based detection provides probabilistic rather than cryptographic
-    assurance.
-  \item Defense in depth---combining multiple approaches---is more robust than
-    any single mechanism.
+  \item Cryptographic signatures alone cannot guarantee content truthfulness,
+    but they provide the \emph{trusted foundation} for techniques that can.
+  \item Depth sensors and environmental sensors raise the attack cost; their
+    trustworthiness depends on cryptographic binding to the capture event.
+  \item The signature transforms content attacks from software problems
+    (metadata editing) to physical problems (fooling sensors).
+  \item AI-based detection provides probabilistic assurance; signatures ensure
+    the analyzed image is authentic.
+  \item Defense in depth---combining cryptographic signatures with multiple
+    sensor and detection approaches---is more robust than any single mechanism.
   \item For high-stakes applications (legal evidence, journalism), human
-    judgment and contextual verification remain essential.
+    judgment and contextual verification remain essential, but cryptographic
+    verification provides a strong foundation for that judgment.
 \end{enumerate}
 
 
