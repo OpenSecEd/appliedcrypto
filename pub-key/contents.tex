@@ -11,6 +11,16 @@
 %   15 and 30 frames, all told.
 
 
+\section{Introduction}
+
+\subsection{The idea and its origin}
+
+\mode<all>{\includepdf[pages=42-47]{./dog-pubkey-tilkry24.pdf}}
+
+%\subsection{Preliminaries}
+%
+%\mode<all>{\includepdf[pages=49-59]{./dog-pubkey-tilkry24.pdf}}
+
 \section{Public-key cryptography}
 
 \subsection{Key-exchange schemes}
@@ -27,15 +37,15 @@
     \end{itemize}
   \end{idea}
 
-%  \pause{}
-%
-%  \begin{exercise}
-%    \begin{itemize}
-%      \item Say Alice and Bob want to communicate.
-%      \item Eve wants to eavesdrop as usual.
-%      \item What are the requirements of such a system?
-%    \end{itemize}
-%  \end{exercise}
+  \pause
+
+  \begin{example}[Key agreement]
+    \begin{itemize}
+      \item Can exchange keys if set up properly.
+      \item Kerberos is all about agreeing on symmetric keys---using only 
+        symmetric keys.
+    \end{itemize}
+  \end{example}
 \end{frame}
 
 \begin{frame}
@@ -46,6 +56,8 @@
     \end{itemize}
   \end{solution}
 \end{frame}
+
+\mode<all>{\includepdf[pages=49-54]{./dog-pubkey-tilkry24.pdf}}
 
 \begin{frame}
   \begin{definition}[\Acl{DLP}, \acs{DLP}]
@@ -64,6 +76,8 @@
     \end{itemize}
   \end{definition}
 \end{frame}
+
+\mode<all>{\includepdf[pages=59]{./dog-pubkey-tilkry24.pdf}}
 
 \begin{frame}
   \begin{definition}[\Acl{DHP}, \acs{DHP}\footfullcite{DiffieHellman}]
@@ -104,11 +118,7 @@
     \begin{itemize}
       \item \citeauthor{DiffieHellman}\footfullcite{DiffieHellman} used 
         \ac{DHP} to create a key-exchange protocol.
-
-        \pause{}
-
-      \item Take some time to figure out how we can use these problems to 
-        achieve what we want.
+        Take some time to think about how.
     \end{itemize}
   \end{exercise}
 
@@ -118,6 +128,13 @@
       \item Then they can use the key to encrypt their communications.
     \end{itemize}
   \end{block}
+
+  \begin{definition}[\Acl{DHP}, \acs{DHP}]
+    \begin{description}
+      \item[Given] \(g, g^x, g^y\in \ZZ_p^*\)
+      \item[Find] \(g^{xy}\)
+    \end{description}
+  \end{definition}
 \end{frame}
 
 \begin{frame}
@@ -161,7 +178,7 @@
     \begin{itemize}
       \item This is not secure as it is.
       \item \(g^x, g^y\) are \emph{not authenticated}!
-      \item Alice can tell the difference between Bob and Eve!
+      \item Alice can't tell the difference between Bob and Eve!
     \end{itemize}
   \end{remark}
 \end{frame}
@@ -173,7 +190,7 @@
     \begin{itemize}
       \item Fine, we can use \(g^{xy}\) as a key in a cipher.
         \begin{itemize}
-          \item \(\Enc[g^{xy}]{m}\), where \(\Enc\) is a symmetric cipher.
+          \item \(\Enc[g^{xy}][m]\), where \(\Enc\) is a symmetric cipher.
         \end{itemize}
       \item But shouldn't we be able to include a message directly?
     \end{itemize}
@@ -200,6 +217,67 @@
   \end{definition}
 \end{frame}
 
+\begin{frame}
+  \begin{definition}[Chosen Plaintext Attack (CPA)]
+    A \emph{chosen plaintext attack} is a scenario in which an adversary 
+    can choose arbitrary plaintexts to be encrypted and then obtain the 
+    corresponding ciphertexts.
+  \end{definition}
+
+  \pause{}
+
+  \begin{example}
+    \begin{itemize}
+      \item Difficult for symmetric ciphers.
+      \item Easy for public-key ciphers, just encrypt with the public key.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{example}[CPA attack]
+    \begin{itemize}
+      \item Alice encrypts \(m\) with Bob's public key, gets \(c\).
+      \item Alice sends \(c\) to Bob.
+      \item Eve guesses \(m'\) might be the message.
+      \item Eve encrypts \(m'\) with Bob's public key, gets \(c'\).
+      \item If \(c = c'\), then \(m = m'\).
+    \end{itemize}
+  \end{example}
+
+  \pause
+
+  \begin{definition}[Semantic Security]
+    An encryption scheme is \emph{semantically secure} if an adversary 
+    cannot derive any meaningful information about the plaintext from the ciphertext.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[ElGamal Encryption Scheme\footfullcite{ElGamal}]
+    \footnotesize
+    Set-up:
+    \begin{itemize}
+      \item Let \(g\in \ZZ_p^*\), randomly choose \(0 < x < |\ZZ_p^*|\).
+      \item Alice publishes \(\ZZ_p^*, g, g^x\) to everyone.
+    \end{itemize}
+    Encryption and decryption:
+    \begin{itemize}
+      \item Bob chooses random \(0 < y < |\ZZ_p^*|\) and computes \(g^y\).
+      \item Bob's message \(m\in \ZZ_p^*\).
+      \item He sends \((g^y, m(g^{x})^y)\) to Alice.
+      \item Alice computes \((g^y)^{-x}\) and \(m(g^x)^y (g^{y})^{-x} = m\).
+    \end{itemize}
+  \end{definition}
+
+  \begin{remark}[Semantic Security of ElGamal]
+    \begin{itemize}
+      \item The ElGamal encryption scheme offers semantic security under the 
+        assumption that the \ac{DDH} problem is hard.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
 \subsection{Digital signatures}
 
 \begin{frame}
@@ -217,15 +295,31 @@
         \end{itemize}
     \end{itemize}
   \end{idea}
+\end{frame}
 
-  \pause{}
-
+\begin{frame}
   \begin{exercise}
     \begin{itemize}
       \item Look at the ElGamal encryption scheme for a bit.
       \item Try to find a way to \enquote{run it backwards}.
     \end{itemize}
   \end{exercise}
+
+  \begin{definition}[ElGamal Encryption Scheme\footfullcite{ElGamal}]
+    \footnotesize
+    Set-up:
+    \begin{itemize}
+      \item Let \(g\in \ZZ_p^*\), randomly choose \(0 < x < |\ZZ_p^*|\).
+      \item Alice publishes \(\ZZ_p^*, g, g^x\) to everyone.
+    \end{itemize}
+    Encryption and decryption:
+    \begin{itemize}
+      \item Bob chooses random \(0 < y < |\ZZ_p^*|\) and computes \(g^y\).
+      \item Bob's message \(m\in \ZZ_p^*\).
+      \item He sends \((g^y, m(g^{x})^y)\) to Alice.
+      \item Alice computes \((g^y)^{-x}\) and \(m(g^x)^y (g^{y})^{-x} = m\).
+    \end{itemize}
+  \end{definition}
 \end{frame}
 
 \begin{frame}
@@ -233,7 +327,8 @@
   \begin{definition}[ElGamal Signature Scheme\footfullcite{ElGamal}]
     Set-up:
     \begin{itemize}
-      \item Let \(g\in \ZZ_p^*\) and \framebox{\(h\) be a one-way function}.
+      \item Let \(g\in \ZZ_p^*\) and \framebox{\(h\) be a collision-reistant 
+        hash function}.
       \item Alice publishes \(\ZZ_p^*, g, g^x\) to everyone.
     \end{itemize}
     Signing \(m\in \ZZ_p^*\):
@@ -313,6 +408,22 @@
     The encryption (decryption) function of the ElGamal cryptosystem is 
     a homomorphism, what structure does it preserve?
   \end{exercise}
+
+  \begin{definition}[ElGamal Encryption Scheme\footfullcite{ElGamal}]
+    \footnotesize
+    Set-up:
+    \begin{itemize}
+      \item Let \(g\in \ZZ_p^*\), randomly choose \(0 < x < |\ZZ_p^*|\).
+      \item Alice publishes \(\ZZ_p^*, g, g^x\) to everyone.
+    \end{itemize}
+    Encryption and decryption:
+    \begin{itemize}
+      \item Bob chooses random \(0 < y < |\ZZ_p^*|\) and computes \(g^y\).
+      \item Bob's message \(m\in \ZZ_p^*\).
+      \item He sends \((g^y, m(g^{x})^y)\) to Alice.
+      \item Alice computes \((g^y)^{-x}\) and \(m(g^x)^y (g^{y})^{-x} = m\).
+    \end{itemize}
+  \end{definition}
 \end{frame}
 
 \begin{frame}
@@ -325,7 +436,7 @@
 
         \pause{}
 
-      \item Create ciphertext
+      \item Create ciphertext (multiplying)
         \begin{align*}
           (g^y g^{y^\prime}, m\cdot g^{xy}\cdot m^\prime\cdot g^{x y^\prime})
           &= (g^{y + y^\prime}, m\cdot m^\prime\cdot g^{xy + xy^\prime}) \\
@@ -344,7 +455,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{remark}
+  \begin{remark}[Digital signatures]
     \begin{itemize}
       \item We use a hash function in the signature scheme to counter the 
         homomorphic property.
@@ -357,6 +468,36 @@
         a new message \emph{without knowing the signature key!}
     \end{itemize}
   \end{remark}
+
+  \pause
+
+  \begin{exercise}[Public-key encryption]
+    \begin{itemize}
+      \item How to deal with encryption and decryption?
+    \end{itemize}
+  \end{exercise}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{solution}
+    \begin{itemize}
+      \item Padding!
+      \item See e.g.~OAEP+.
+      \item And see the Public Key Cryptography Standards (PKCS).
+    \end{itemize}
+  \end{solution}
+
+  \begin{example}[OAEP+]
+    \begin{itemize}
+      \item Standardized in PKCS\#1 v2 and RFC 2437.
+    \end{itemize}
+  \end{example}
+
+  \begin{example}[\Ac{DH} key-agreement]
+    \begin{itemize}
+      \item Standardized in PKCS\#3, v1.4.
+    \end{itemize}
+  \end{example}
 \end{frame}
 
 \begin{frame}
@@ -364,11 +505,15 @@
     \begin{itemize}
       \item There are many schemes with different homomorphic properties.
       \item There is even \emph{fully homomorphic 
-          encryption}~\cite{GentryFullyHomomorphicEncryption}.
+        encryption}~\footfullcite{GentryFullyHomomorphicEncryption}.
     \end{itemize}
   \end{remark}
 \end{frame}
 
+
+\section{Public-key infrasturctures, PKIs}
+
+\mode<all>{\includepdf[pages=96-99]{./dog-pubkey-tilkry24.pdf}}
 
 %%%%%%%%%%%%%%%%%%%%%%
 
