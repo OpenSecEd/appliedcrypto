@@ -469,6 +469,180 @@ A complete camera signature system combines:
 \end{exercise}
 
 
+\section{Trusted timestamps and the C2PA standard}\label{CameraTimestamps}
+
+\ltnote{%
+  We introduce trusted timestamps to address the problem of backdating.
+  This creates contrast with signature-only approaches where an attacker 
+  with a compromised key could create signatures dated before the compromise.
+  Students should discern that signatures prove \emph{who} but not 
+  \emph{when} without additional mechanisms.
+}
+
+\begin{exercise}
+  A camera signature proves the image came from a specific camera.
+  But how do we prove \emph{when} it was taken?
+  Why does this matter?
+\end{exercise}
+
+\subsection{The timestamp problem}
+
+Camera signatures alone don't prove when an image was captured:
+\begin{itemize}
+  \item The camera's internal clock can be manipulated.
+  \item An attacker with a compromised key could create backdated signatures.
+  \item For legal evidence, the time of capture may be as important as 
+    authenticity.
+\end{itemize}
+
+\subsection{Timestamp authorities}
+
+A Timestamp Authority (TSA) provides cryptographic proof that data existed at 
+a specific time:
+\begin{enumerate}
+  \item The camera (or a connected device) sends a hash of the signed image to 
+    the TSA\@.
+  \item The TSA signs the hash together with a trusted timestamp.
+  \item The timestamp token is embedded in the image metadata.
+\end{enumerate}
+
+Now we have two signatures:
+\begin{description}
+  \item[Camera signature] Proves the image came from camera~\(C\).
+  \item[Timestamp signature] Proves the image existed at time~\(t\).
+\end{description}
+
+\begin{exercise}
+  What are the requirements for a trustworthy TSA?
+\end{exercise}
+
+Requirements:
+\begin{itemize}
+  \item The TSA must have an accurate, tamper-resistant clock (often 
+    synchronized via GPS or secure NTP).
+  \item The TSA's signing key must be protected in an HSM.
+  \item The TSA should be operated by a trusted, independent entity.
+  \item Multiple TSAs can provide redundancy and reduce single-point-of-trust.
+\end{itemize}
+
+\subsection{The C2PA standard}
+
+The Coalition for Content Provenance and Authenticity (C2PA) has developed an 
+industry standard for content authenticity:
+\begin{itemize}
+  \item Defines metadata formats for embedding signatures and provenance 
+    information.
+  \item Specifies how editing software can add its own signatures while 
+    preserving the chain of custody.
+  \item Includes support for trusted timestamps.
+  \item Adopted by major camera manufacturers, software vendors, and platforms.
+\end{itemize}
+
+Using C2PA provides interoperability: images signed by one manufacturer's 
+camera can be verified by any C2PA-compliant viewer.
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item Trusted timestamps require network connectivity at capture time (or 
+    shortly after).
+  \item TSA dependency: if the TSA is unavailable or compromised, timestamp 
+    verification fails.
+  \item The C2PA standard is evolving; implementations must track updates.
+  \item Timestamp tokens increase metadata size.
+\end{enumerate}
+
+
+\section{Post-quantum considerations}\label{CameraPostQuantum}
+
+\ltnote{%
+  We introduce the quantum computing threat to create contrast with the 
+  implicit assumption that current cryptographic algorithms remain secure 
+  indefinitely.
+  Students should discern that long-term authenticity requires planning for 
+  cryptographic transitions.
+}
+
+\begin{exercise}
+  Photographic evidence may be relevant decades after capture.
+  What happens if quantum computers break the signature algorithms used today?
+\end{exercise}
+
+\subsection{The quantum threat to signatures}
+
+Our system uses ECDSA or EdDSA for signatures.
+Both are vulnerable to Shor's algorithm on a sufficiently powerful quantum 
+computer:
+\begin{itemize}
+  \item An attacker could forge signatures, making any image appear to be from 
+    any camera.
+  \item Unlike encryption (where \enquote{harvest now, decrypt later} is the 
+    threat), signature forgery affects only \emph{future} verification---past 
+    signatures were valid at the time they were created.
+\end{itemize}
+
+\subsection{Migration strategies}
+
+\begin{description}
+  \item[Post-quantum signature algorithms] NIST has standardized ML-DSA 
+    (formerly Dilithium) and SLH-DSA (formerly SPHINCS+).
+    These resist quantum attacks but have larger signatures (several 
+    kilobytes).
+  \item[Hybrid signatures] Sign with both a classical algorithm (ECDSA) and a 
+    post-quantum algorithm.
+    The image is trusted if \emph{either} signature is valid, providing 
+    backwards compatibility and future security.
+  \item[Cryptographic agility] Design the system to easily swap algorithms 
+    when standards evolve.
+\end{description}
+
+For cameras deployed today with a 20-year expected lifespan, hybrid signatures 
+are prudent.
+The C2PA standard supports algorithm agility, making migration feasible.
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item Post-quantum signatures increase metadata size significantly.
+  \item Hybrid approaches require twice the signature computation.
+  \item Not all viewers will immediately support new algorithms.
+  \item Planning for quantum resistance now avoids costly retrofits later.
+\end{enumerate}
+
+
+\section{Future work and open problems}\label{CameraFutureWork}
+
+Several aspects of camera signature systems remain active areas of development:
+
+\begin{description}
+  \item[AI detection integration] Combining cryptographic signatures with AI 
+    detection models could provide defense in depth: signatures prove camera 
+    origin, while AI detectors flag suspicious content that lacks signatures.
+  \item[Sensor fingerprinting] Each image sensor has unique imperfections that 
+    create a \enquote{fingerprint} in images.
+    This could complement cryptographic signatures by providing a secondary 
+    verification mechanism.
+  \item[Video streaming] Live video presents additional challenges: signatures 
+    must be applied in real-time, and viewers need to verify without 
+    downloading the entire stream.
+  \item[Decentralized PKI] Blockchain-based certificate management could 
+    provide transparency and reduce reliance on centralized CAs.
+  \item[Metadata preservation] Images are often stripped of metadata when 
+    shared on social media.
+    Standards for preserving authenticity information through sharing 
+    pipelines are needed.
+  \item[Usability studies] How should viewers display verification status?
+    Warning fatigue and user understanding are critical concerns.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach designing a 
+  solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
+\end{exercise}
+
+
 
 \chapter{Detecting bot networks via digital signatures}\label{TwitterSignature}
 \chapterprecis{%
@@ -792,4 +966,196 @@ A complete bot detection system via signatures combines:
   free speech, whistleblowing, and political dissent?
   What alternative approaches to bot detection might avoid these
   concerns?
+\end{exercise}
+
+
+\section{Sybil resistance and rate limiting}\label{BotSybilResistance}
+
+\ltnote{%
+  We introduce the Sybil attack as a fundamental challenge to bot detection.
+  This creates contrast with the assumption that identity binding fully 
+  solves the problem.
+  Students should discern that economic and computational barriers, not just 
+  cryptography, are essential for bot resistance.
+}
+
+\begin{exercise}
+  Even with identity binding, a determined adversary might acquire multiple 
+  identities (fake IDs, purchased accounts, compromised devices).
+  How can we make large-scale bot operation economically infeasible?
+\end{exercise}
+
+\subsection{The Sybil attack}
+
+In a Sybil attack, an adversary creates many pseudonymous identities to gain 
+disproportionate influence.
+Even with identity verification:
+\begin{itemize}
+  \item Fake or stolen identity documents exist.
+  \item \enquote{Device farms} provide many attested devices cheaply.
+  \item Account markets sell verified accounts.
+\end{itemize}
+
+The goal is not to make bot operation impossible, but to make it expensive 
+enough to deter most attackers.
+
+\subsection{Proof-of-work requirements}
+
+One approach is to require computational work for each signature:
+\begin{enumerate}
+  \item Before posting, the client must solve a computational puzzle 
+    (similar to Bitcoin mining, but much easier).
+  \item The puzzle difficulty is tuned so legitimate users barely notice 
+    (e.g., 100ms of computation), but operating 10,000 bots requires 
+    significant resources.
+  \item The puzzle can be bound to the message content, preventing 
+    pre-computation.
+\end{enumerate}
+
+\begin{exercise}
+  What are the trade-offs of proof-of-work for bot deterrence?
+\end{exercise}
+
+Trade-offs:
+\begin{description}
+  \item[Energy cost] Proof-of-work consumes energy; environmental concerns 
+    apply.
+  \item[Device inequality] Powerful devices complete puzzles faster; this 
+    disadvantages users with older phones.
+  \item[Accessibility] Assistive technologies may struggle with computational 
+    requirements.
+  \item[Determined attackers] Well-funded adversaries (nation-states) can 
+    afford the computation.
+\end{description}
+
+\subsection{Economic rate limiting}
+
+Alternative approaches impose economic costs:
+\begin{description}
+  \item[Micropayments] Each post costs a tiny amount (e.g., \$0.001).
+    Negligible for humans, prohibitive at bot scale.
+  \item[Stake-based reputation] Users deposit a bond that is slashed for 
+    violations.
+    Sybil accounts require capital for each identity.
+  \item[Social graph analysis] Accounts without genuine social connections 
+    (mutual follows, conversations) face higher scrutiny.
+\end{description}
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item No single mechanism eliminates Sybil attacks; defense in depth is 
+    required.
+  \item Economic barriers shift the problem from cryptography to economics.
+  \item Accessibility and equity concerns constrain the aggressiveness of 
+    rate limiting.
+  \item Well-funded adversaries may accept the costs; the goal is deterrence, 
+    not perfect prevention.
+\end{enumerate}
+
+
+\section{Legal and regulatory considerations}\label{BotLegal}
+
+\ltnote{%
+  We introduce legal aspects to create contrast with the purely technical 
+  focus of previous sections.
+  Students should discern that cryptographic systems operate within legal 
+  frameworks that constrain design choices.
+}
+
+\begin{exercise}
+  What legal and regulatory issues arise from mandatory signing of social 
+  media posts?
+\end{exercise}
+
+\subsection{Privacy regulations}
+
+In jurisdictions with strong privacy laws (EU GDPR, California CCPA):
+\begin{description}
+  \item[Data minimization] Collecting cryptographic signatures that link all 
+    user activity may violate data minimization principles.
+  \item[Right to erasure] Users may request deletion of their data, but 
+    signatures on public posts create permanent links.
+  \item[Consent] Users must understand and consent to the privacy implications 
+    of signing.
+\end{description}
+
+\subsection{Free speech implications}
+
+Mandatory identity verification conflicts with anonymous speech:
+\begin{itemize}
+  \item Whistleblowers and dissidents rely on anonymity for safety.
+  \item Anonymous speech has legal protection in many democracies.
+  \item Platforms operating globally must navigate varying legal regimes.
+\end{itemize}
+
+\begin{exercise}
+  How might a platform balance bot detection with anonymous speech 
+  protections?
+\end{exercise}
+
+Possible approaches:
+\begin{itemize}
+  \item Tiered verification: anonymous accounts exist but have reduced 
+    visibility/reach.
+  \item Verified accounts receive a badge; unverified accounts are not banned 
+    but are marked.
+  \item Group signatures allow proving membership without revealing identity 
+    (as discussed in \cref{BotPrivacy}).
+\end{itemize}
+
+\subsection{Liability and content moderation}
+
+If signatures provide non-repudiation:
+\begin{itemize}
+  \item Platforms may be compelled to provide signing key information to law 
+    enforcement.
+  \item Users may face legal consequences for signed content more easily.
+  \item Platforms may face pressure to act on signed content as \enquote{known} 
+    to be from a specific person.
+\end{itemize}
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item Legal constraints may prohibit the most effective technical solutions.
+  \item Privacy-by-design is not optional but legally mandated in some 
+    jurisdictions.
+  \item Global platforms must implement jurisdiction-specific policies.
+  \item The design must be reviewed by legal counsel, not just engineers.
+\end{enumerate}
+
+
+\section{Future work and open problems}\label{BotFutureWork}
+
+Several aspects of bot detection via signatures remain active areas of 
+research:
+
+\begin{description}
+  \item[Decentralized identity (DIDs)] Self-sovereign identity systems could 
+    provide verified credentials without centralized CAs.
+    Users control their own identity data while still proving uniqueness.
+  \item[Behavioral biometrics] Typing patterns, mouse movements, and 
+    interaction timing could complement cryptographic verification.
+    These are harder for bots to fake but raise additional privacy concerns.
+  \item[Federated platforms] In decentralized social networks (Mastodon, 
+    Bluesky), each server has different policies.
+    Cross-server signature verification and identity portability are open 
+    problems.
+  \item[AI-generated content labeling] As AI-generated text becomes 
+    indistinguishable from human writing, signatures prove human authorship 
+    only if the signing process is secure.
+  \item[Post-quantum signatures] Like camera signatures, social media 
+    signatures should plan for quantum resistance.
+    The high volume of signatures makes efficiency critical.
+  \item[Incentive alignment] Economic mechanism design could make honest 
+    behavior more profitable than bot operation, rather than relying solely 
+    on detection.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach designing a 
+  solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
 \end{exercise}
