@@ -346,6 +346,103 @@ See \cref{fig:CameraPKI} for the certificate chain.
 \end{enumerate}
 
 
+\section{Offline verification}\label{CameraOfflineVerification}
+
+\ltnote{%
+  We address the challenge of verifying signatures without network access.
+  This creates contrast with the online revocation checking discussed earlier,
+  helping students discern that real-world deployment must handle disconnected 
+  scenarios.
+  Many students discussed this challenge in their submissions.
+}
+
+\begin{exercise}
+  Image viewers may not always have network connectivity.
+  How can they verify signatures and check revocation status when offline?
+\end{exercise}
+
+\subsection{The offline verification challenge}
+
+Certificate verification typically requires checking revocation status via CRL
+or OCSP\@.
+However, cameras are often used in remote locations, and images may be viewed on
+devices without internet access:
+\begin{itemize}
+  \item A journalist in a conflict zone photographs evidence but cannot connect
+    to verify until days later.
+  \item An airplane passenger views photos on a laptop without Wi-Fi.
+  \item A court proceeding requires verification in a secure facility without
+    external network access.
+\end{itemize}
+
+\subsection{OCSP stapling}
+
+With OCSP stapling, the camera (or a connected device) periodically obtains a
+signed OCSP response and embeds it in the image metadata alongside the
+signature:
+\begin{enumerate}
+  \item The camera connects to the OCSP responder when online.
+  \item The responder returns a signed statement: \enquote{Certificate~\(C\) was
+    valid at time~\(t\).}
+  \item This response is embedded in subsequent images.
+  \item Viewers can verify the OCSP response offline, trusting it for a limited
+    validity period (e.g., 7 days).
+\end{enumerate}
+
+\begin{exercise}
+  What are the limitations of OCSP stapling for cameras?
+\end{exercise}
+
+Limitations:
+\begin{description}
+  \item[Staleness] The OCSP response has a validity period.
+    Images captured after the response expires but before the camera reconnects
+    cannot include fresh revocation status.
+  \item[Compromise window] If a camera is compromised and its certificate
+    revoked, images signed before the camera learns of revocation will have
+    stale (valid) OCSP responses.
+  \item[Storage overhead] Each image must include the OCSP response, increasing
+    file size.
+\end{description}
+
+\subsection{Cached CRLs}
+
+An alternative approach caches Certificate Revocation Lists locally:
+\begin{itemize}
+  \item Image viewers periodically download CRLs when online.
+  \item The cached CRL is used for offline verification.
+  \item Delta CRLs reduce bandwidth by transmitting only changes since the last
+    full CRL.
+\end{itemize}
+
+This shifts the burden from the camera to the viewer, but requires viewers to
+maintain current CRL caches.
+
+\subsection{Grace periods and trust decisions}
+
+Practical systems must define policies for offline scenarios:
+\begin{description}
+  \item[Accept with warning] Display images with stale revocation data but warn
+    the user that the certificate status could not be verified recently.
+  \item[Time-limited trust] Accept signatures verified against OCSP responses or
+    CRLs that are less than~\(n\) days old; reject older ones.
+  \item[Fail closed vs.\ fail open] Critical applications (legal evidence) may
+    reject unverifiable images; casual viewing may accept them with warnings.
+\end{description}
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item Offline verification requires embedding additional data (OCSP responses)
+    or maintaining local caches (CRLs).
+  \item Staleness creates a window where revoked certificates may appear valid.
+  \item Policy decisions about grace periods involve trade-offs between
+    usability and security.
+  \item The C2PA standard supports OCSP stapling for interoperable offline
+    verification.
+\end{enumerate}
+
+
 \section{Hardware security and side-channel attacks}\label{CameraHardwareSecurity}
 
 \begin{exercise}
@@ -447,6 +544,124 @@ Concerns:
     trust in manufacturers.
   \item Group signatures add cryptographic complexity.
   \item User choice requires careful UX design to avoid confusion.
+\end{enumerate}
+
+
+\section{Capture environment verification}\label{CameraCaptureEnvironment}
+
+\ltnote{%
+  We address a fundamental limitation: signatures prove the image came from a
+  camera, but not that the camera photographed \enquote{reality}.
+  This creates contrast with the implicit assumption that signed images are
+  truthful.
+  Students should discern that cryptographic authenticity differs from content
+  truthfulness.
+  Several students and peer reviewers discussed this attack in their
+  submissions.
+}
+
+\begin{exercise}
+  An attacker prints a high-resolution AI-generated image and photographs it
+  with a real camera.
+  The resulting image has a valid camera signature.
+  How can we detect or prevent this attack?
+\end{exercise}
+
+\subsection{The photograph-of-photograph attack}
+
+Camera signatures prove \emph{provenance} (which device created the image) but
+not \emph{content authenticity} (whether the scene was real).
+An attacker can:
+\begin{enumerate}
+  \item Generate a photorealistic AI image.
+  \item Print it at high resolution or display it on a high-quality screen.
+  \item Photograph the print/screen with a genuine camera.
+  \item Obtain a valid signature on the fake content.
+\end{enumerate}
+
+This is a fundamental limitation of cryptographic signatures: they authenticate
+the signing process, not the semantic content.
+
+\subsection{Depth sensing}
+
+Modern cameras can include depth sensors (LiDAR, structured light, or stereo
+cameras) that capture 3D information:
+\begin{itemize}
+  \item A photograph of a printed image or screen produces a flat depth map.
+  \item A photograph of a real 3D scene produces varying depth values.
+  \item The depth data is signed alongside the image, allowing viewers to detect
+    flat subjects.
+\end{itemize}
+
+\begin{exercise}
+  What are the limitations of depth sensing as a countermeasure?
+\end{exercise}
+
+Limitations:
+\begin{description}
+  \item[Cost and complexity] Depth sensors increase camera cost and power
+    consumption.
+  \item[Range limitations] Many depth sensors work only at short range (a few
+    meters), limiting their effectiveness for landscape or distant subjects.
+  \item[Sophisticated attacks] An attacker could create a physical 3D model or
+    use multiple screens at different depths to produce non-flat depth maps.
+  \item[Legitimate flat subjects] Photographs of paintings, documents, or
+    screens may be legitimately flat.
+\end{description}
+
+\subsection{Environmental sensor fusion}
+
+Cameras can include additional sensors whose data is signed with the image:
+\begin{description}
+  \item[Accelerometer and gyroscope] Record camera motion during capture.
+    A static tripod shot of a print differs from handheld photography.
+  \item[GPS and compass] Record location and orientation.
+    Metadata can be cross-referenced with known geography.
+  \item[Ambient light sensor] Record lighting conditions.
+    Flash photography of a print may produce distinctive reflections.
+  \item[Microphone] Record ambient audio during video capture.
+    Audio can corroborate location and environment.
+\end{description}
+
+\begin{exercise}
+  How might an attacker defeat environmental sensor fusion?
+\end{exercise}
+
+Environmental sensors raise the bar but are not foolproof:
+\begin{itemize}
+  \item An attacker could simulate camera motion while photographing a print.
+  \item GPS coordinates can be spoofed on compromised devices.
+  \item Sophisticated setups could match environmental conditions.
+\end{itemize}
+
+\subsection{AI-based authenticity detection}
+
+A complementary approach uses machine learning to detect signs of
+photograph-of-photograph attacks:
+\begin{itemize}
+  \item Moiré patterns from photographing screens.
+  \item Paper texture or print artifacts.
+  \item Lighting inconsistencies between the subject and environment.
+  \item Perspective distortions from photographing flat surfaces.
+\end{itemize}
+
+These detectors can run alongside signature verification, providing defense in
+depth.
+However, as AI generation improves, the arms race between generation and
+detection continues.
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item Cryptographic signatures alone cannot guarantee content truthfulness.
+  \item Depth sensors and environmental sensors raise the attack cost but add
+    hardware complexity.
+  \item AI-based detection provides probabilistic rather than cryptographic
+    assurance.
+  \item Defense in depth---combining multiple approaches---is more robust than
+    any single mechanism.
+  \item For high-stakes applications (legal evidence, journalism), human
+    judgment and contextual verification remain essential.
 \end{enumerate}
 
 
