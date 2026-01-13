@@ -124,3 +124,7 @@ sympy-plots-for-*.tex/
 # WinEdt
 *.bak
 *.sav
+
+## Canvas push stamps:
+.pushed
+.pushed.d/

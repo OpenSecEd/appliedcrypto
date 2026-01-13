@@ -1,68 +1,67 @@
-COURSE?=tilkry26
-MODULE?=Course overview
+MODULE ?= Course overview
+PULL_COURSE ?= tilkry25
+PULL_MODULE ?= Course Memo
 
-PAGES+=start.md
-PAGES+=registration.md
-PAGES+=content.md
-PAGES+=setup.md
-PAGES+=LAB1.md
-PAGES+=INL1.md
-PAGES+=schedule.md
-PAGES+=help.md
-PAGES+=deadlines.md
-PAGES+=grading-criteria.md
-PAGES+=teachers.md
-PAGES+=news-and-links.md
-PAGES+=videos.md
-PAGES+=booking.md
+PAGES += start.md
+PAGES += registration.md
+PAGES += content.md
+PAGES += setup.md
+PAGES += LAB1.md
+PAGES += INL1.md
+PAGES += schedule.md
+PAGES += help.md
+PAGES += deadlines.md
+PAGES += grading-criteria.md
+PAGES += teachers.md
+PAGES += news-and-links.md
+PAGES += videos.md
+PAGES += booking.md
 
-.PHONY: all
-all:
+include ../module.mk
 
-STAMPDIR := .pushed.d
-
-.PHONY: push
-push: .pushed
-
-.pushed: $(addprefix $(STAMPDIR)/,$(PAGES))
-	touch $@
-
-$(STAMPDIR)/%: %
-	@mkdir -p $(dir $@)
-	canvaslms pages edit -c "${COURSE}" -f "$<"
-	touch $@
-
-.PHONY: force-push
-force-push:
-	for page in $$(ls *.md); do \
-		echo "Pushing $$page to ${COURSE} ..."; \
-		canvaslms pages edit --create -c "${COURSE}" -f "$${page}"; \
-	done; \
-	echo "Done."
-
-# Get list of pages:
-# canvaslms pages list -c tilkry26 -M "Course overview" | cut -f 4 | tr -d '\r'
+# tilkry26 structure:
+# canvaslms modules view -c "${COURSE}" "${MODULE}" | rg "\tPage\t"
+# tilkry25 fallback sources (module name differs from tilkry26):
+# canvaslms pages list -c "${PULL_COURSE}" -M "${PULL_MODULE}" | cut -f 4 | tr -d '\r'
 .PHONY: pull
 pull:
-	canvaslms pages view -c "${COURSE}" -p "Start here!" -M "${MODULE}" > start.md
-	canvaslms pages view -c "${COURSE}" \
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Start here!" > start.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Start here!" > start.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" \
 		-p "At the start: registration, canvas settings and funka" \
-		> registration.md
-	canvaslms pages view -c "${COURSE}" \
+		> registration.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" \
+			-p "At the start: registration, canvas settings and funka" \
+			> registration.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" \
 		-p "Content, intended learning outcomes and literature" \
-		> content.md
-	canvaslms pages view -c "${COURSE}" -p "Course setup" > setup.md
-	canvaslms pages view -c "${COURSE}" -p "Class zoom, schedule, lab queue" \
-		> schedule.md
-	canvaslms pages view -c "${COURSE}" -p "How to get help" > help.md
-	canvaslms pages view -c "${COURSE}" -p "Deadlines and passing the course" \
-		> deadlines.md
-	canvaslms pages view -c "${COURSE}" -p "Grading criteria" \
-		> grading-criteria.md
-	canvaslms pages view -c "${COURSE}" \
+		> content.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" \
+			-p "Content, intended learning outcomes and literature" \
+			> content.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Course setup" > setup.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Course setup" > setup.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Class zoom, schedule, lab queue" \
+		> schedule.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Class zoom, schedule, lab queue" \
+			> schedule.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "How to get help" > help.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "How to get help" > help.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Deadlines and passing the course" \
+		> deadlines.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Deadlines and passing the course" \
+			> deadlines.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Grading criteria" > grading-criteria.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Grading criteria" > grading-criteria.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" \
 		-p "Teachers, representation, contact and naming conventions" \
-		> teachers.md
-	canvaslms pages view -c "${COURSE}" -p "News and Links" > news-and-links.md
-	canvaslms pages view -c "${COURSE}" -p "Access to videos" > videos.md
-	canvaslms pages view -c "${COURSE}" \
-		-p "Booking time slots in Canvas calendar" > booking.md
+		> teachers.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" \
+			-p "Teachers, representation, contact and naming conventions" \
+			> teachers.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "News and Links" > news-and-links.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "News and Links" > news-and-links.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Access to videos" > videos.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Access to videos" > videos.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Booking time slots in Canvas calendar" > booking.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Booking time slots in Canvas calendar" > booking.md
