@@ -1,11 +1,11 @@
 ---
-title: 'Lecture 16/1: Ciphers (Daniel) ON CAMPUS+ZOOM'
+title: 'Lecture 16/1: Ciphers (Daniel) on ZOOM+CAMPUS'
 url: lecture-16-slash-1-ciphers-daniel-on-campus+zoom
 published: true
 front_page: false
 editing_roles: teachers
 modules:
-- Week 1 (calendar week 3)
+- Week 1 \(calendar week 3\)
 ---
 ### Content
 
