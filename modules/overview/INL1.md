@@ -1,5 +1,6 @@
 ---
 title: INL1 assignments
+url: inl1-assignments-12
 published: true
 front_page: false
 editing_roles: teachers
