@@ -9,11 +9,11 @@ modules:
 ---
 ### Teachers
 
--   Daniel Bosk \[DB, dbosk@kth.se\] (course responsible, lecturer)
--   Douglas Wikström \[DW\] (examiner, lecturer)
+-   Daniel Bosk \[DB, dbosk@kth.se\] (course responsible and examiner, 
+    lecturer)
 -   Sonja Buchegger \[SB\], Martin Ekerå \[ME\], Roberto Guanciales
     \[RG\], Karl Norrmann \[KN\], Mats Näslund \[MN\] (lecturers)
--   Jesper Amilon \[JA\], Eric Cornelissen \[EC\], Mojtaba Moazen \[MM\]
+-   Jesper Amilon \[JA\]
     (teaching assistants)
 
 ### Student representation (course board, kursnämnd)
@@ -31,8 +31,7 @@ suggestions for course improvements much faster.
 Proceed in this order:
 
 1.  In relevant pinned
-    [discussion](https://canvas.kth.se/courses/59543/discussion_topics "Discussions"){api-endpoint="https://canvas.kth.se/api/v1/courses/59543/discussion_topics"
-    api-returntype="[Discussion]"} thread as a reply.
+    [discussion](https://canvas.kth.se/courses/59543/discussion_topics "Discussions"){api-endpoint="https://canvas.kth.se/api/v1/courses/59543/discussion_topics" api-returntype="[Discussion]"} thread as a reply.
 2.  If nothing fits, post a new discussion or
 3.  Contact teacher or course responsible student(s)
 

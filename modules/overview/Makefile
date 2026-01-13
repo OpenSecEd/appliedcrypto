@@ -19,12 +19,8 @@ PAGES += booking.md
 
 include ../module.mk
 
-# tilkry26 structure:
-# canvaslms modules view -c "${COURSE}" "${MODULE}" | rg "\tPage\t"
-# tilkry25 fallback sources (module name differs from tilkry26):
-# canvaslms pages list -c "${PULL_COURSE}" -M "${PULL_MODULE}" | cut -f 4 | tr -d '\r'
-.PHONY: pull
-pull:
+.PHONY: pull-pages
+pull-pages:
 	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Start here!" > start.md \
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Start here!" > start.md
 	canvaslms pages view -c "${COURSE}" -M "${MODULE}" \
@@ -65,3 +61,7 @@ pull:
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Access to videos" > videos.md
 	canvaslms pages view -c "${COURSE}" -M "${MODULE}" -p "Booking time slots in Canvas calendar" > booking.md \
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE}" -p "Booking time slots in Canvas calendar" > booking.md
+
+.PHONY: pull-assignments
+pull-assignments:
+	@echo "No assignments in ${MODULE}."

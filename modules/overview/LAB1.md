@@ -1,5 +1,6 @@
 ---
 title: LAB1 assignments
+url: lab1-assignments-53
 published: true
 front_page: false
 editing_roles: teachers
@@ -17,5 +18,9 @@ are prefixed with "Optional".
 
 All these assignments are handed in and presented during the lab sessions.
 
-You can find a list by going to the assignments tab and sorting by type (rather 
-than date, which is the default) and look for the assignment group LAB1.
+There are two modules in LADOK: INL1 and LAB1. Which assignments belong
+to which module can be found under
+[Assignments](https://canvas.kth.se/courses/59543/assignments "Assignments"){course-type="navigation" api-endpoint="https://canvas.kth.se/api/v1/courses/59543/assignments" api-returntype="[Assignment]"} (*select \"by type\" instead of the
+default \"by date\" in the top right corner*). Then you can figure out
+what\'s missing if you don\'t get your grades in LADOK.
+

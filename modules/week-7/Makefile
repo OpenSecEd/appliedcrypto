@@ -5,14 +5,18 @@ PULL_MODULE_RE ?= $(MODULE_RE)
 
 PAGES += lecture-risk-based-security.md
 
+ASSIGNMENTS += assignments/inl1written.md
+
 include ../module.mk
 
 # Note: Canvas treats module/page selectors as regexes.
-# tilkry26 structure:
-# canvaslms modules view -c "${COURSE}" "${MODULE_RE}" | rg "\tPage\t"
-# tilkry25 fallback sources:
-# canvaslms modules view -c "${PULL_COURSE}" "${PULL_MODULE_RE}" | rg "\tPage\t"
-.PHONY: pull
-pull:
+.PHONY: pull-pages
+pull-pages:
 	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "Risk-based security" > lecture-risk-based-security.md \
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Risk-based security" > lecture-risk-based-security.md
+
+.PHONY: pull-assignments
+pull-assignments:
+	@mkdir -p assignments
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "INL1Written" > assignments/inl1written.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "INL1Written" > assignments/inl1written.md

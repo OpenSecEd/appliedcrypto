@@ -128,3 +128,7 @@ sympy-plots-for-*.tex/
 ## Canvas push stamps:
 .pushed
 .pushed.d/
+.pushed-pages
+.pushed-pages.d/
+.pushed-assignments
+.pushed-assignments.d/
