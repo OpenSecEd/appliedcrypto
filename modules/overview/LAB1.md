@@ -1,6 +1,6 @@
 ---
 title: LAB1 assignments
-url: lab1-assigments-53
+url: lab1-assignments-53
 published: true
 front_page: false
 editing_roles: teachers
