@@ -3,13 +3,16 @@ MODULE_RE ?= Week 9
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
+ASSIGNMENTS += assignments/inl1oral.md
+
 include ../module.mk
 
-# Note: Canvas treats module/page selectors as regexes.
-# tilkry26 structure:
-# canvaslms modules view -c "${COURSE}" "${MODULE_RE}" | rg "\tPage\t"
-# tilkry25 fallback sources:
-# canvaslms modules view -c "${PULL_COURSE}" "${PULL_MODULE_RE}" | rg "\tPage\t"
-.PHONY: pull
-pull:
+.PHONY: pull-pages
+pull-pages:
 	@echo "No pages (Page items) in ${MODULE}."
+
+.PHONY: pull-assignments
+pull-assignments:
+	@mkdir -p assignments
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "INL1Oral" > assignments/inl1oral.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "INL1Oral" > assignments/inl1oral.md
