@@ -7,6 +7,7 @@ modules:
 - Course overview
 ---
 **How INL1 works:** it has 3 components:
+
 1. a quiz on cryptography, broken up into several parts, name starting with 
    INL1Quiz;
 2. a written assignment (INL1Written), and
