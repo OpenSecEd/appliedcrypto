@@ -1,0 +1,50 @@
+﻿Overview
+Report Generated,Meeting Topic,Meeting/Webinar ID,Actual Start Time
+2024-02-05 13:48:39,tilkry,69563422731,2024-02-05 10:00:06
+
+Launched Polls
+#,Poll Name,Questions,Responses
+1,applied-hash prep overview,2,16
+
+applied-hash prep overview
+#,User Name,Email Address,Submitted Date and Time,What prep material did you watch/read?,What was difficult?
+1,Maximilian Mannila,mmannila@kth.se,2024-02-05 10:21:19,Video: Blockchains and proof-of-work,,,,,,,,,,,
+2,Jonas Liley,liley@kth.se,2024-02-05 10:21:12,Video: Blockchains and proof-of-work,,,,,,,,,,,
+3,Gustav Andersson Kasche,gustavak@kth.se,2024-02-05 10:21:03,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Video: Authentication and password hashing",,,,,,,,,,,
+4,Ludvig Christensen,ludvigch@kth.se,2024-02-05 10:21:10,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Video: Authentication and password hashing",,,,,,,,,,,
+5,Felipe Andrés José San Martín Irarrázabal,fajsmi@kth.se,2024-02-05 10:21:14,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work",,,,,,,,,,,
+6,Lukas Gamard,gamard@kth.se,2024-02-05 10:20:49,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Video: Authentication and password hashing",,,,,,,,,,,
+7,Kristina Skrebutenas,kskr@kth.se,2024-02-05 10:22:30,Video: Blockchains and proof-of-work,,,,,,,,,,,
+8,Minh Quang Nguyen,mqnguyen@kth.se,2024-02-05 10:20:53,"Document: Schneier--Kelsey logs;
+Video: Authentication and password hashing",,,,,,,,,,,
+9,Tilda Jansson,tildaja@kth.se,2024-02-05 10:21:26,"Video: Fingerprinting properties of hash functions;
+Document: Chapter 10 Git Internals of ProGit;
+Video: Authentication and password hashing",,,,,,,,,,,
+10,Gustav Henningsson,ghenn@kth.se,2024-02-05 10:22:46,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Document: Bitcoin: A peer-to-peer electronic cash system;
+Video: Authentication and password hashing;
+Recording of last year's tutorial",Fingerprinting of hash functions in general was a little bit confusing imo,,,,,,,,,,
+11,Anton,aradberg@kth.se,2024-02-05 10:22:12,,forgot to prep,,,,,,,,,,
+12,Arber Limani,arberl@kth.se,2024-02-05 10:21:34,"Document: The BitTorrent specification;
+Recording of last year's tutorial",,,,,,,,,,,
+13,Antoine Missue,missue@kth.se,2024-02-05 10:22:02,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Video: Authentication and password hashing",Blockchains ,,,,,,,,,,
+14,Eusebiu Volostiuc,eusebiu@kth.se,2024-02-05 10:22:29,"Video: Fingerprinting properties of hash functions;
+Video: Authentication and password hashing;
+Recording of last year's tutorial",,,,,,,,,,,
+15,Roni Henareh,ronih@kth.se,2024-02-05 10:20:59,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Video: Authentication and password hashing",,,,,,,,,,,
+16,Sofia Edvardsson,sofiaedv@kth.se,2024-02-05 10:22:06,"Video: Fingerprinting properties of hash functions;
+Video: Blockchains and proof-of-work;
+Video: Authentication and password hashing",,,,,,,,,,,
+
