@@ -59,7 +59,7 @@
       \item They secure the connection to our internet bank.
       \item Is it a good idea to send
         \begin{center}
-          Enc(\texttt{``Transfer 1000 SEK to account 1234''}, k)
+          Enc(\texttt{``Transfer 1000 SEK from 1234 to 1235''}, k)
         \end{center}
         to the bank?
     \end{itemize}
@@ -174,9 +174,8 @@
 \begin{frame}[fragile]
   \begin{block}{Lecture format}
     \begin{itemize}
-      \item Most on campus
-      \item Some flipped (watch videos before class)
-      \item Some online (participate through Zoom)
+      \item Most on Zoom and campus.
+      \item Some flipped (watch videos, read material before class).
     \end{itemize}
   \end{block}
 
@@ -227,10 +226,12 @@
       \item Cryptanalysis of Ciphertexts
       \item Implement AES (Kattis Problem)
       \item AES presentation
-      \item MANDATORY Seminar (31/1): usability (Sonja)  ON CAMPUS
-      \item MANDATORY Seminar (pick 6/2): Impact considerations around crypto systems (Sonja)  ON CAMPUS
+      \item MANDATORY Seminar: usability (Sonja)  ON CAMPUS
+      \item MANDATORY Seminar: Impact considerations around crypto systems 
+        (Sonja)  ON CAMPUS
       \item MANDATORY Design Considerations (after the impact considerations seminar)
-      \item MANDATORY Lab (20-21/2): Introduction to ProVerif  (Karl and Jesper)  ON CAMPUS
+      \item MANDATORY Lab: Introduction to ProVerif  (Karl and Jesper)  ON 
+        CAMPUS
     \end{itemize}
   \end{block}
 \end{frame}
@@ -302,5 +303,64 @@
     \begin{itemize}
       \item Let's look at INL1Written
     \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Introductory example: Parcel boxes (\enquote{postboxes})}
+
+\begin{frame}[fragile]
+  \begin{block}{Scenario: delivering parcels}
+    \begin{itemize}
+      \item Parcels are delivered when recipients are away.
+      \item A shared parcel box (a \enquote{postbox}) stores parcels temporarily.
+      \item A backend coordinates access and notifications.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{What must the system achieve?}
+    \begin{itemize}
+      \item Only the right person can retrieve the right parcel.
+      \item The delivery company can operate efficiently.
+      \item Disputes can be resolved (\enquote{delivered or not?}).
+      \item The system should leak as little metadata as possible.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[What can go wrong?]
+    \begin{itemize}
+      \item Impersonation: attacker pretends to be customer or delivery person.
+      \item Replay: attacker reuses a captured access message.
+      \item Compromise: a box or backend is hacked or tampered with.
+      \item Insider abuse: authorized actors misuse their privileges.
+      \item Privacy leakage: pickup patterns reveal habits, locations, relationships.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Crypto toolbox you need to learn}
+    \begin{itemize}
+      \item Hash functions: identifiers, integrity checks, commitments
+      \item MACs and authenticated encryption: protect tokens and stored data
+      \item Digital signatures: accountability and verifiable records
+      \item Secure channels and key exchange: protect communication with backends
+      \item Key management: provisioning, rotation, revocation, trust anchors
+      \item Randomness and nonces: freshness, replay resistance, safe protocols
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Course topics $\rightarrow$ scenario needs}
+    \begin{description}
+      \item[Confidentiality] parcel details and access data
+      \item[Integrity] tokens, logs, and device state
+      \item[Authentication] customer and delivery identities
+      \item[Authorization] who may open which compartment, when
+      \item[Accountability] audit trails and dispute handling
+      \item[Privacy] minimize metadata leakage and linkability
+    \end{description}
   \end{block}
 \end{frame}
