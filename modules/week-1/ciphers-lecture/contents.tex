@@ -1,0 +1,446 @@
+\title{Ciphers and shared-key encryption}
+\author{Daniel Bosk}
+\institute{KTH EECS}
+
+\mode*
+
+\begin{frame}
+  \maketitle
+\end{frame}
+
+\begin{abstract}
+  \input{abstract.tex}
+\end{abstract}
+
+\clearpage
+
+\begin{frame}
+  \only<presentation>{\tableofcontents[hideallsubsections]}
+  \only<article>{\tableofcontents}
+\end{frame}
+
+\clearpage
+
+\section{Background and principles}
+
+\subsection{What is cryptography?}
+
+\begin{frame}
+  \begin{exercise}
+    When you hear \enquote{cryptography}, what do you think it does?
+    Take 30 seconds and write down a one-sentence answer.
+  \end{exercise}
+
+  \ltnote{%
+    Try-first: activate prior knowledge before terminology.
+    The contrast between student intuition and the definitions below makes the
+    scope (contents vs existence) discernible.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+    \item Cryptography aims to protect information against an adversary.
+    \item Steganography hides \emph{existence}; cryptography hides \emph{contents}.
+    \item Today: mostly a science (definitions, models, proofs), not
+      \enquote{clever} tricks.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Kerckhoffs' principle}
+    \begin{itemize}
+      \item No security-by-obscurity.
+      \item The \emph{key} should be the only secret.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\section{Ciphers (shared-key encryption)}
+
+\subsection{The interface and the goal}
+
+\begin{frame}
+  \begin{idea}
+    \begin{itemize}
+      \item Alice and Bob share a (small) secret key \(k\).
+      \item Alice computes ciphertext \(c = \Enc_k(m)\) and sends \(c\).
+      \item Bob computes \(m = \Dec_k(c)\).
+      \item An eavesdropper should learn (essentially) nothing about \(m\) from
+        \(c\).
+    \end{itemize}
+  \end{idea}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Symmetric encryption in one line}
+    \begin{itemize}
+      \item Same key for encryption and decryption.
+      \item Main practical challenge: \emph{key distribution}.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Block-cipher encryption}
+    \begin{description}
+      \item[Input] key \(k\), plaintext block \(p\).
+      \item[Output] ciphertext block \(c\).
+      \item[Notation] \(\Enc[_k][p] = c\)
+    \end{description}
+  \end{block}
+
+  \pause
+
+  \begin{block}{Block-cipher decryption}
+    \begin{description}
+      \item[Input] key \(k\), ciphertext block \(c\).
+      \item[Output] plaintext block \(p\).
+      \item[Notation] \(\Dec[_k][c] = p\)
+    \end{description}
+  \end{block}
+\end{frame}
+
+\subsection{Why classical ciphers fail}
+
+\begin{frame}
+  \begin{definition}[Shift cipher (Caesar)]
+    \begin{itemize}
+      \item Think of letters as integers modulo \(n\) (e.g., \(n=26\) or
+        include space).
+      \item Key \(k\in\mathbb{Z}_n\).
+      \item \(\Enc[_k][m] = (m+k)\bmod n\), \(\Dec[_k][c] = (c-k)\bmod n\).
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    You intercept a Caesar-encrypted message, but you do not know the key.
+
+    How would you try to break it?
+  \end{exercise}
+
+  \ltnote{%
+    Try-first: gives students a chance to propose brute force vs statistics.
+    In discussion, collect both and use them to motivate the concept of
+    \enquote{keyspace} and \enquote{structure leakage}.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Cryptanalysis of Caesar}
+    \begin{itemize}
+      \item Brute force: try all keys (tiny keyspace).
+      \item Statistics: letter frequencies are preserved (just ``rotated'').
+      \item If we guess one plaintext letter \(\alpha\) maps to ciphertext
+        letter \(\beta\), then \(k = \beta - \alpha \bmod n\).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Substitution cipher]
+    \begin{itemize}
+      \item Key: a permutation \(\sigma\) of the alphabet.
+      \item Encryption: \(c_i = \sigma(m_i)\).
+      \item Decryption: \(m_i = \sigma^{-1}(c_i)\).
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Cryptanalysis: structure still leaks}
+    \begin{itemize}
+      \item Single-letter frequencies leak (A/E/T/... are uneven).
+      \item Digrams/trigrams (``th'', ``the'', ...) give more clues.
+      \item A large keyspace is not enough if the scheme leaks structure.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Vigen\`ere cipher]
+    \begin{itemize}
+      \item Key: a short sequence \(k_0,\ldots,k_{\ell-1}\) reused periodically.
+      \item Encryption: \(c_i = m_i + k_{i\bmod\ell} \bmod n\).
+      \item Decryption: \(m_i = c_i - k_{i\bmod\ell} \bmod n\).
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Cryptanalysis of Vigen\`ere (simple version)}
+    \begin{itemize}
+      \item If we guess the key length \(\ell\), then we split the ciphertext
+        into \(\ell\) columns.
+      \item Each column is a Caesar cipher with its own shift.
+      \item Try plausible \(\ell\) and test for language-like statistics.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Security properties and pitfalls}
+
+\begin{frame}
+  \begin{definition}[Perfect secrecy]
+    \begin{itemize}
+      \item Random variables \(M\) (message) and \(C\) (ciphertext).
+      \item Perfect secrecy means: \(\Pr(M=m\mid C=c)=\Pr(M=m)\) for all
+        \(m,c\).
+    \end{itemize}
+  \end{definition}
+
+  \pause
+
+  \begin{remark}
+    Perfect secrecy is possible (one-time pad), but expensive in key material.
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{One-time pad (OTP)}
+    \begin{itemize}
+      \item Key is as long as the message, uniformly random, used once.
+      \item Gives perfect secrecy.
+      \item Key distribution and key reuse are the practical obstacles.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Key length and brute force}
+    \begin{itemize}
+      \item If the best attack is brute force, security grows with key length.
+      \item Doubling key length squares brute-force work.
+      \item Symmetric keys (e.g., 128--256 bits) can be enough in practice.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Block ciphers need a mode of operation}
+    \begin{itemize}
+      \item Real messages are longer than one block.
+      \item A mode defines how to encrypt many blocks.
+      \item Bad modes leak patterns.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    Suppose you encrypt a bitmap image block-by-block.
+
+    What would you expect the ciphertext image to look like if you encrypt each
+    block independently with the same key?
+  \end{exercise}
+
+  \ltnote{%
+    Try-first before ECB: students can reason about repetition/patterns without
+    knowing the term \enquote{ECB}. This sets up the contrast that motivates
+    modes of operation.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{ECB (Electronic Codebook) leaks patterns}
+    \begin{itemize}
+      \item Each block encrypted independently.
+      \item Equal plaintext blocks \(\Rightarrow\) equal ciphertext blocks.
+      \item Structure in the plaintext becomes visible.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \mode<presentation>{%
+    \begin{block}{CBC and CTR avoid pattern leakage (high level)}
+      \begin{itemize}
+        \item CBC mixes each plaintext block with previous ciphertext.
+        \item CTR uses a counter to create a keystream.
+        \item Both rely on an \emph{IV/nonce} so encryptions of the same
+          message look different.
+      \end{itemize}
+    \end{block}
+  }
+  \mode<article>{%
+    \begin{block}{CBC and CTR avoid pattern leakage (high level)}
+      The key idea is to make encryption of identical plaintext blocks produce
+      different ciphertext blocks.
+      CBC does this by chaining blocks (each block depends on the previous
+      ciphertext), while CTR does this by XORing the plaintext with a keystream
+      generated from a counter.
+
+      In both cases we need an IV/nonce to ensure the chaining/keystream starts
+      differently each time.
+    \end{block}
+  }
+
+  \ltnote{%
+    Article-mode prose explains the \emph{why} without diving into construction.
+    Slides keep it short for narration.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{IV/nonce: what it is and why it matters}
+    \begin{itemize}
+      \item A public value used to randomize encryption.
+      \item Must be unique (and often unpredictable) depending on the mode.
+      \item Reuse can destroy confidentiality.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    In CTR mode, encryption looks like
+    \(c = m \oplus \text{keystream}(k,\text{nonce})\).
+
+    What do you think happens if the same nonce is reused for two different
+    messages?
+  \end{exercise}
+
+  \ltnote{%
+    Try-first: students can compute \(c_1\oplus c_2\) themselves and discover
+    the key invariant (same keystream) before we state the rule.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{CTR nonce reuse: the disaster in one line}
+    \begin{itemize}
+      \item CTR gives: \(c = m \oplus \text{keystream}(k,\text{nonce})\).
+      \item If nonce reused: \(c_1\oplus c_2 = m_1\oplus m_2\).
+      \item This leaks relations between messages and is often enough to recover
+        both.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    Alice sends Bob an encrypted message.
+
+    An attacker flips a few bits in the ciphertext.
+
+    What do you think Bob will notice when decrypting?
+  \end{exercise}
+
+  \ltnote{%
+    Try-first: many students implicitly assume encryption implies
+    tamper-detection. This question surfaces that misconception before we state
+    the separation between confidentiality and integrity.
+  }
+\end{frame}
+
+\begin{frame}
+  \mode<presentation>{%
+    \begin{block}{Encryption does not give integrity}
+      \begin{itemize}
+        \item Encryption hides content, but does not necessarily detect tampering.
+        \item Bob can often decrypt a modified ciphertext into \enquote{garbage}
+          without knowing it was modified.
+        \item Integrity requires additional mechanisms (covered later).
+      \end{itemize}
+    \end{block}
+  }
+  \mode<article>{%
+    \begin{block}{Encryption does not give integrity}
+      The purpose of encryption is confidentiality: an eavesdropper should not
+      learn the message.
+      But confidentiality alone does not mean the receiver can detect if the
+      ciphertext was modified.
+
+      Many encryption schemes are \emph{malleable}: an attacker can change the
+      ciphertext in a way that results in a predictable (or at least different)
+      plaintext after decryption.
+      To get tamper detection we need integrity protection, typically by using a
+      MAC or an authenticated-encryption scheme.
+    \end{block}
+  }
+\end{frame}
+
+\section{Case study: police body cameras}
+
+\subsection{ECB vs CTR in practice}
+
+\begin{frame}
+  \begin{block}{Motivation}
+    Police body cameras record sensitive material.
+    We want confidentiality of stored footage, but encryption must be used
+    correctly.
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \begin{sidecaption}[Tux encrypted using different modes.]{%
+      Tux encrypted using different block modes of operation.
+      When using ECB mode, we can still distinguish Tux.
+      But we expect encryption to have the effect as shown for CTR.
+    }[fig:EncModes]
+    \hfill
+    \begin{subfigure}[t]{0.3\linewidth}
+      \includegraphics[width=\linewidth]{../../../project/figs/Tux.pdf}
+      \caption{Original Tux.
+      Image by: Larry Ewing, Simon Budig, Garrett LeSage.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.3\linewidth}
+      \includegraphics[width=\linewidth]{../../../project/figs/Tux_encrypted_ecb.png}
+      \caption{ECB-encrypted Tux.
+      Image by: RFL890.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.3\linewidth}
+      \includegraphics[width=\linewidth]{../../../project/figs/Tux_encrypted_ctr.png}
+      \caption{CTR-encrypted Tux.
+      Image by: RFL890.}
+    \end{subfigure}
+    \hspace{\fill}
+    \end{sidecaption}
+  \end{figure}
+
+  \ltnote{%
+    This is the core contrast example for modes.
+    We keep the key and plaintext image invariant and vary only the mode
+    (ECB vs CTR), making pattern leakage discernible.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    The camera uses CTR mode.
+
+    What must be true about the IV/nonce values to keep confidentiality?
+
+    \medskip
+    Bonus: what could go wrong if the camera reboots and starts counting from
+    the same nonce again?
+  \end{exercise}
+
+  \ltnote{%
+    This ties the abstract nonce-reuse rule to a concrete operational scenario
+    (device reboot/state loss). Students often know \enquote{nonce must be
+    unique} but miss why systems engineering matters.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Take-away}
+    \begin{itemize}
+      \item Modes matter: ECB is not acceptable for structured data.
+      \item IV/nonce discipline is part of the security definition.
+      \item Shared-key encryption is fast and practical, but key distribution and
+        correct use are crucial.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    Questions?
+  \end{center}
+\end{frame}

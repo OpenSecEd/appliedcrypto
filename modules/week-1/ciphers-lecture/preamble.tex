@@ -1,0 +1,51 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[swedish,british]{babel}
+
+\usepackage{noweb}
+\noweboptions{breakcode,longchunks,longxref}
+
+\usepackage{booktabs}
+
+\usepackage[all]{foreign}
+\renewcommand{\foreignfullfont}{}
+\renewcommand{\foreignabbrfont}{}
+
+%\usepackage{newclude}
+\usepackage{import}
+
+% didactic provides the semantic environments.
+\usepackage{didactic}
+
+% Quotes.
+\usepackage{csquotes}
+
+% Hyperlinks. Beamer may load hyperref early, so avoid option clashes.
+\makeatletter
+\@ifpackageloaded{hyperref}{%
+  \hypersetup{colorlinks=true}%
+}{%
+  \usepackage[colorlinks]{hyperref}%
+}
+\makeatother
+
+\usepackage{acro}
+
+\usepackage{subcaption}
+
+\usepackage{xparse}
+
+\let\email\texttt
+
+\usepackage{amsmath}
+\newcommand{\Enc}{\mathsf{Enc}}
+\newcommand{\Dec}{\mathsf{Dec}}
+\usepackage{mathtools}
+
+\usepackage{thmtools}
+\usepackage[unq]{unique}
+\DeclareMathOperator{\powerset}{\mathcal{P}}
+
+\usepackage{siunitx}
+
+\usepackage{cleveref}
