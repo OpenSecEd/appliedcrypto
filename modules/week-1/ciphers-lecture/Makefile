@@ -6,10 +6,14 @@ LATEXFLAGS+=	-shell-escape
 SRC+=		preamble.tex
 SRC+=		abstract.tex contents.tex
 
-notes.pdf: notes.tex didactic.sty
+DEPENDS+=	didactic.sty
+DEPENDS+=	bibsp.sty
+DEPENDS+=	crypto.bib
+
+notes.pdf: notes.tex ${DEPENDS}
 notes.pdf: ${SRC}
 
-slides.pdf: slides.tex didactic.sty
+slides.pdf: slides.tex ${DEPENDS}
 slides.pdf: ${SRC}
 
 .PHONY: clean
@@ -22,4 +26,5 @@ include ${INCLUDE_MAKEFILES}/tex.mk
 include ${INCLUDE_MAKEFILES}/noweb.mk
 INCLUDE_DIDACTIC=../../../didactic
 include ${INCLUDE_DIDACTIC}/didactic.mk
-
+INCLUDE_BIBSP=../../../bibsp
+include ${INCLUDE_BIBSP}/bibsp.mk

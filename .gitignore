@@ -99,6 +99,22 @@ acs-*.bib
 _minted*
 *.pyg
 
+# pythontex
+pythontex-files-*/
+*.pytxcode
+
+# latexmk output directory
+ltxobj/
+
+# XeTeX intermediates
+*.xdv
+
+# beamerarticle/memoir helper
+*.unq
+
+# LaTeX errors saved by editors/tools
+*-SAVE-ERROR
+
 # morewrites
 *.mw
 
