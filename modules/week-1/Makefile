@@ -6,6 +6,8 @@ PULL_MODULE_RE ?= $(MODULE_RE)
 PAGES += lecture-intro.md
 PAGES += lecture-ciphers.md
 
+QUIZZES += INL1Quiz-ciphers.json
+
 ASSIGNMENTS += assignments/hac-ch6-stream-ciphers.md
 ASSIGNMENTS += assignments/hac-ch7-block-ciphers.md
 ASSIGNMENTS += assignments/cryptanalysis-of-ciphertexts.md
@@ -23,6 +25,12 @@ pull-pages:
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Lecture .*: Intro" > lecture-intro.md
 	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture .*: Ciphers" > lecture-ciphers.md \
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Lecture .*: Ciphers" > lecture-ciphers.md
+
+.PHONY: pull-quizzes
+pull-quizzes:
+	canvaslms quizzes view -c "${COURSE}" -M "${MODULE_RE}" \
+		-a "INL1Quiz Ciphers" \
+		> quizzes/INL1Quiz-ciphers.json
 
 .PHONY: pull-assignments
 pull-assignments:
