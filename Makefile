@@ -1,5 +1,5 @@
 SUBDIR+= 	intro
-SUBDIR+= 	shared-key
+#SUBDIR+= 	shared-key
 SUBDIR+= 	one-way
 SUBDIR+= 	pub-key
 SUBDIR+= 	zkp-smc
