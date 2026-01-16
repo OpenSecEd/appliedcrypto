@@ -84,7 +84,7 @@ it without the key.
 }
 
 Modern cryptography goes far beyond simple secret writing.
-As \textcite{GoldreichFoC-1} notes, cryptography is concerned with the 
+As \textcite{GoldreichFOC-1} notes, cryptography is concerned with the 
 conceptualization, definition, and construction of computing systems that 
 address security concerns.
 This includes not only encryption, but also digital signatures, authentication 
@@ -93,7 +93,7 @@ Indeed, any concept that has security properties can be considered a
 cryptographic notion.
 
 \begin{frame}
-  \blockcquote{GoldreichFoC-1}{%
+  \blockcquote{GoldreichFOC-1}{%
     Cryptography is concerned with the conceptualization, definition,
     and construction of computing systems that address security
     concerns.%
@@ -156,10 +156,15 @@ its own flavor and historical development.
     computational assumptions.
 
   \item[Counter-intuitive cryptography]
-    The most modern developments, from the 1980s onward.
+    Modern developments, from the 1980s onward.
     These include zero-knowledge proofs (proving you know something without 
     revealing what), secure multi-party computation (computing on secret 
     inputs without revealing them), and other seemingly impossible feats.
+
+  \item[Fully homomorphic encryption]
+    More recent (early 2000s) allowing arbitrary computations on encrypted data 
+    without decrypting it first.
+    This has profound implications for cloud computing and data privacy.
 \end{description}
 
 \mode<presentation>{%
@@ -235,7 +240,7 @@ secrets people already use in everyday life.
 
   \begin{onlyenv}<2>
   \begin{exercise}
-    What is missing for this to work?
+    What do we need for this to work?
   \end{exercise}
 
   \end{onlyenv}
@@ -266,6 +271,26 @@ Give 30--60 seconds of think-pair-share. Listen for phrases like:
 enough if it is public—what matters is \emph{secret information}.
 }
 
+\begin{frame}
+  \begin{solution}
+    We have two options:
+    \begin{enumerate}
+      \item Either we keep the garbling procedure secret.
+      \item Or we need a secret component in a publicly known garbling.
+    \end{enumerate}
+  \end{solution}
+\end{frame}
+
+\begin{frame}
+  \begin{example}[Secret language]
+    \foreignquote{swedish}{Rövarspråket}:
+    \begin{itemize}
+      \item Each consonant \(x\) is replaced by the triplet \(xox\).
+      \item Each vowel is left unchanged.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
 The missing ingredient in any cipher is a \emph{joint secret}---some piece of 
 information that Alice and Bob share but that is difficult for an adversary to 
 guess.
@@ -276,7 +301,6 @@ In cryptography, this joint secret is called a \emph{key}.
     A \emph{joint secret} is a piece of shared information of Alice and Bob
     that is hard to guess for others.
   \end{definition}
-
 \end{frame}
 
 \ltnote{%
@@ -311,8 +335,6 @@ friends.
     \enquote{Remember how many fish we caught that rainy day?}
   \end{example}
 
-\end{frame}
-
 \ltnote{%
   \textbf{Variation pattern}: Contrast.
 
@@ -327,20 +349,11 @@ friends.
   This foreshadows the tension between usability and security in key management.
 }
 
-\note{%
-Ask: “Why might this be hard for an outsider?” Highlight: it depends on
-shared experience. Then point out a limitation: it may not be uniformly
-hard to guess; it could leak via social media, friends, etc. This motivates
-a more formal secret.
-}
 
-\begin{frame}
   \begin{example}[Joint secret: random bits]
     Alice and Bob agree on a sequence of randomly chosen bits intended
     for use later.
   \end{example}
-
-\end{frame}
 
 \ltnote{%
   \textbf{Variation pattern}: Generalization.
@@ -355,8 +368,14 @@ a more formal secret.
   not rely on obscurity of the method}, but on the secrecy of the key.
   This prepares them for Kerckhoff's principle.
 }
+\end{frame}
 
 \note{%
+Ask: “Why might this be hard for an outsider?” Highlight: it depends on
+shared experience. Then point out a limitation: it may not be uniformly
+hard to guess; it could leak via social media, friends, etc. This motivates
+a more formal secret.
+
 Stress: the bits are \emph{random} and \emph{shared only by Alice and Bob}.
 Then connect to the cipher story: the missing ingredient is a joint secret
 (a shared key) that enables Bob to reverse the transformation, while others
@@ -380,13 +399,11 @@ about it, except the key, becomes public knowledge.
 This is often paraphrased as \enquote{no security by obscurity}.
 
 \begin{frame}
-  \begin{block}{A quote\footfullcite{KerckhoffsPrinciple}}
-    \begin{displayquote}\relax
-      [A cryptosystem] should not require secrecy, and it should not be 
-      a problem
-      if it falls into the enemy hands;
-    \end{displayquote}
-  \end{block}
+  \begin{displayquote}\relax
+    [A cryptosystem] should not require secrecy, and it should not be 
+    a problem
+    if it falls into the enemy hands;
+  \end{displayquote}
 
   \pause{}
 
@@ -520,14 +537,17 @@ Swedish alphabet), and encryption simply adds the key to each letter.
 
 \begin{frame}
   \begin{definition}[Shift Cipher]\label{ShiftCipher}
-    Let \(\M = \C = \K = \ZZ_{29}\).
-    For each \(k\in \K\) we define
-    \begin{align}
-      \nonumber
-      \Enc[_k][m] &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
-      \nonumber
-      \Dec[_k][c] &= (c - k) \bmod 29, c\in \C.
-    \end{align}
+    We define it as follows:
+    \begin{itemize}
+      \item Let \(\M = \C = \K = \ZZ_{29}\).
+      \item For each \(k\in \K\) we define
+        \begin{align}
+          \nonumber
+          \Enc[_k][m] &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
+          \nonumber
+          \Dec[_k][c] &= (c - k) \bmod 29, c\in \C.
+        \end{align}
+    \end{itemize}
   \end{definition}
 
   \pause{}
@@ -573,10 +593,12 @@ already knew.
 \begin{frame}
   \begin{definition}[Perfect secrecy]\footfullcite{ShannonSecrecy}
     Consider a cryptosystem \((\M, \C, \K, \E, \D)\) with stochastic variables 
-    \(M\) (message) and \(C\) (ciphertext).
-    The system has \emph{perfect secrecy} if and only if 
-    \[\Pr(M = m\mid C = c) = \Pr(M = m)\] 
-    for all \(m\in \M\) and \(c\in \C\).
+    \(M\) (message) and \(C\) (ciphertext):
+    \begin{itemize}
+      \item The system has \emph{perfect secrecy} if and only if 
+        \[\Pr(M = m\mid C = c) = \Pr(M = m)\] 
+        for all \(m\in \M\) and \(c\in \C\).
+    \end{itemize}
   \end{definition}
 
   \pause{}
@@ -627,22 +649,27 @@ Decryption is the same operation, since XOR is its own inverse.
 
 \begin{frame}
   \begin{example}[One-time Pad]
-    Let \(n\) be a positive integer and let \(\M = \C = \K = (\ZZ_2)^n\).
+    We construct it as follows:
+    \begin{itemize}
+      \item Let \(n\) be a positive integer.
+      \item Let \(\M = \C = \K = (\ZZ_2)^n\).
 
-    \pause{}
+        \pause{}
 
-    For each key \(k = (k_1, \ldots, k_n)\in \K\), plaintexts 
-    \(m = (m_1, \ldots, m_n)\in \M\) and ciphertexts 
-    \(c = (c_1, \ldots, c_n)\in \C\), we define
-    \[\Enc[_k][m] = (m_1 + k_1, \ldots, m_n + k_n).\]
+      \item For each key \(k = (k_1, \ldots, k_n)\in \K\), plaintexts 
+        \(m = (m_1, \ldots, m_n)\in \M\) and ciphertexts 
+        \(c = (c_1, \ldots, c_n)\in \C\), we define
+        \[\Enc[_k][m] = (m_1 + k_1, \ldots, m_n + k_n).\]
 
-    \pause{}
+        \pause{}
 
-    We also define \(\Dec = \Enc\).
+      \item We also define \(\Dec = \Enc\).
 
-    \pause{}
+        \pause{}
 
-    The key \(k\in \K\) must be chosen uniformly at random for each encryption.
+      \item The key \(k\in \K\) must be chosen uniformly at random for each 
+        encryption.
+    \end{itemize}
   \end{example}
 \end{frame}
 
@@ -664,9 +691,6 @@ algorithm.
 \begin{frame}
   \begin{definition}[\Acl{PRP}, \acs{PRP}]\footfullcite{KatzLindell-v1}
     Let \(F\colon \{0,1\}^s\times \{0, 1\}^n\to \{0,1\}^n\).
-
-    \pause{}
-
     We say \(F\) is \iac{PRP} if:
     \begin{enumerate}
       \item for any \(k\in \{0, 1\}^s\), \(F_k\) is a bijection;
@@ -810,9 +834,12 @@ Surely this is secure?
 
 \begin{frame}
   \begin{definition}[Substitution cipher]
-    The key is a permutation \(\sigma\) of the alphabet.
-    Encryption replaces each letter: \(c_i = \sigma(m_i)\).
-    Decryption inverts: \(m_i = \sigma^{-1}(c_i)\).
+    We define it as follows:
+    \begin{itemize}
+      \item Key: a permutation \(\sigma\) of the alphabet.
+      \item Encryption: \(c_i = \sigma(m_i)\).
+      \item Decryption: \(m_i = \sigma^{-1}(c_i)\).
+    \end{itemize}
   \end{definition}
 \end{frame}
 
@@ -853,11 +880,12 @@ chiffre indéchiffrable} (the unbreakable cipher).
 
 \begin{frame}
   \begin{definition}[Vigen\`ere cipher]
-    The key is a short sequence \(k_0,\ldots,k_{\ell-1}\) that is reused 
-    periodically.
-    Encryption shifts each letter by the corresponding key element:
-    \(c_i = m_i + k_{i\bmod\ell} \bmod n\).
-    Decryption reverses: \(m_i = c_i - k_{i\bmod\ell} \bmod n\).
+    We define it as follows:
+    \begin{itemize}
+      \item Key: a short sequence \(k_0,\ldots,k_{\ell-1}\) reused periodically.
+      \item Encryption: \(c_i = m_i + k_{i\bmod\ell} \bmod n\).
+      \item Decryption: \(m_i = c_i - k_{i\bmod\ell} \bmod n\).
+    \end{itemize}
   \end{definition}
 \end{frame}
 
@@ -891,11 +919,14 @@ frequency analysis.
 
 \begin{frame}
   \begin{definition}[Hill cipher]
-    The key is an invertible \(m \times m\) matrix \(K\) over \(\ZZ_n\).
-    The plaintext is grouped into vectors \(\mathbf{p} = (p_1, \ldots, p_m)^T\) 
-    of \(m\) letters.
-    Encryption multiplies: \(\mathbf{c} = K \cdot \mathbf{p} \bmod n\).
-    Decryption inverts: \(\mathbf{p} = K^{-1} \cdot \mathbf{c} \bmod n\).
+    We define it as follows:
+    \begin{itemize}
+      \item Key: an invertible \(m \times m\) matrix \(K\) over \(\ZZ_n\).
+      \item Plaintext: a vector \(\mathbf{p} = (p_1, \ldots, p_m)^T\) of \(m\) 
+        letters.
+      \item Encryption: \(\mathbf{c} = K \cdot \mathbf{p} \bmod n\).
+      \item Decryption: \(\mathbf{p} = K^{-1} \cdot \mathbf{c} \bmod n\).
+    \end{itemize}
   \end{definition}
 \end{frame}
 
