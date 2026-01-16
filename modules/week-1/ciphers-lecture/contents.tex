@@ -25,10 +25,14 @@
 
 \section{Introduction}
 
+Cryptography is one of the oldest arts, yet also one of the most modern 
+sciences.
+Before we dive into definitions and constructions, take a moment to reflect on 
+what the word \enquote{cryptography} means to you.
+
 \begin{frame}
   \begin{exercise}
     When you hear \enquote{cryptography}, what do you think it does?
-    Take 30 seconds and write down a one-sentence answer.
   \end{exercise}
 
   \ltnote{%
@@ -38,6 +42,24 @@
   }
 \end{frame}
 
+The word \emph{cryptography} derives from Greek: \emph{kryptos} 
+(\ibygr{krupto's}) meaning \enquote{hidden}, and \emph{graphos} 
+(\ibygr{gra'fos}) meaning \enquote{writing}.
+Literally, cryptography is the art of hidden writing.
+The field has existed for millennia---from ancient Egyptian hieroglyphics to 
+Roman military ciphers to modern computer algorithms.
+
+It is important to distinguish cryptography from a related but distinct field: 
+\emph{steganography}.
+While both aim to protect communication, they do so in fundamentally different 
+ways.
+Steganography hides the \emph{existence} of a message (for example, by 
+embedding secret text within an innocent-looking image), whereas cryptography 
+hides the \emph{contents} of a message while leaving its existence visible.
+An eavesdropper knows a cryptographic message was sent, but cannot understand 
+it without the key.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{itemize}
     \item The word has its origin in greek~\footfullcite{OED2013cg}:
@@ -59,6 +81,16 @@
     \item Cryptography concerns hiding a message's \emph{contents}.
   \end{itemize}
 \end{frame}
+}
+
+Modern cryptography goes far beyond simple secret writing.
+As \textcite{GoldreichFoC-1} notes, cryptography is concerned with the 
+conceptualization, definition, and construction of computing systems that 
+address security concerns.
+This includes not only encryption, but also digital signatures, authentication 
+protocols, secure computation, and much more.
+Indeed, any concept that has security properties can be considered a 
+cryptographic notion.
 
 \begin{frame}
   \blockcquote{GoldreichFoC-1}{%
@@ -74,6 +106,17 @@
   }
 \end{frame}
 
+Historically, cryptography was an art practiced by a select few---military 
+officers, diplomats, and spies who devised \enquote{clever} schemes to 
+obscure their messages.
+The security of these schemes rested on the assumption that adversaries could 
+not figure out the method.
+This turned out to be a poor assumption: there are always people with 
+sufficient time, motivation, and ingenuity to break such schemes.
+The transition from art to science came with the realization that security 
+must be provable, not merely hoped for.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{itemize}
     \item Then it was an art, now it's a science.
@@ -90,9 +133,36 @@
       of time and motivation \dots
   \end{itemize}
 \end{frame}
+}
 
 \subsection{Outline}
 
+Modern cryptography can be organized into three broad categories, each with 
+its own flavor and historical development.
+
+\begin{description}
+  \item[Shared-key (symmetric) cryptography]
+    The oldest form, where the same secret key is shared between the 
+    communicating parties.
+    This is the focus of this lecture.
+    The main challenge is \emph{key distribution}: how do Alice and Bob agree 
+    on a shared secret in the first place?
+
+  \item[Public-key (asymmetric) cryptography]
+    A revolutionary development from the 1970s.
+    Each user has a pair of keys: a public key (known to everyone) and a 
+    private key (known only to the owner).
+    This elegantly solves the key distribution problem but introduces new 
+    computational assumptions.
+
+  \item[Counter-intuitive cryptography]
+    The most modern developments, from the 1980s onward.
+    These include zero-knowledge proofs (proving you know something without 
+    revealing what), secure multi-party computation (computing on secret 
+    inputs without revealing them), and other seemingly impossible feats.
+\end{description}
+
+\mode<presentation>{%
 \begin{frame}
   \begin{description}
     \item[Shared-key]
@@ -112,9 +182,20 @@
       of what.
   \end{description}
 \end{frame}
+}
 
 
 \section{Shared-key cryptography}
+
+In shared-key (or symmetric) cryptography, Alice and Bob share a common 
+secret---a \emph{key}---that they use to encrypt and decrypt messages.
+This is the oldest and most intuitive form of cryptography: if you and a 
+friend share a secret code, you can communicate privately even if others are 
+listening.
+
+But what exactly is this \enquote{shared secret}?
+Before we formalize the notion of a cipher, let us explore what kinds of 
+secrets people already use in everyday life.
 
 \ltnote{%
   Variation theory (try-first): start from learners' everyday experience
@@ -153,17 +234,25 @@
   \end{block}
 
   \begin{onlyenv}<2>
-  \ltnote{%
-    Variation theory (try-first): leave space for student hypotheses
-    Critical aspect to discern: Bob can invert only if he has extra 
-    information
-  }
   \begin{exercise}
     What is missing for this to work?
   \end{exercise}
 
   \end{onlyenv}
 \end{frame}
+
+\ltnote{%
+  \textbf{Variation pattern}: Try-first.
+
+  \textbf{What varies}: Student hypotheses about the missing ingredient.
+
+  \textbf{What remains invariant}: The cipher setup (message, garbled text, 
+  transformation).
+
+  \textbf{Critical aspect}: Bob can invert the transformation \emph{only if} he 
+  has extra information that Eve lacks.
+  This surfaces the need for a shared secret (key).
+}
 
 \note{%
 Ask students to point out what each symbol means: \(m\) (message/meaning),
@@ -177,15 +266,31 @@ Give 30--60 seconds of think-pair-share. Listen for phrases like:
 enough if it is public—what matters is \emph{secret information}.
 }
 
+The missing ingredient in any cipher is a \emph{joint secret}---some piece of 
+information that Alice and Bob share but that is difficult for an adversary to 
+guess.
+In cryptography, this joint secret is called a \emph{key}.
+
 \begin{frame}
   \begin{definition}[Joint secret]
     A \emph{joint secret} is a piece of shared information of Alice and Bob
     that is hard to guess for others.
   \end{definition}
 
-  % Variation theory (generalization): name the invariant pattern behind many
-  % everyday strategies (inside jokes, passwords, secret handshakes)
 \end{frame}
+
+\ltnote{%
+  \textbf{Variation pattern}: Generalization.
+
+  \textbf{What varies}: The form of the secret (memory-based, random bits, 
+  passwords, inside jokes, secret handshakes).
+
+  \textbf{What remains invariant}: The concept of a joint secret---shared 
+  information that is hard for others to guess.
+
+  \textbf{Critical aspect}: Students should discern that the \emph{principle} 
+  of shared secrets is independent of the particular form the secret takes.
+}
 
 \note{%
 Connect back to the first question: many “friend privacy” methods rely on
@@ -194,14 +299,33 @@ secret is typically called a \emph{key}. (You can mention the word “key”
 now, or save it for the next slide if you prefer pacing.)
 }
 
+Joint secrets can take many forms.
+A shared memory (\enquote{Remember how many fish we caught that rainy day?}) 
+is meaningful to Alice and Bob but hard for an outsider to guess.
+However, such memory-based secrets have limitations: they may not be uniformly 
+hard to guess, and information might leak through social media or mutual 
+friends.
+
 \begin{frame}
   \begin{example}[Joint secret: shared memory]
     \enquote{Remember how many fish we caught that rainy day?}
   \end{example}
 
-  % Variation theory (contrast): "meaningful to Alice/Bob" vs "hard to guess for others"
-  % Invariant: shared secret; Varies: the form (memory-based vs random bits)
 \end{frame}
+
+\ltnote{%
+  \textbf{Variation pattern}: Contrast.
+
+  \textbf{What varies}: Perspective on the secret---meaningful to Alice and Bob 
+  versus hard to guess for outsiders.
+
+  \textbf{What remains invariant}: The secret itself (the shared memory).
+
+  \textbf{Critical aspect}: A good secret must be \emph{both} meaningful to the 
+  parties (so they can remember and use it) \emph{and} hard for adversaries to 
+  guess.
+  This foreshadows the tension between usability and security in key management.
+}
 
 \note{%
 Ask: “Why might this be hard for an outsider?” Highlight: it depends on
@@ -216,9 +340,21 @@ a more formal secret.
     for use later.
   \end{example}
 
-  % Variation theory (generalization): move from informal secrets to formal keys
-  % Critical aspect: secrecy should not rely on obscurity of the method, but on the key
 \end{frame}
+
+\ltnote{%
+  \textbf{Variation pattern}: Generalization.
+
+  \textbf{What varies}: The nature of the secret---from informal (shared 
+  memories) to formal (random bit strings).
+
+  \textbf{What remains invariant}: The requirement that the secret is shared 
+  only by the communicating parties.
+
+  \textbf{Critical aspect}: Students should discern that \emph{security should 
+  not rely on obscurity of the method}, but on the secrecy of the key.
+  This prepares them for Kerckhoff's principle.
+}
 
 \note{%
 Stress: the bits are \emph{random} and \emph{shared only by Alice and Bob}.
@@ -228,7 +364,20 @@ cannot. Optionally preview: next we will formalize encryption/decryption
 as algorithms that take \(m\) and a key \(k\) to produce \(c\).
 }
 
+A more formal approach is to use a sequence of randomly chosen bits as the 
+key.
+Random bits have the advantage that their guessing probability is precisely 
+quantifiable: a truly random \(n\)-bit key can be guessed with probability at 
+most \(2^{-n}\).
+This leads to a fundamental principle that separates modern cryptography from 
+its historical predecessors.
+
 \subsection{Kerckhoff's Principle}
+
+In 1883, Auguste Kerckhoffs articulated a principle that remains central to 
+cryptographic design: a cryptosystem should remain secure even if everything 
+about it, except the key, becomes public knowledge.
+This is often paraphrased as \enquote{no security by obscurity}.
 
 \begin{frame}
   \begin{block}{A quote\footfullcite{KerckhoffsPrinciple}}
@@ -249,6 +398,17 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   \end{block}
 \end{frame}
 
+This does not mean we must broadcast our cryptographic choices to the world.
+Rather, it means that our security analysis should assume the adversary knows 
+everything except the key.
+If the system remains secure under this assumption, then any additional 
+obscurity is a bonus rather than a requirement.
+This principle has practical benefits: cryptographic algorithms can be 
+publicly scrutinized by experts, implementations can be standardized, and 
+security does not depend on keeping algorithms secret---something that is 
+notoriously difficult in practice.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{remark}
     \begin{itemize}
@@ -257,9 +417,19 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{remark}
 \end{frame}
+}
 
 \subsection{Ciphers}
 
+With Kerckhoff's principle in mind, we can now formalize what a cipher 
+(symmetric cryptosystem) is.
+The basic idea is simple: Alice and Bob share a small secret key, Alice uses 
+it to transform her message into an unintelligible ciphertext, and Bob uses 
+the same key to recover the original message.
+An eavesdropper (traditionally called Eve) who captures the ciphertext should 
+learn nothing about the message.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{idea}
     \begin{itemize}
@@ -281,6 +451,7 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{idea}
 \end{frame}
+}
 
 \begin{frame}
   \begin{block}{Block-cipher encryption}
@@ -304,51 +475,65 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   \end{block}
 \end{frame}
 
+A \emph{block cipher} operates on fixed-size blocks of data.
+Given a key \(k\) and a plaintext block \(p\), the encryption function 
+produces a ciphertext block \(c = \Enc_k(p)\).
+Decryption reverses this: \(\Dec_k(c) = p\).
+The key must be the same for both operations, which is why this is called 
+\emph{symmetric} encryption.
+
 \begin{frame}
   \begin{definition}[Crypto 
     system]\footfullcite{Stinson2006cta}\label{CryptoSystem}
+    A \emph{crypto system} is a tuple \((\M, \C, \K, \E, \D)\), where:
     \begin{itemize}
-        \item A \emph{crypto system} is a tuple \((\M, \C, \K, \E, \D)\), 
-          where:
-          \begin{itemize}
-            \item \(\M\) is a finite set of \emph{plaintexts} or messages,
-            \item \(\C\) is a finite set of \emph{ciphertexts},
-            \item \(\K\) is the \emph{keyspace}, a finite set of keys.
-            \item \(\E\) and \(\D\) are the sets of encryption and decryption
-              rules, respectively.
-          \end{itemize}
+      \item \(\M\) is a finite set of \emph{plaintexts} or messages,
+      \item \(\C\) is a finite set of \emph{ciphertexts},
+      \item \(\K\) is the \emph{keyspace}, a finite set of keys,
+      \item \(\E\) and \(\D\) are the sets of encryption and decryption
+        rules, respectively.
+    \end{itemize}
 
-          \pause{}
+    \pause{}
 
-        \item For every \(k\in \K\) there is a
-          \(\Enc_k\in \E\) and
-          \(\Dec_k\in \D\) such that
-          \begin{itemize}
-            \item \(\Enc_k\colon \M\to \C\) and \(\Dec_k\colon \C\to \M\) are 
-              functions and
-            \item \(\Dec[_k][\Enc[_k][m]] = m\) for all plaintexts \(m\in \M\).
-          \end{itemize}
-      \end{itemize}
+    For every \(k\in \K\) there is an \(\Enc_k\in \E\) and a \(\Dec_k\in \D\) 
+    such that:
+    \begin{itemize}
+      \item \(\Enc_k\colon \M\to \C\) and \(\Dec_k\colon \C\to \M\) are 
+        functions, and
+      \item \(\Dec[_k][\Enc[_k][m]] = m\) for all plaintexts \(m\in \M\).
+    \end{itemize}
   \end{definition}
 \end{frame}
 
+Formally, a cryptosystem consists of five components: a message space \(\M\), 
+a ciphertext space \(\C\), a keyspace \(\K\), and families of encryption and 
+decryption functions \(\E\) and \(\D\).
+The fundamental requirement is \emph{correctness}: for every key \(k\) and 
+message \(m\), decrypting the encryption of \(m\) must yield \(m\) again.
+That is, \(\Dec_k(\Enc_k(m)) = m\).
+
+As a simple example, consider the \emph{shift cipher} (also known as the 
+Caesar cipher, after Julius Caesar who reportedly used it).
+We represent letters as integers modulo some number (for example, 29 for the 
+Swedish alphabet), and encryption simply adds the key to each letter.
+
 \begin{frame}
   \begin{definition}[Shift Cipher]\label{ShiftCipher}
-    \begin{itemize}
-      \item Let \(\M = \C = \K = \ZZ_{29}\)
-      \item For each \(k\in \K\) we define
-        \begin{align}
-          \nonumber
-          \Enc[_k][m] &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
-          \nonumber
-          \Dec[_k][c] &= (c - k) \bmod 29, c\in \C.
-        \end{align}
-    \end{itemize}
+    Let \(\M = \C = \K = \ZZ_{29}\).
+    For each \(k\in \K\) we define
+    \begin{align}
+      \nonumber
+      \Enc[_k][m] &= (m + k) \bmod 29, m\in \M, \text{\ och } \\
+      \nonumber
+      \Dec[_k][c] &= (c - k) \bmod 29, c\in \C.
+    \end{align}
   \end{definition}
 
   \pause{}
 
   \begin{example}
+    With key \(k = 3\), we encrypt individual letters as follows:
     \begin{itemize}
       \item \(\Enc[_3][7] = 7+3 \bmod 29 = 10\)\hfill h\(\to\)J
       \item \(\Enc[_3][4] = 4+3 \bmod 29 = 7\)\hfill e\(\to\)G
@@ -357,6 +542,7 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   \end{example}
 \end{frame}
 
+\mode<presentation>{%
 \begin{frame}
   \begin{remark}
     \begin{itemize}
@@ -367,17 +553,30 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{remark}
 \end{frame}
+}
+
+The shift cipher is trivially insecure: there are only 29 possible keys (or 
+26 for the English alphabet), so an attacker can simply try all of them.
+We use it here purely for illustration, not as a model of secure encryption.
+The question of what makes a cipher \emph{secure} is more subtle, and we turn 
+to it next.
 
 \subsection{Security}
 
+What does it mean for a cipher to be secure?
+The strongest notion is \emph{perfect secrecy}, formalized by Claude Shannon 
+in 1949.
+Intuitively, a cipher has perfect secrecy if observing the ciphertext gives 
+an adversary no additional information about the plaintext beyond what they 
+already knew.
+
 \begin{frame}
   \begin{definition}[Perfect secrecy]\footfullcite{ShannonSecrecy}
-    \begin{itemize}
-      \item Cryptosystem \((\M, \C, \K, \E, \D)\).
-      \item Stochastic variables \(M, C\).
-      \item \emph{Perfect secrecy} if and only if \[\Pr(M = m\mid C = c) 
-          = \Pr(M = m)\] for all \(m\in \M\) and \(c\in \C\).
-    \end{itemize}
+    Consider a cryptosystem \((\M, \C, \K, \E, \D)\) with stochastic variables 
+    \(M\) (message) and \(C\) (ciphertext).
+    The system has \emph{perfect secrecy} if and only if 
+    \[\Pr(M = m\mid C = c) = \Pr(M = m)\] 
+    for all \(m\in \M\) and \(c\in \C\).
   \end{definition}
 
   \pause{}
@@ -387,6 +586,15 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     anything about plaintext.
   \end{remark}
 \end{frame}
+
+Mathematically, perfect secrecy means that the probability distribution over 
+messages is unchanged by observing the ciphertext: 
+\(\Pr(M = m \mid C = c) = \Pr(M = m)\).
+In information-theoretic terms, the conditional entropy of the message given 
+the ciphertext equals the unconditional entropy: \(H(M \mid C) = H(M)\).
+The ciphertext reveals \emph{nothing}.
+
+Shannon's theorem characterizes exactly when perfect secrecy is achievable.
 
 \begin{frame}
   \begin{theorem}[Shannon's theorem]
@@ -407,62 +615,90 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   \end{theorem}
 \end{frame}
 
+The theorem states that perfect secrecy requires the keyspace to be at least 
+as large as the message space, and keys must be used uniformly at random.
+This has a sobering implication: for perfect secrecy, you need as much key 
+material as message material.
+
+The \emph{one-time pad} (OTP) achieves perfect secrecy.
+The key is a random bit string as long as the message, and encryption is 
+simply XOR (addition modulo 2).
+Decryption is the same operation, since XOR is its own inverse.
+
 \begin{frame}
   \begin{example}[One-time Pad]
-    \begin{itemize}
-      \item Let \(n\) be a positive integer.
-      \item Let \(\M = \C = \K = (\ZZ_2)^n\).
+    Let \(n\) be a positive integer and let \(\M = \C = \K = (\ZZ_2)^n\).
 
-        \pause{}
+    \pause{}
 
-      \item For each key \(k = (k_1, \ldots, k_n)\in \K\), plaintexts \(m 
-          = (m_1, \ldots, m_n)\in \M\) and ciphertexts \(c = (c_1, \ldots, 
-          c_n)\in \C\) we define
-        \[\Enc[_k][m] = (m_1 + k_1, \ldots, m_n + k_n)\]
+    For each key \(k = (k_1, \ldots, k_n)\in \K\), plaintexts 
+    \(m = (m_1, \ldots, m_n)\in \M\) and ciphertexts 
+    \(c = (c_1, \ldots, c_n)\in \C\), we define
+    \[\Enc[_k][m] = (m_1 + k_1, \ldots, m_n + k_n).\]
 
-        \pause{}
+    \pause{}
 
-      \item We also define \(\Dec = \Enc\).
+    We also define \(\Dec = \Enc\).
 
-        \pause{}
+    \pause{}
 
-      \item \(k\in \K\) must be chosen uniformly randomly for each encryption.
-    \end{itemize}
+    The key \(k\in \K\) must be chosen uniformly at random for each encryption.
   \end{example}
 \end{frame}
 
+The one-time pad is provably unbreakable, but it has severe practical 
+limitations.
+The key must be as long as the message, must be truly random, must be shared 
+securely in advance, and---crucially---must never be reused.
+If the same key is used twice, an attacker can XOR the two ciphertexts to 
+obtain the XOR of the two plaintexts, which often reveals both.
+Key distribution and the prohibition on reuse make the OTP impractical for 
+most applications.
+
+In practice, we settle for \emph{computational} security rather than 
+information-theoretic security.
+We use ciphers based on \emph{pseudorandom permutations} (PRPs): functions 
+that are indistinguishable from truly random permutations by any efficient 
+algorithm.
+
 \begin{frame}
   \begin{definition}[\Acl{PRP}, \acs{PRP}]\footfullcite{KatzLindell-v1}
-    \begin{itemize}
-      \item Let \(F\colon \{0,1\}^s\times \{0, 1\}^n\to \{0,1\}^n\).
+    Let \(F\colon \{0,1\}^s\times \{0, 1\}^n\to \{0,1\}^n\).
+
+    \pause{}
+
+    We say \(F\) is \iac{PRP} if:
+    \begin{enumerate}
+      \item for any \(k\in \{0, 1\}^s\), \(F_k\) is a bijection;
 
         \pause{}
 
-      \item \(F\) is \iac{PRP} if
-        \begin{enumerate}
-          \item for any \(k\in \{0, 1\}^s\), \(F\) is a bijection;
+      \item for any \(k\in \{0, 1\}^s\), we can \enquote{efficiently} 
+        evaluate \(F_k(x)\);
 
-            \pause{}
+        \pause{}
 
-          \item for any \(k\in \{0, 1\}^s\), we can \enquote{efficiently} 
-            evaluate \(F_k(x)\);
-
-            \pause{}
-
-          \item for all \enquote{efficient} distinguishers~\(D\),
-            \[\left|\Pr[D^{F_k}(1^n) = 1] - \Pr[D^{f_n}(1^n) = 1]\right| 
-              < \epsilon(s)\] if we choose \(k\in \{0,1\}^s\) and the random 
-            permutation \(f_n\) uniformly at random.
-        \end{enumerate}
-    \end{itemize}
+      \item for all \enquote{efficient} distinguishers~\(D\),
+        \[\left|\Pr[D^{F_k}(1^n) = 1] - \Pr[D^{f_n}(1^n) = 1]\right| 
+          < \epsilon(s)\] 
+        when we choose \(k\in \{0,1\}^s\) and the random 
+        permutation \(f_n\) uniformly at random.
+    \end{enumerate}
   \end{definition}
 \end{frame}
+
+A PRP is a function that, when keyed, behaves like a random permutation to 
+anyone who does not know the key.
+Modern block ciphers like AES are designed to be PRPs: given a 128-bit key, 
+AES maps 128-bit blocks to 128-bit blocks in a way that is computationally 
+indistinguishable from a random permutation.
 
 
 \section{Ciphers (shared-key encryption)}
 
 \subsection{The interface and the goal}
 
+\mode<presentation>{%
 \begin{frame}
   \begin{idea}
     \begin{itemize}
@@ -503,9 +739,16 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{description}
   \end{block}
 \end{frame}
+}
 
 \subsection{Why classical ciphers fail}
 
+Before modern cryptography, people designed ciphers based on intuition and 
+cleverness.
+Let us examine why these classical ciphers fail, and what lessons we can draw 
+for modern cipher design.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{definition}[Shift cipher (Caesar)]
     \begin{itemize}
@@ -516,6 +759,11 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{definition}
 \end{frame}
+}
+
+The shift cipher (Caesar cipher) is the simplest classical cipher.
+Each letter is shifted by a fixed amount determined by the key.
+But how would you break it if you intercepted a Caesar-encrypted message?
 
 \begin{frame}
   \begin{exercise}
@@ -531,6 +779,15 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   }
 \end{frame}
 
+There are two main approaches to breaking the Caesar cipher.
+First, \emph{brute force}: since there are only \(n\) possible keys (26 for 
+English, 29 for Swedish), an attacker can simply try them all.
+Second, \emph{frequency analysis}: since the cipher merely rotates the 
+frequency distribution of letters, the most common ciphertext letter likely 
+corresponds to the most common plaintext letter (E in English, A in Swedish).
+Once a single letter is guessed correctly, the key is revealed.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{Cryptanalysis of Caesar}
     \begin{itemize}
@@ -541,19 +798,39 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
 
 % add figure of polar plot for caesar cipher.
 
+The \emph{substitution cipher} generalizes the shift cipher by allowing an 
+arbitrary permutation of the alphabet.
+The keyspace is now \(n!\) (approximately \(4 \times 10^{26}\) for 26 
+letters), which is astronomically large.
+Surely this is secure?
+
 \begin{frame}
   \begin{definition}[Substitution cipher]
-    \begin{itemize}
-      \item Key: a permutation \(\sigma\) of the alphabet.
-      \item Encryption: \(c_i = \sigma(m_i)\).
-      \item Decryption: \(m_i = \sigma^{-1}(c_i)\).
-    \end{itemize}
+    The key is a permutation \(\sigma\) of the alphabet.
+    Encryption replaces each letter: \(c_i = \sigma(m_i)\).
+    Decryption inverts: \(m_i = \sigma^{-1}(c_i)\).
   \end{definition}
 \end{frame}
 
+Unfortunately, the substitution cipher is still vulnerable to frequency 
+analysis.
+The letter E appears about 13\% of the time in English text, and this 
+frequency is preserved in the ciphertext---just under a different letter.
+Digrams (two-letter combinations like TH) and trigrams (THE) provide 
+additional structure.
+An experienced cryptanalyst can break a substitution cipher on a 
+moderate-length text by hand.
+
+The lesson is profound: \emph{a large keyspace is necessary but not 
+sufficient for security}.
+If the cipher leaks structure, it can be broken regardless of how many keys 
+exist.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{Cryptanalysis: structure still leaks}
     \begin{itemize}
@@ -563,19 +840,36 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
 
 % add graph of substitution cipher frequency analysis.
 
+The \emph{Vigenère cipher} attempts to defeat frequency analysis by using a 
+repeating key.
+Instead of a single shift, a sequence of shifts \(k_0, k_1, \ldots, 
+k_{\ell-1}\) is applied cyclically.
+This was considered unbreakable for centuries and was called \enquote{le 
+chiffre indéchiffrable} (the unbreakable cipher).
+
 \begin{frame}
   \begin{definition}[Vigen\`ere cipher]
-    \begin{itemize}
-      \item Key: a short sequence \(k_0,\ldots,k_{\ell-1}\) reused periodically.
-      \item Encryption: \(c_i = m_i + k_{i\bmod\ell} \bmod n\).
-      \item Decryption: \(m_i = c_i - k_{i\bmod\ell} \bmod n\).
-    \end{itemize}
+    The key is a short sequence \(k_0,\ldots,k_{\ell-1}\) that is reused 
+    periodically.
+    Encryption shifts each letter by the corresponding key element:
+    \(c_i = m_i + k_{i\bmod\ell} \bmod n\).
+    Decryption reverses: \(m_i = c_i - k_{i\bmod\ell} \bmod n\).
   \end{definition}
 \end{frame}
 
+The Vigenère cipher fell to cryptanalysis in the 19th century.
+The key insight is that if you can determine the key length \(\ell\), the 
+problem reduces to \(\ell\) independent Caesar ciphers.
+The key length can be guessed by looking for repeating patterns in the 
+ciphertext (Kasiski examination) or by testing different lengths and checking 
+whether the resulting columns have language-like frequency distributions 
+(index of coincidence).
+
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{Cryptanalysis of Vigen\`ere (simple version)}
     \begin{itemize}
@@ -586,15 +880,101 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
 
-% we should add Hill cipher
-% diffuses statustics over blocks --- fixes Vigénère.
-% but still linear algebra --- vulnerable to known-plaintext attacks.
-% cover known-plaintext, chosen-plaintext attacks,
-% chosen ciphertext and adaptive chosen-ciphertext attacks later.
+The \emph{Hill cipher}, invented by Lester Hill in 1929, takes a different 
+approach.
+Instead of substituting individual letters, it operates on blocks of letters 
+using matrix multiplication.
+This \emph{diffuses} the statistics across the block, defeating simple 
+frequency analysis.
+
+\begin{frame}
+  \begin{definition}[Hill cipher]
+    The key is an invertible \(m \times m\) matrix \(K\) over \(\ZZ_n\).
+    The plaintext is grouped into vectors \(\mathbf{p} = (p_1, \ldots, p_m)^T\) 
+    of \(m\) letters.
+    Encryption multiplies: \(\mathbf{c} = K \cdot \mathbf{p} \bmod n\).
+    Decryption inverts: \(\mathbf{p} = K^{-1} \cdot \mathbf{c} \bmod n\).
+  \end{definition}
+\end{frame}
+
+The Hill cipher successfully hides single-letter frequencies: a single 
+plaintext letter affects multiple ciphertext letters, and vice versa.
+However, it has a fatal flaw: it is \emph{linear}.
+This makes it vulnerable to \emph{known-plaintext attacks}.
+
+\subsubsection{Attack models}
+
+To analyze cipher security rigorously, we must specify what capabilities we 
+grant the adversary.
+Different attack models capture different realistic scenarios.
+
+\begin{frame}
+  \begin{block}{Attack models}
+    \begin{description}
+      \item[Ciphertext-only] Attacker sees only ciphertexts.
+      \item[Known-plaintext] Attacker knows some plaintext-ciphertext pairs.
+      \item[Chosen-plaintext] Attacker can choose plaintexts and obtain their 
+        encryptions.
+      \item[Chosen-ciphertext] Attacker can also choose ciphertexts and obtain 
+        their decryptions.
+    \end{description}
+  \end{block}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Generalization.
+
+    \textbf{What varies}: The adversary's capabilities (what they can observe 
+    or influence).
+
+    \textbf{What remains invariant}: The goal (recover key or plaintext).
+
+    \textbf{Critical aspect}: Security must be defined relative to an attack 
+    model; a cipher secure against ciphertext-only attacks may fall to 
+    chosen-plaintext attacks.
+  }
+\end{frame}
+
+In a \emph{ciphertext-only attack}, the adversary sees only the encrypted 
+messages.
+This is the weakest attack model---if a cipher is insecure here, it is 
+useless.
+The classical ciphers we studied (Caesar, substitution, Vigenère) all fall to 
+ciphertext-only attacks.
+
+In a \emph{known-plaintext attack}, the adversary knows some 
+plaintext-ciphertext pairs.
+This is realistic: messages often have predictable headers, signatures, or 
+standard phrases.
+The Hill cipher succumbs immediately: given \(m\) known plaintext-ciphertext 
+block pairs, the attacker can set up a system of linear equations and solve 
+for the key matrix.
+
+\begin{frame}
+  \begin{block}{Known-plaintext attack on Hill cipher}
+    \begin{itemize}
+      \item Attacker knows \(m\) plaintext-ciphertext pairs: 
+        \((\mathbf{p}_1, \mathbf{c}_1), \ldots, (\mathbf{p}_m, \mathbf{c}_m)\).
+      \item Form matrices \(P = [\mathbf{p}_1 \cdots \mathbf{p}_m]\) and 
+        \(C = [\mathbf{c}_1 \cdots \mathbf{c}_m]\).
+      \item Then \(C = K \cdot P\), so \(K = C \cdot P^{-1} \bmod n\).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+In \emph{chosen-plaintext} and \emph{chosen-ciphertext} attacks, the 
+adversary has even more power: they can request encryptions or decryptions of 
+messages of their choice.
+These stronger models are relevant when the attacker can interact with a 
+system (for example, sending crafted messages to a server).
+Modern ciphers are designed to resist even adaptive chosen-ciphertext 
+attacks, where the attacker can make queries before and after receiving the 
+challenge ciphertext.
 
 \subsection{Security properties and pitfalls}
 
+\mode<presentation>{%
 \begin{frame}
   \begin{definition}[Perfect secrecy]
     \begin{itemize}
@@ -630,6 +1010,7 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
 
 
 \begin{frame}
@@ -675,19 +1056,152 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   }
 \end{frame}
 
-% expand on the idea of composing small ciphers into larger ones
-% AES as an example: permutation-substitution network.
-% Shannon calls this confusion and diffusion.
+\subsection{Building modern block ciphers}
 
-% how to choose the key size.
-% We want 128 bit security, what does that mean?
-% Why will AES-256 give only 128 bits in a quantum computer world? Grover's 
-% algorithm.
+The failures of classical ciphers teach us what properties a secure cipher 
+needs.
+Shannon identified two key principles: \emph{confusion} and \emph{diffusion}.
+
+\begin{frame}
+  \begin{block}{Shannon's principles: confusion and diffusion}
+    \begin{description}
+      \item[Confusion] The relationship between key and ciphertext should be 
+        complex.
+        Each ciphertext bit should depend on many key bits.
+      \item[Diffusion] The relationship between plaintext and ciphertext should 
+        spread information.
+        Changing one plaintext bit should affect many ciphertext bits.
+    \end{description}
+  \end{block}
+\end{frame}
+
+Confusion makes it hard to deduce the key from the ciphertext.
+Diffusion spreads the statistical structure of the plaintext across the 
+ciphertext, defeating frequency analysis.
+Modern block ciphers achieve both by composing simple operations in multiple 
+rounds.
+
+\begin{frame}
+  \begin{block}{Substitution-permutation networks (SPNs)}
+    \begin{itemize}
+      \item Alternate between substitution (S-boxes) and permutation (P-boxes).
+      \item S-boxes provide confusion: nonlinear mappings.
+      \item P-boxes provide diffusion: rearrange bit positions.
+      \item Repeat for many rounds to achieve security.
+    \end{itemize}
+  \end{block}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Generalization.
+
+    \textbf{What varies}: The specific S-boxes and P-boxes used.
+
+    \textbf{What remains invariant}: The SPN structure.
+
+    \textbf{Critical aspect}: Students should discern that modern ciphers 
+    \emph{compose} simple building blocks rather than relying on one clever 
+    trick.
+  }
+\end{frame}
+
+The \emph{Advanced Encryption Standard} (AES) is the most widely used block 
+cipher today.
+It uses a 128-bit block size and supports key sizes of 128, 192, or 256 bits.
+AES is an SPN: each round applies a nonlinear substitution (SubBytes), a 
+permutation (ShiftRows), a mixing operation (MixColumns), and a key addition 
+(AddRoundKey).
+After 10--14 rounds (depending on key size), the result is a ciphertext that 
+appears random to anyone without the key.
+
+\begin{frame}
+  \begin{block}{AES at a glance}
+    \begin{itemize}
+      \item Block size: 128 bits.
+      \item Key sizes: 128, 192, or 256 bits.
+      \item Rounds: 10, 12, or 14 (depending on key size).
+      \item Operations per round: SubBytes, ShiftRows, MixColumns, AddRoundKey.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Key size and security level}
+
+How do we choose a key size?
+The \emph{security level} of a cipher is the logarithm (base 2) of the number 
+of operations needed to break it.
+A cipher with \(n\)-bit security requires approximately \(2^n\) operations to 
+break.
+
+\begin{frame}
+  \begin{block}{Security level}
+    \begin{itemize}
+      \item \(n\)-bit security means \(\approx 2^n\) operations to break.
+      \item A 128-bit key gives (at most) 128-bit security.
+      \item For brute force: \(2^{128}\) is astronomically large 
+        (\(\approx 10^{38}\)).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+For a good cipher (one where brute force is the best attack), the security 
+level equals the key length.
+Doubling the key length squares the work for brute force.
+In practice, 128-bit keys are sufficient for most applications, and 256-bit 
+keys provide a comfortable margin.
+
+But what about quantum computers?
+
+\begin{frame}
+  \begin{block}{Quantum threat: Grover's algorithm}
+    \begin{itemize}
+      \item Grover's algorithm searches \(N\) items in \(O(\sqrt{N})\) quantum 
+        operations.
+      \item For brute-forcing a key: \(2^n \to 2^{n/2}\) operations.
+      \item A 256-bit key provides only 128-bit security against quantum attack.
+      \item AES-256 is quantum-safe at the 128-bit level.
+    \end{itemize}
+  \end{block}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast.
+
+    \textbf{What varies}: The computational model (classical vs quantum).
+
+    \textbf{What remains invariant}: The cipher itself (AES-256).
+
+    \textbf{Critical aspect}: The security level depends not just on the cipher 
+    but on the adversary's computational capabilities.
+  }
+\end{frame}
+
+Grover's algorithm provides a quadratic speedup for unstructured search.
+This means a quantum computer can brute-force an \(n\)-bit key in 
+\(O(2^{n/2})\) operations instead of \(O(2^n)\).
+Consequently, to achieve 128-bit security against quantum adversaries, we need 
+256-bit keys.
+AES-256 is therefore considered quantum-safe at the 128-bit security level.
+
+For asymmetric cryptography, the situation is worse: Shor's algorithm breaks 
+RSA and elliptic-curve cryptography entirely.
+This is why post-quantum cryptography is an active research area, but for 
+symmetric ciphers, simply doubling the key size suffices.
+
 
 \section{Block modes}
 
+A block cipher encrypts fixed-size blocks (for example, 128 bits for AES).
+But real messages are rarely exactly one block long.
+How do we encrypt longer messages?
+The answer is a \emph{mode of operation}: a method for applying the block 
+cipher to a sequence of blocks.
+
+The choice of mode matters enormously.
+A poorly chosen mode can leak information even if the underlying block cipher 
+is perfectly secure.
+
 \subsection{Why modes?}
 
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{Block ciphers need a mode of operation}
     \begin{itemize}
@@ -697,6 +1211,9 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
+
+Consider what happens if we simply encrypt each block independently.
 
 \begin{frame}
   \begin{exercise}
@@ -713,6 +1230,14 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   }
 \end{frame}
 
+This naive approach is called \emph{Electronic Codebook} (ECB) mode.
+Each plaintext block is encrypted independently to produce a ciphertext block.
+The problem is that identical plaintext blocks produce identical ciphertext 
+blocks.
+Any structure in the plaintext---repeated blocks, patterns, regions of 
+uniform data---is preserved in the ciphertext.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{ECB (Electronic Codebook) leaks patterns}
     \begin{itemize}
@@ -722,6 +1247,12 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
+
+The famous \enquote{ECB penguin} demonstrates this dramatically.
+When a bitmap image of the Linux mascot Tux is encrypted with ECB mode, the 
+penguin is still clearly visible in the ciphertext.
+With a proper mode like CTR, the ciphertext appears random.
 
 \begin{frame}
   \begin{figure}
@@ -759,6 +1290,11 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
 \end{frame}
 
 \subsection{Common modes (properties)}
+
+There are many modes of operation, each with different properties.
+Rather than detailing their internal workings, we focus on the properties that 
+matter for practical use: how randomness is introduced, whether operations can 
+be parallelized, how errors propagate, and whether random access is possible.
 
 % explain how they function, what they do to achieve this.
 
@@ -800,6 +1336,14 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   \end{block}
 \end{frame}
 
+\emph{Cipher Block Chaining} (CBC) mode XORs each plaintext block with the 
+previous ciphertext block before encryption.
+This breaks the pattern leakage of ECB: even identical plaintext blocks 
+produce different ciphertext blocks (unless they appear after identical 
+prefixes).
+CBC requires an \emph{initialization vector} (IV) for the first block, which 
+must be random and unpredictable.
+
 \begin{frame}
   \begin{block}{CTR (Counter mode) --- properties}
     \begin{itemize}
@@ -810,6 +1354,13 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+
+\emph{Counter} (CTR) mode turns a block cipher into a stream cipher.
+The cipher encrypts a sequence of counter values (nonce concatenated with a 
+counter) to produce a keystream, which is XORed with the plaintext.
+This is highly parallelizable and allows random access to any block.
+However, nonce reuse is catastrophic: if the same nonce is used twice, the 
+XOR of the two ciphertexts equals the XOR of the two plaintexts.
 
 \begin{frame}
   \mode<presentation>{%
@@ -833,6 +1384,12 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
 \end{frame}
 
 \subsection{IVs/nonces and misuse}
+
+All secure modes require some form of randomization to avoid deterministic 
+encryption.
+This is provided by an \emph{initialization vector} (IV) or \emph{nonce}.
+The exact requirements vary by mode: CBC needs an unpredictable IV, while CTR 
+only requires the nonce to be unique (never reused with the same key).
 
 \begin{frame}
   \begin{block}{IV/nonce: what it is and why it matters}
@@ -859,6 +1416,14 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   }
 \end{frame}
 
+The consequences of nonce reuse in CTR mode are immediate and devastating.
+If two messages \(m_1\) and \(m_2\) are encrypted with the same nonce, then 
+\(c_1 \oplus c_2 = m_1 \oplus m_2\).
+This XOR of plaintexts often contains enough structure to recover both 
+messages, especially if one is partially known or follows a predictable 
+format.
+
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{CTR nonce reuse: the disaster in one line}
     \begin{itemize}
@@ -869,6 +1434,7 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     \end{itemize}
   \end{block}
 \end{frame}
+}
 
 \begin{frame}
   \begin{exercise}
@@ -881,6 +1447,19 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     cued by a specific scenario.
   }
 \end{frame}
+
+The lesson is clear: IV/nonce discipline is not optional---it is part of the 
+security definition.
+Failing to maintain uniqueness can completely compromise confidentiality, 
+regardless of how strong the underlying cipher is.
+
+In practice, we rarely use bare encryption.
+We usually want \emph{authenticated encryption}, which provides both 
+confidentiality and integrity in a single operation.
+Modes like GCM (Galois/Counter Mode) are widely used for this purpose.
+For specialized applications like disk encryption, modes like XTS are 
+designed to handle the unique constraints (random access, no per-sector 
+storage for nonces).
 
 \begin{frame}
   \mode<presentation>{%
@@ -906,6 +1485,7 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
   }
 \end{frame}
 
+\mode<presentation>{%
 \begin{frame}
   \begin{block}{Take-away}
     \begin{itemize}
@@ -922,879 +1502,5 @@ as algorithms that take \(m\) and a key \(k\) to produce \(c\).
     Questions?
   \end{center}
 \end{frame}
+}
 
-
-\mode<all>\endinput
-
-DD2520 Applied Cryptography
-Lecture 2
-
-Douglas Wikström
-KTH Royal Institute of Technology
-dog@kth.se
-
-January 18, 2022
-
-What is cryptography?
-
-Cryptographic Concepts
-
-The focus of the first part of this course is cryptographic
-concepts, but not mathematical details.
-Several cryptographic notions are digitized versions of physical
-objects or everyday processes.
-We rely heavily on analogies in our presentation to give a working
-knowledge of how to apply the primitives and understand their
-security properties.
-Interested students may take DD2448 Foundations of cryptography
-in Period 4 for a more rigorous treatment.
-
-Cipher (Symmetric Cryptosystem)
-
-m = E−1
-k (c)
-
-c = Ek (m)
-
-m
-
-E
-
-Alice
-
-k
-
-c
-
-E−1
-
-m
-
-k
-
-Bob
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-◮ Gen is a probabilistic key generation algorithm outputting
-keys from a key space K,
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-◮ Gen is a probabilistic key generation algorithm outputting
-keys from a key space K,
-◮ P is a set of plaintexts,
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-◮ Gen is a probabilistic key generation algorithm outputting
-keys from a key space K,
-◮ P is a set of plaintexts,
-◮ E is a deterministic encryption algorithm, and
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-◮ Gen is a probabilistic key generation algorithm outputting
-keys from a key space K,
-◮ P is a set of plaintexts,
-◮ E is a deterministic encryption algorithm, and
-◮ E−1 is a deterministic decryption algorithm,
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-◮ Gen is a probabilistic key generation algorithm outputting
-keys from a key space K,
-◮ P is a set of plaintexts,
-◮ E is a deterministic encryption algorithm, and
-◮ E−1 is a deterministic decryption algorithm,
-such encryption followed by decryption recovers the message.
-
-Cipher (Symmetric Cryptosystem)
-Definition. A cipher (symmetric cryptosystem) is a tuple
-(Gen, P, E, E−1 ), where
-◮ Gen is a probabilistic key generation algorithm outputting
-keys from a key space K,
-◮ P is a set of plaintexts,
-◮ E is a deterministic encryption algorithm, and
-◮ E−1 is a deterministic decryption algorithm,
-such that E−1
-k (Ek (m)) = m for every m ∈ P and every k ∈ K.
-
-Caesar Cipher (Shift Cipher)
-Consider English, with alphabet A-Z , where
-thought of as integers modulo 27, i.e., Z27 .
-
-denotes space,
-
-◮ Key. Random letter k ∈ Z27 .
-◮ Encrypt. Plaintext m = (m1 , . . . , mn ) ∈ Zn27 gives ciphertext
-c = (c1 , . . . , cn ), where
-ci = mi + k mod 27 .
-◮ Decrypt. Ciphertext c = (c1 , . . . , cn ) ∈ Zn27 gives plaintext
-m = (m1 , . . . , mn ), where
-mi = ci − k mod 27 .
-
-Caesar Cipher (Example)
-Encoding the alphabet as Z27.
-a b c d e f g h i j k l m n o p q r s t u v w x y z
-00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
-
-Example
-Key: G = 6
-Substitution table:
-a b c d e f g h i j k l m n o p q r s t u v w x y z
-G H I J K L M N O P Q R S T U V W X Y Z - A B C D E F
-
-Plaintext: b r i b e
-l u l a
-t o
-b u y
-j a s
-Plaintext: 01 17 08 01 04 26 11 20 11 00 26 19 14 26 01 20 24 26 09 00 18
-Ciphertext: 07 23 14 07 10 05 17 26 17 06 05 25 20 05 07 26 03 05 15 06 24
-Ciphertext: H X O H K F R - R G F Z U F H - D F P G Y
-
-Letter Frequencies (1/2)
-Letters occur with very different frequencies in natural languages.
-The following is a frequency table for English.
-A
-B
-C
-D
-E
-F
-G
-H
-I
-
-0.072
-0.013
-0.024
-0.037
-0.112
-0.020
-0.018
-0.054
-0.061
-
-J
-K
-L
-M
-N
-O
-P
-Q
-R
-
-0.001
-0.007
-0.035
-0.021
-0.059
-0.066
-0.017
-0.001
-0.053
-
-S
-T
-U
-V
-W
-X
-Y
-Z
-
-0.056
-0.080
-0.024
-0.009
-0.021
-0.001
-0.017
-0.001
-0.120
-
-Letter Frequencies (1/2)
-Letters occur with very different frequencies in natural languages.
-The following is a frequency table for English.
-A
-B
-C
-D
-E
-F
-G
-H
-I
-
-0.072
-0.013
-0.024
-0.037
-0.112
-0.020
-0.018
-0.054
-0.061
-
-J
-K
-L
-M
-N
-O
-P
-Q
-R
-
-0.001
-0.007
-0.035
-0.021
-0.059
-0.066
-0.017
-0.001
-0.053
-
-S
-T
-U
-V
-W
-X
-Y
-Z
-
-0.056
-0.080
-0.024
-0.009
-0.021
-0.001
-0.017
-0.001
-0.120
-
-The same frequencies appear in a ciphertext of written English,
-but in shifted order!
-
-Letter Frequencies (2/2)
-
-Cryptanalysis of the Caesar Cipher
-
-◮ Exploit structure. If we know that a single letter α is
-encrypted into a ciphertext letter β, then k = β − α mod 27.
-◮ Brute force. Try all keys and check if the result is English,
-e.g., by counting Google hits. This works since the keyspace is
-very small.
-◮ Statistics and structure. “Rotate” until the letter
-frequences of the ciphertext and English match. Works for
-any “language” with non-uniform letter frequencies!
-
-Polar Plot of Letter Frequencies (log-scaled for clarity)
-
-Substitution Table (Key: G=6)
-
-Attacker’s View of a Ciphertext
-
-Rotate Until It Matches Letter Frequencies
-
-Interpret
-
-Substitution Cipher
-What if we use a randomly chosen table to substitute one letter for
-another instead of rotation?
-
-(This ciphertext was captured in my apartment, but never cryptanalyzed.)
-
-Substitution Cipher
-
-◮ Key. Random permutation σ ∈ S of the symbols in the
-alphabet, for some subset S of all permutations.
-◮ Encrypt. Plaintext m = (m1 , . . . , mn ) ∈ Zn27 gives ciphertext
-c = (c1 , . . . , cn ), where ci = σ(mi ).
-◮ Decrypt. Ciphertext c = (c1 , . . . , cn ) ∈ Zn27 gives plaintext
-m = (m1 , . . . , mn ), where mi = σ −1 (ci ).
-
-Cryptanalysis of the Substitution Cipher
-
-Sorted
-English
-Frequencies
-
-Group by similar
-frequency and brute
-force within each group!
-
-Sorted
-Ciphertext
-Frequencies
-
-This bar chart is not
-identical to the above!
-
-Digrams and Trigrams
-
-To differentiate symbols which have similar frequencies and/or are
-rare during deciphering, it is useful to compute frequency tables for
-the most frequent digrams and trigrams.
-◮ A digram is an ordered pair of symbols.
-◮ A trigram is an ordered triple of symbols.
-Examples: “sh”, “the”, “I ”,...
-
-Generic Attack Against Substitution Cipher
-
-1. Compute symbol/digram/trigram frequency tables for the
-candidate language and the ciphertext.
-2. Try to match symbols/digrams/trigrams with similar
-frequencies.
-3. Try to recognize words to confirm your guesses (we would use
-a dictionary or Google).
-4. Backtrack/repeat until the plaintext can be guessed.
-
-Vigénère
-
-A single letter encrypted with the Caesar cipher gives a random
-ciphertext letter.
-How do we achieve something similar for more than one letter?
-
-Vigénère
-
-A single letter encrypted with the Caesar cipher gives a random
-ciphertext letter.
-How do we achieve something similar for more than one letter?
-Vigénère Cipher.
-◮ Key. k = (k0 , . . . , kl−1 ), where ki ∈ Z27 is random.
-◮ Encrypt. Plaintext m = (m1 , . . . , mn ) ∈ Zn27 gives ciphertext
-c = (c1 , . . . , cn ), where ci = mi + ki mod l mod 27.
-◮ Decrypt. Ciphertext c = (c1 , . . . , cn ) ∈ Zn27 gives plaintext
-m = (m1 , . . . , mn ), where mi = ci − ki mod l mod 27.
-
-Attack Vigénère (1/2)
-
-◮ Each probability distribution p1 , . . . , pn on n symbols may be
-viewed as a point p = (p1 , . . . , pn ) on a n − 1 dimensional
-hyperplane in Rn orthogonal to the vector 1
-p
-◮ Such a point p = (p1 , . . . , pn ) is at distance F (p) from the
-P
-origin, where F (p) = ni=1 pi2 .
-◮ It is clear that p is closest to the origin, when p is the uniform
-distribution, i.e., when F (p) is minimized. (Draw picture!)
-◮ F (p) is invariant under permutation of the underlying symbols
-−→ tool to check if a set of symbols is (likely) the result of
-some substitution cipher (for non-uniform plaintext sources).
-
-Attack Vigénère (2/2)
-1. For l = 1, 2, 3, . . ., we form
-
- 
-C0
-c0
- C1   c1
-
- 
- ..  =  ..
- .   .
-
-c2l
-
-cl+1
-..
-.
-
-c2l+1
-..
-.
-
-
-···
-··· 
-
-.. 
-. 
-
-cl−1 c2l−1 c3l−1 · · ·
-
-Cl−1
-
-and compute fl = 1l
-
-cl
-
-Pl−1
-
-i =0 F (Ci ).
-
-Smallest local maximum is probably the key length.
-2. Attack each Ci separately to recover ki , using the attack
-against the Caesar cipher.
-
-Attack Vigénère (2/2)
-1. For l = 1, 2, 3, . . ., we form
-
- 
-C0
-c0
- C1   c1
-
- 
- ..  =  ..
- .   .
-
-c2l
-
-cl+1
-..
-.
-
-c2l+1
-..
-.
-
-
-···
-··· 
-
-.. 
-. 
-
-cl−1 c2l−1 c3l−1 · · ·
-
-Cl−1
-
-and compute fl = 1l
-
-cl
-
-Pl−1
-
-i =0 F (Ci ).
-
-Smallest local maximum is probably the key length.
-2. Attack each Ci separately to recover ki , using the attack
-against the Caesar cipher.
-English can no longer be recognized, but statistics don’t lie!
-
-What went wrong?
-
-Vigénère does smooth out the statistics, but only the global
-statistics.
-We need to diffuse the statistics in such a way that it is infeasible
-to exploit marginal distributions.
-
-Hill Cipher
-◮ Key. k = A, where A is an invertible l × l -matrix over Z27 .
-◮ Encrypt. Plaintext m = (m1 , . . . , mn ) ∈ Zn27 gives ciphertext
-c = (c1 , . . . , cn ), where (computed modulo 27):
-(ci +0 , . . . , ci +l−1 ) = (mi +0 , . . . , mi +l−1 )A .
-◮ Decrypt. Ciphertext c = (c1 , . . . , cn ) ∈ Zn27 gives plaintext
-m = (m1 , . . . , mn ), where (computed modulo 27):
-(mi +0 , . . . , mi +l−1 ) = (ci +0 , . . . , ci +l−1 )A−1 .
-for i = 1, l + 1, 2l + 1, . . .
-Transposition cipher is a special case. Vigénère is similar to using a
-diagonal Hill matrix.
-
-Cryptanalysis of Linear Ciphers
-
-Given plaintexts-ciphertext pairs of the form
-
-(mi ,1 , . . . , mi ,n ), (ci ,n , . . . , ci ,n )
-for i = 1, . . . , n we likely get a solvable equation system in the
-unknowns ai ,j :
-C =M ×A
-where C = (ci ,j )i ,j∈[n] , M = (mi ,j )i ,j∈[n] , and A = (ai ,j )i ,j∈[n] .
-Linear ciphers can be broken with a known plaintext attack!
-
-Weak Ciphers Summarized
-◮ Invertible substitution:
-mi 7→ σ(mi )
-
-◮ Invertible linear map:
-(m1 , . . . , ml ) 7→ (m1 , . . . , ml )A
-
-Weak Ciphers Summarized
-◮ Invertible substitution:
-mi 7→ σ(mi )
-Confusing map without structure, but too small key space
-and susceptible to statistical analysis.
-◮ Invertible linear map:
-(m1 , . . . , ml ) 7→ (m1 , . . . , ml )A
-
-Weak Ciphers Summarized
-◮ Invertible substitution:
-mi 7→ σ(mi )
-Confusing map without structure, but too small key space
-and susceptible to statistical analysis.
-◮ Invertible linear map:
-(m1 , . . . , ml ) 7→ (m1 , . . . , ml )A
-Diffusing map which turns most marginal statistics into
-smooth global statistics and large keyspace, but the key can
-be recovered by solving a linear equation system.
-
-Weak Ciphers Summarized
-◮ Invertible substitution:
-mi 7→ σ(mi )
-Confusing map without structure, but too small key space
-and susceptible to statistical analysis.
-◮ Invertible linear map:
-(m1 , . . . , ml ) 7→ (m1 , . . . , ml )A
-Diffusing map which turns most marginal statistics into
-smooth global statistics and large keyspace, but the key can
-be recovered by solving a linear equation system.
-Anything that is approximately the same is also weak!
-
-Simple Ciphers are Bad, What is a Good Block Cipher?
-
-◮ For every key a block-cipher with plaintext/ciphertext space
-{0, 1}n gives a permutation of {0, 1}n .
-◮ A perfect block cipher is one where each key gives a
-randomly chosen permutation of {0, 1}n .
-Bad news! The representation of a single key requires
-roughly n2n bits, e.g., 147 × 106·3 bits for n = 64.
-◮ Can we construct a cipher that may not be perfect, but good
-enough for practice?
-Something that is indistinguishable from perfect to any
-computationally bounded adversary?
-
-Modern Ciphers
-
-Idea. Compose smaller weak ciphers into a large one.
-
-Modern Ciphers
-
-Idea. Compose smaller weak ciphers into a large one.
-Shannon (1948) calls this:
-◮ Confusion. “The method of confusion is to make the relation
-between the simple statistics of E and the simple description
-of K a very complex and involved one.”
-◮ Diffusion. “In the method of diffusion the statistical
-structure of M which leads to its redundancy is dissipated into
-long range statistics...”
-
-Substitution-Permutation Networks (1/2)
-
-◮ Block-size. We use a block-size of n = ℓ × m bits.
-◮ Key Schedule. Round r uses its own round key Kr derived
-from the key K using a key schedule.
-◮ Each Round. In each round we invoke:
-1. Round Key. xor with the round key.
-2. Substitution. ℓ substitution boxes each acting on one m-bit
-word (m-bit S-Boxes).
-3. Permutation. A permutation πi acting on {1, . . . , n} to
-reorder the n bits.
-
-Substitution-Permutation Networks (2/2)
-Ui −1
-Ki
-
-Substitution-Permutation Networks (2/2)
-Ui −1
-L
-
-Ki
-Xi
-
-xor with
-round key
-
-Substitution-Permutation Networks (2/2)
-Ui −1
-L
-
-Ki
-
-xor with
-round key
-
-Xi
-Si ,1
-Yi
-
-Si ,2
-
-Si ,3
-
-Si ,4
-
-substitute
-words
-
-Substitution-Permutation Networks (2/2)
-Ui −1
-L
-
-Ki
-
-xor with
-round key
-
-Xi
-Si ,1
-
-Si ,2
-
-Si ,3
-
-Si ,4
-
-substitute
-words
-
-Yi
-πi
-
-Ui
-
-permute
-bits
-
-Substitution-Permutation Networks (2/2)
-Ui −1
-L
-
-Ki
-
-xor with
-round key
-
-Xi
-Si ,1
-
-Si ,2
-
-Si ,3
-
-Si ,4
-
-substitute
-words
-
-Yi
-permute
-bits
-
-Ui
-
-Substitution-Permutation Networks (2/2)
-Ui −1
-Ki
-
-Round i
-
-Ui
-
-A Simple Block Cipher (1/2)
-
-◮ |P| = |C | = 16
-◮ 4 rounds
-◮ |K | = 32
-◮ r th round key Kr consists of
-the 4r th to the (4r + 16)th
-bits of key K .
-◮ 4-bit S-Boxes
-
-A Simple Block Cipher (2/2)
-
-S-Boxes the same (S 6= S −1 )
-
-◮ Y = S(X )
-◮ Can be described using 4 boolean functions
-
-Input
-Output
-
-0
-E
-
-1
-4
-
-2
-D
-
-3
-1
-
-4
-2
-
-5
-F
-
-6
-B
-
-7
-8
-
-8
-3
-
-9
-A
-
-A
-6
-
-B
-C
-
-C
-5
-
-D
-9
-
-E
-0
-
-F
-7
-
-A Simple Block Cipher (2/2)
-
-S-Boxes the same (S 6= S −1 )
-
-◮ Y = S(X )
-◮ Can be described using 4 boolean functions
-
-Input
-Output
-
-0
-E
-
-1
-4
-
-2
-D
-
-3
-1
-
-4
-2
-
-5
-F
-
-6
-B
-
-7
-8
-
-8
-3
-
-9
-A
-
-A
-6
-
-B
-C
-
-C
-5
-
-D
-9
-
-E
-0
-
-F
-7
-
-13
-4
-
-14
-8
-
-15
-12
-
-16-bit permutation (π = π −1 )
-Input
-Output
-
-1
-1
-
-2
-5
-
-3
-9
-
-4
-13
-
-5
-2
-
-6
-6
-
-7
-10
-
-8
-14
-
-9
-3
-
-10
-7
-
-11
-11
-
-12
-15
-
-16
-16
-
-Advanced Encryption Standard (AES)
-
-◮ Chosen in worldwide public competition 1997-2000.
-Probably no backdoors. Increased confidence!
-◮ Winning proposal named “Rijndael”, by Rijmen and Daemen
-◮ Family of 128-bit block ciphers:
-
-Key bits
-Rounds
-
-128
-10
-
-192
-12
-
-256
-14
-
-◮ The first key-recovery attacks on full AES due to Bogdanov,
-Khovratovich, and Rechberger, published 2011, is faster than
-brute force by a factor of about 4.
-
-
