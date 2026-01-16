@@ -581,7 +581,10 @@ We use it here purely for illustration, not as a model of secure encryption.
 The question of what makes a cipher \emph{secure} is more subtle, and we turn 
 to it next.
 
-\subsection{Security}
+% XXX add description of Vigénère and point out that it was believed to be 
+% unbreakable for 300 years.
+
+\section{Security}
 
 What does it mean for a cipher to be secure?
 The strongest notion is \emph{perfect secrecy}, formalized by Claude Shannon 
@@ -716,23 +719,7 @@ Modern block ciphers like \ac{AES} are designed to be \acsp{PRP}: given a
 128-bit key, \ac{AES} maps 128-bit blocks to 128-bit blocks in a way that is 
 computationally indistinguishable from a random permutation.
 
-
-\section{Ciphers (shared-key encryption)}
-
-\subsection{The interface and the goal}
-
-\mode<presentation>{%
-\begin{frame}
-  \begin{idea}
-    \begin{itemize}
-      \item Alice and Bob share a (small) secret key \(k\).
-      \item Alice computes ciphertext \(c = \Enc_k(m)\) and sends \(c\).
-      \item Bob computes \(m = \Dec_k(c)\).
-      \item An eavesdropper should learn (essentially) nothing about \(m\) from
-        \(c\).
-    \end{itemize}
-  \end{idea}
-\end{frame}
+\subsection{Summary}
 
 \begin{frame}
   \begin{block}{Symmetric encryption in one line}
@@ -742,27 +729,6 @@ computationally indistinguishable from a random permutation.
     \end{itemize}
   \end{block}
 \end{frame}
-
-\begin{frame}
-  \begin{block}{Block-cipher encryption}
-    \begin{description}
-      \item[Input] key \(k\), plaintext block \(p\).
-      \item[Output] ciphertext block \(c\).
-      \item[Notation] \(\Enc[_k][p] = c\)
-    \end{description}
-  \end{block}
-
-  \pause
-
-  \begin{block}{Block-cipher decryption}
-    \begin{description}
-      \item[Input] key \(k\), ciphertext block \(c\).
-      \item[Output] plaintext block \(p\).
-      \item[Notation] \(\Dec[_k][c] = p\)
-    \end{description}
-  \end{block}
-\end{frame}
-}
 
 \subsection{Why classical ciphers fail}
 
@@ -878,7 +844,7 @@ This was considered unbreakable for centuries and was called \enquote{le
 chiffre indéchiffrable} (the unbreakable cipher).
 
 \begin{frame}
-  \begin{definition}[Vigen\`ere cipher]
+  \begin{definition}[Vigénère cipher]
     We define it as follows:
     \begin{itemize}
       \item Key: a short sequence \(k_0,\ldots,k_{\ell-1}\) reused periodically.
@@ -888,7 +854,7 @@ chiffre indéchiffrable} (the unbreakable cipher).
   \end{definition}
 \end{frame}
 
-The Vigenère cipher fell to cryptanalysis in the 19th century.
+The Vigénère cipher fell to cryptanalysis in the 19th century.
 The key insight is that if you can determine the key length \(\ell\), the 
 problem reduces to \(\ell\) independent Caesar ciphers.
 The key length can be guessed by looking for repeating patterns in the 
@@ -898,7 +864,7 @@ whether the resulting columns have language-like frequency distributions
 
 \mode<presentation>{%
 \begin{frame}
-  \begin{block}{Cryptanalysis of Vigen\`ere (simple version)}
+  \begin{block}{Cryptanalysis of Vigénère (simple version)}
     \begin{itemize}
       \item If we guess the key length \(\ell\), then we split the ciphertext
         into \(\ell\) columns.
@@ -927,6 +893,13 @@ frequency analysis.
       \item Decryption: \(\mathbf{p} = K^{-1} \cdot \mathbf{c} \bmod n\).
     \end{itemize}
   \end{definition}
+
+  \pause
+
+  \begin{remark}
+    This hides individual frequencies.
+    This fixes the problem that broke Vigénère.
+  \end{remark}
 \end{frame}
 
 The Hill cipher successfully hides single-letter frequencies: a single 
@@ -934,11 +907,15 @@ plaintext letter affects multiple ciphertext letters, and vice versa.
 However, it has a fatal flaw: it is \emph{linear}.
 This makes it vulnerable to \emph{known-plaintext attacks}.
 
+% XXX move frame about breaking the Hill cipher here.
+
 \subsubsection{Attack models}
 
 To analyze cipher security rigorously, we must specify what capabilities we 
 grant the adversary.
 Different attack models capture different realistic scenarios.
+
+% XXX add question about alternatives to known plaintext attacks.
 
 \begin{frame}
   \begin{block}{Attack models}
@@ -1029,6 +1006,10 @@ challenge ciphertext.
       \item Key distribution and key reuse are the practical obstacles.
     \end{itemize}
   \end{block}
+
+  \begin{remark}
+    What broke Vigénère was reusing the key!
+  \end{remark}
 \end{frame}
 
 \begin{frame}
