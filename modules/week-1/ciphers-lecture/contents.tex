@@ -642,7 +642,7 @@ as large as the message space, and keys must be used uniformly at random.
 This has a sobering implication: for perfect secrecy, you need as much key 
 material as message material.
 
-The \emph{one-time pad} (OTP) achieves perfect secrecy.
+The \ac{OTP} achieves perfect secrecy.
 The key is a random bit string as long as the message, and encryption is 
 simply XOR (addition modulo 2).
 Decryption is the same operation, since XOR is its own inverse.
@@ -679,14 +679,13 @@ The key must be as long as the message, must be truly random, must be shared
 securely in advance, and---crucially---must never be reused.
 If the same key is used twice, an attacker can XOR the two ciphertexts to 
 obtain the XOR of the two plaintexts, which often reveals both.
-Key distribution and the prohibition on reuse make the OTP impractical for 
+Key distribution and the prohibition on reuse make the \ac{OTP} impractical for 
 most applications.
 
 In practice, we settle for \emph{computational} security rather than 
 information-theoretic security.
-We use ciphers based on \emph{pseudorandom permutations} (PRPs): functions 
-that are indistinguishable from truly random permutations by any efficient 
-algorithm.
+We use ciphers based on \emph{\aclp{PRP}} (\acsp{PRP}): functions that are 
+indistinguishable from truly random permutations by any efficient algorithm.
 
 \begin{frame}
   \begin{definition}[\Acl{PRP}, \acs{PRP}]\footfullcite{KatzLindell-v1}
@@ -711,11 +710,11 @@ algorithm.
   \end{definition}
 \end{frame}
 
-A PRP is a function that, when keyed, behaves like a random permutation to 
+A \ac{PRP} is a function that, when keyed, behaves like a random permutation to 
 anyone who does not know the key.
-Modern block ciphers like AES are designed to be PRPs: given a 128-bit key, 
-AES maps 128-bit blocks to 128-bit blocks in a way that is computationally 
-indistinguishable from a random permutation.
+Modern block ciphers like \ac{AES} are designed to be \acsp{PRP}: given a 
+128-bit key, \ac{AES} maps 128-bit blocks to 128-bit blocks in a way that is 
+computationally indistinguishable from a random permutation.
 
 
 \section{Ciphers (shared-key encryption)}
@@ -1023,7 +1022,7 @@ challenge ciphertext.
 \end{frame}
 
 \begin{frame}
-  \begin{block}{One-time pad (OTP)}
+  \begin{block}{\Ac{OTP}}
     \begin{itemize}
       \item Key is as long as the message, uniformly random, used once.
       \item Gives perfect secrecy.
@@ -1082,7 +1081,7 @@ challenge ciphertext.
       ciphertext in a way that results in a predictable (or at least different)
       plaintext after decryption.
       To get tamper detection we need integrity protection, typically by using a
-      MAC or an authenticated-encryption scheme.
+      \ac{MAC} or an authenticated-encryption scheme.
     \end{block}
   }
 \end{frame}
@@ -1113,7 +1112,7 @@ Modern block ciphers achieve both by composing simple operations in multiple
 rounds.
 
 \begin{frame}
-  \begin{block}{Substitution-permutation networks (SPNs)}
+  \begin{block}{\Acp{SPN}}
     \begin{itemize}
       \item Alternate between substitution (S-boxes) and permutation (P-boxes).
       \item S-boxes provide confusion: nonlinear mappings.
@@ -1127,7 +1126,7 @@ rounds.
 
     \textbf{What varies}: The specific S-boxes and P-boxes used.
 
-    \textbf{What remains invariant}: The SPN structure.
+    \textbf{What remains invariant}: The \ac{SPN} structure.
 
     \textbf{Critical aspect}: Students should discern that modern ciphers 
     \emph{compose} simple building blocks rather than relying on one clever 
@@ -1135,17 +1134,16 @@ rounds.
   }
 \end{frame}
 
-The \emph{Advanced Encryption Standard} (AES) is the most widely used block 
-cipher today.
+The \ac{AES} is the most widely used block cipher today.
 It uses a 128-bit block size and supports key sizes of 128, 192, or 256 bits.
-AES is an SPN: each round applies a nonlinear substitution (SubBytes), a 
-permutation (ShiftRows), a mixing operation (MixColumns), and a key addition 
+\Ac{AES} is an \ac{SPN}: each round applies a nonlinear substitution (SubBytes), 
+a permutation (ShiftRows), a mixing operation (MixColumns), and a key addition 
 (AddRoundKey).
 After 10--14 rounds (depending on key size), the result is a ciphertext that 
 appears random to anyone without the key.
 
 \begin{frame}
-  \begin{block}{AES at a glance}
+  \begin{block}{\Ac{AES} at a glance}
     \begin{itemize}
       \item Block size: 128 bits.
       \item Key sizes: 128, 192, or 256 bits.
@@ -1189,7 +1187,7 @@ But what about quantum computers?
         operations.
       \item For brute-forcing a key: \(2^n \to 2^{n/2}\) operations.
       \item A 256-bit key provides only 128-bit security against quantum attack.
-      \item AES-256 is quantum-safe at the 128-bit level.
+      \item \Ac{AES}-256 is quantum-safe at the 128-bit level.
     \end{itemize}
   \end{block}
 
@@ -1198,7 +1196,7 @@ But what about quantum computers?
 
     \textbf{What varies}: The computational model (classical vs quantum).
 
-    \textbf{What remains invariant}: The cipher itself (AES-256).
+    \textbf{What remains invariant}: The cipher itself (\ac{AES}-256).
 
     \textbf{Critical aspect}: The security level depends not just on the cipher 
     but on the adversary's computational capabilities.
@@ -1210,7 +1208,7 @@ This means a quantum computer can brute-force an \(n\)-bit key in
 \(O(2^{n/2})\) operations instead of \(O(2^n)\).
 Consequently, to achieve 128-bit security against quantum adversaries, we need 
 256-bit keys.
-AES-256 is therefore considered quantum-safe at the 128-bit security level.
+\Ac{AES}-256 is therefore considered quantum-safe at the 128-bit security level.
 
 For asymmetric cryptography, the situation is worse: Shor's algorithm breaks 
 RSA and elliptic-curve cryptography entirely.
@@ -1220,7 +1218,7 @@ symmetric ciphers, simply doubling the key size suffices.
 
 \section{Block modes}
 
-A block cipher encrypts fixed-size blocks (for example, 128 bits for AES).
+A block cipher encrypts fixed-size blocks (for example, 128 bits for \ac{AES}).
 But real messages are rarely exactly one block long.
 How do we encrypt longer messages?
 The answer is a \emph{mode of operation}: a method for applying the block 
@@ -1255,13 +1253,13 @@ Consider what happens if we simply encrypt each block independently.
   \end{exercise}
 
   \ltnote{%
-    Try-first before ECB: students can reason about repetition/patterns without
-    knowing the term \enquote{ECB}. This sets up the contrast that motivates
-    modes.
+    Try-first before \ac{ECB}: students can reason about repetition/patterns 
+    without knowing the term \enquote{\ac{ECB}}. This sets up the contrast that 
+    motivates modes.
   }
 \end{frame}
 
-This naive approach is called \emph{Electronic Codebook} (ECB) mode.
+This naive approach is called \ac{ECB} mode.
 Each plaintext block is encrypted independently to produce a ciphertext block.
 The problem is that identical plaintext blocks produce identical ciphertext 
 blocks.
@@ -1270,7 +1268,7 @@ uniform data---is preserved in the ciphertext.
 
 \mode<presentation>{%
 \begin{frame}
-  \begin{block}{ECB (Electronic Codebook) leaks patterns}
+  \begin{block}{\Ac{ECB} leaks patterns}
     \begin{itemize}
       \item Each block encrypted independently.
       \item Equal plaintext blocks \(\Rightarrow\) equal ciphertext blocks.
@@ -1280,17 +1278,17 @@ uniform data---is preserved in the ciphertext.
 \end{frame}
 }
 
-The famous \enquote{ECB penguin} demonstrates this dramatically.
-When a bitmap image of the Linux mascot Tux is encrypted with ECB mode, the 
-penguin is still clearly visible in the ciphertext.
-With a proper mode like CTR, the ciphertext appears random.
+The famous \enquote{\ac{ECB} penguin} demonstrates this dramatically.
+When a bitmap image of the Linux mascot Tux is encrypted with \ac{ECB} mode, 
+the penguin is still clearly visible in the ciphertext.
+With a proper mode like \ac{CTR}, the ciphertext appears random.
 
 \begin{frame}
   \begin{figure}
     \begin{sidecaption}[Tux encrypted using different modes.]{%
       Tux encrypted using different block modes of operation.
-      When using ECB mode, we can still distinguish Tux.
-      With CTR, the ciphertext looks random.
+      When using \ac{ECB} mode, we can still distinguish Tux.
+      With \ac{CTR}, the ciphertext looks random.
     }[fig:EncModes]
     \hfill
     \begin{subfigure}[t]{0.3\linewidth}
@@ -1301,13 +1299,13 @@ With a proper mode like CTR, the ciphertext appears random.
     \hfill
     \begin{subfigure}[t]{0.3\linewidth}
       \includegraphics[width=\linewidth]{../../../project/figs/Tux_encrypted_ecb.png}
-      \caption{ECB-encrypted Tux.
+      \caption{\Ac{ECB}-encrypted Tux.
       Image by: RFL890.}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.3\linewidth}
       \includegraphics[width=\linewidth]{../../../project/figs/Tux_encrypted_ctr.png}
-      \caption{CTR-encrypted Tux.
+      \caption{\Ac{CTR}-encrypted Tux.
       Image by: RFL890.}
     \end{subfigure}
     \hspace{\fill}
@@ -1316,7 +1314,7 @@ With a proper mode like CTR, the ciphertext appears random.
 
   \ltnote{%
     Core contrast example: keep key/plaintext invariant and vary only the mode
-    (ECB vs CTR).
+    (\ac{ECB} vs \ac{CTR}).
   }
 \end{frame}
 
@@ -1331,9 +1329,9 @@ be parallelized, how errors propagate, and whether random access is possible.
 
 \begin{frame}
   \mode<presentation>{%
-    \begin{block}{CBC, CTR, CFB, OFB: what differs?}
+    \begin{block}{\Ac{CBC}, \ac{CTR}, \ac{CFB}, \ac{OFB}: what differs?}
       \begin{itemize}
-        \item How randomness enters (IV/nonce).
+        \item How randomness enters (\ac{IV}/nonce).
         \item Whether encryption can be parallelised.
         \item Error propagation (a bit flip affects how much?).
         \item Random access: can you decrypt block \(i\) without earlier blocks?
@@ -1341,8 +1339,8 @@ be parallelized, how errors propagate, and whether random access is possible.
     \end{block}
   }
   \mode<article>{%
-    \begin{block}{CBC, CTR, CFB, OFB: what differs?}
-      These modes combine a block cipher with an IV/nonce and feedback in
+    \begin{block}{\Ac{CBC}, \ac{CTR}, \ac{CFB}, \ac{OFB}: what differs?}
+      These modes combine a block cipher with an \ac{IV}/nonce and feedback in
       different ways.
       We focus on high-level properties: which misuse breaks confidentiality,
       and which modes are convenient for implementation (parallelism, random
@@ -1357,9 +1355,9 @@ be parallelized, how errors propagate, and whether random access is possible.
 \end{frame}
 
 \begin{frame}
-  \begin{block}{CBC (Cipher Block Chaining) --- properties}
+  \begin{block}{\Ac{CBC} --- properties}
     \begin{itemize}
-      \item Uses a random/unpredictable IV.
+      \item Uses a random/unpredictable \ac{IV}.
       \item Hides patterns across blocks.
       \item Encryption is sequential (depends on previous ciphertext).
       \item Bit flips affect the current block and the next block.
@@ -1367,16 +1365,16 @@ be parallelized, how errors propagate, and whether random access is possible.
   \end{block}
 \end{frame}
 
-\emph{Cipher Block Chaining} (CBC) mode XORs each plaintext block with the 
-previous ciphertext block before encryption.
-This breaks the pattern leakage of ECB: even identical plaintext blocks 
+\Ac{CBC} mode XORs each plaintext block with the previous ciphertext block 
+before encryption.
+This breaks the pattern leakage of \ac{ECB}: even identical plaintext blocks 
 produce different ciphertext blocks (unless they appear after identical 
 prefixes).
-CBC requires an \emph{initialization vector} (IV) for the first block, which 
-must be random and unpredictable.
+\Ac{CBC} requires an \ac{IV} for the first block, which must be random and 
+unpredictable.
 
 \begin{frame}
-  \begin{block}{CTR (Counter mode) --- properties}
+  \begin{block}{\Ac{CTR} --- properties}
     \begin{itemize}
       \item Uses a unique nonce (and counter) to create a keystream.
       \item Parallelisable and supports random access.
@@ -1386,7 +1384,7 @@ must be random and unpredictable.
   \end{block}
 \end{frame}
 
-\emph{Counter} (CTR) mode turns a block cipher into a stream cipher.
+\Ac{CTR} mode turns a block cipher into a stream cipher.
 The cipher encrypts a sequence of counter values (nonce concatenated with a 
 counter) to produce a keystream, which is XORed with the plaintext.
 This is highly parallelizable and allows random access to any block.
@@ -1395,35 +1393,36 @@ XOR of the two ciphertexts equals the XOR of the two plaintexts.
 
 \begin{frame}
   \mode<presentation>{%
-    \begin{block}{CFB and OFB --- properties}
+    \begin{block}{\Ac{CFB} and \ac{OFB} --- properties}
       \begin{itemize}
         \item Turn a block cipher into a stream-cipher-like scheme.
-        \item CFB is self-synchronising; OFB is not.
-        \item Both require IV/nonce discipline to avoid reuse.
+        \item \Ac{CFB} is self-synchronising; \ac{OFB} is not.
+        \item Both require \ac{IV}/nonce discipline to avoid reuse.
       \end{itemize}
     \end{block}
   }
   \mode<article>{%
-    \begin{block}{CFB and OFB --- properties}
-      CFB (Cipher Feedback) and OFB (Output Feedback) are older modes that
-      effectively use a block cipher to generate a keystream.
-      They are less common in modern protocols than CTR and AEAD modes, but they
-      illustrate the design space: how feedback affects synchronisation and
-      error propagation.
+    \begin{block}{\Ac{CFB} and \ac{OFB} --- properties}
+      \Ac{CFB} and \ac{OFB} are older modes that effectively use a block cipher 
+      to generate a keystream.
+      They are less common in modern protocols than \ac{CTR} and \ac{AEAD} 
+      modes, but they illustrate the design space: how feedback affects 
+      synchronisation and error propagation.
     \end{block}
   }
 \end{frame}
 
-\subsection{IVs/nonces and misuse}
+\subsection{\Acsp{IV}/nonces and misuse}
 
 All secure modes require some form of randomization to avoid deterministic 
 encryption.
-This is provided by an \emph{initialization vector} (IV) or \emph{nonce}.
-The exact requirements vary by mode: CBC needs an unpredictable IV, while CTR 
-only requires the nonce to be unique (never reused with the same key).
+This is provided by an \ac{IV} or \emph{nonce}.
+The exact requirements vary by mode: \ac{CBC} needs an unpredictable \ac{IV}, 
+while \ac{CTR} only requires the nonce to be unique (never reused with the 
+same key).
 
 \begin{frame}
-  \begin{block}{IV/nonce: what it is and why it matters}
+  \begin{block}{\Ac{IV}/nonce: what it is and why it matters}
     \begin{itemize}
       \item A public value used to randomise encryption.
       \item Must be unique (and sometimes unpredictable), depending on the mode.
@@ -1434,7 +1433,7 @@ only requires the nonce to be unique (never reused with the same key).
 
 \begin{frame}
   \begin{exercise}
-    In CTR mode, encryption looks like
+    In \ac{CTR} mode, encryption looks like
     \(c = m \oplus \text{keystream}(k,\text{nonce})\).
 
     What do you think happens if the same nonce is reused for two different
@@ -1447,7 +1446,7 @@ only requires the nonce to be unique (never reused with the same key).
   }
 \end{frame}
 
-The consequences of nonce reuse in CTR mode are immediate and devastating.
+The consequences of nonce reuse in \ac{CTR} mode are immediate and devastating.
 If two messages \(m_1\) and \(m_2\) are encrypted with the same nonce, then 
 \(c_1 \oplus c_2 = m_1 \oplus m_2\).
 This XOR of plaintexts often contains enough structure to recover both 
@@ -1456,9 +1455,9 @@ format.
 
 \mode<presentation>{%
 \begin{frame}
-  \begin{block}{CTR nonce reuse: the disaster in one line}
+  \begin{block}{\Ac{CTR} nonce reuse: the disaster in one line}
     \begin{itemize}
-      \item CTR gives: \(c = m \oplus \text{keystream}(k,\text{nonce})\).
+      \item \Ac{CTR} gives: \(c = m \oplus \text{keystream}(k,\text{nonce})\).
       \item If nonce reused: \(c_1\oplus c_2 = m_1\oplus m_2\).
       \item This leaks relations between messages and is often enough to recover
         both.
@@ -1469,17 +1468,18 @@ format.
 
 \begin{frame}
   \begin{exercise}
-    What must be true about IV/nonce values for repeated encryptions under the
-    same key?
+    What must be true about \ac{IV}/nonce values for repeated encryptions under 
+    the same key?
   \end{exercise}
 
   \ltnote{%
-    Post-test: students should now articulate IV/nonce uniqueness without being
-    cued by a specific scenario.
+    Post-test: students should now articulate \ac{IV}/nonce uniqueness without 
+    being cued by a specific scenario.
   }
 \end{frame}
 
-The lesson is clear: IV/nonce discipline is not optional---it is part of the 
+The lesson is clear: \ac{IV}/nonce discipline is not optional---it is part of 
+the 
 security definition.
 Failing to maintain uniqueness can completely compromise confidentiality, 
 regardless of how strong the underlying cipher is.
@@ -1487,8 +1487,8 @@ regardless of how strong the underlying cipher is.
 In practice, we rarely use bare encryption.
 We usually want \emph{authenticated encryption}, which provides both 
 confidentiality and integrity in a single operation.
-Modes like GCM (Galois/Counter Mode) are widely used for this purpose.
-For specialized applications like disk encryption, modes like XTS are 
+Modes like \ac{GCM} are widely used for this purpose.
+For specialized applications like disk encryption, modes like \ac{XTS} are 
 designed to handle the unique constraints (random access, no per-sector 
 storage for nonces).
 
@@ -1496,21 +1496,21 @@ storage for nonces).
   \mode<presentation>{%
     \begin{block}{Later: authenticated encryption and storage modes}
       \begin{itemize}
-        \item AEAD: encryption + integrity in one scheme.
-        \item GCM: widely used AEAD mode.
-        \item XTS: disk/storage encryption mode.
+        \item \Ac{AEAD}: encryption + integrity in one scheme.
+        \item \Ac{GCM}: widely used \ac{AEAD} mode.
+        \item \Ac{XTS}: disk/storage encryption mode.
       \end{itemize}
     \end{block}
   }
   \mode<article>{%
     \begin{block}{Later: authenticated encryption and storage modes}
       In practice we rarely use \enquote{bare} confidentiality.
-      We often need authenticated encryption, where the receiver can both decrypt
-      and detect tampering.
-      This is commonly provided by AEAD schemes, such as GCM.
+      We often need authenticated encryption, where the receiver can both 
+      decrypt and detect tampering.
+      This is commonly provided by \ac{AEAD} schemes, such as \ac{GCM}.
 
       For disk encryption the requirements are different (random access, no
-      per-sector nonces), and specialised modes such as XTS are used.
+      per-sector nonces), and specialised modes such as \ac{XTS} are used.
       We will return to these later.
     \end{block}
   }
@@ -1520,10 +1520,10 @@ storage for nonces).
 \begin{frame}
   \begin{block}{Take-away}
     \begin{itemize}
-      \item Modes matter: ECB is not acceptable for structured data.
+      \item Modes matter: \ac{ECB} is not acceptable for structured data.
       \item Pick a mode with good properties for your setting (parallelism,
         random access, error propagation).
-      \item IV/nonce discipline is part of the security definition.
+      \item \Ac{IV}/nonce discipline is part of the security definition.
     \end{itemize}
   \end{block}
 \end{frame}
