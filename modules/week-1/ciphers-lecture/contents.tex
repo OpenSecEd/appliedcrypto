@@ -1442,7 +1442,7 @@ pattern leakage of \ac{ECB}.
       \Ac{CBC} encryption: each plaintext block is XORed with the previous 
       ciphertext before encryption.
     }[fig:cbc-enc]
-      \centering
+      \flushright
       \input{figs/cbc-enc.tex}
     \end{sidecaption}
   \end{figure}
@@ -1463,7 +1463,7 @@ to recover the plaintext:
       \Ac{CBC} decryption: each ciphertext block is decrypted, then XORed with 
       the previous ciphertext.
     }[fig:cbc-dec]
-      \centering
+      \flushright
       \input{figs/cbc-dec.tex}
     \end{sidecaption}
   \end{figure}
@@ -1507,7 +1507,7 @@ within a message.
       \Ac{CTR} encryption: the block cipher encrypts counter values to produce 
       a keystream, which is XORed with the plaintext.
     }[fig:ctr-enc]
-      \centering
+      \flushright
       \input{figs/ctr-enc.tex}
     \end{sidecaption}
   \end{figure}
@@ -1530,7 +1530,7 @@ This means \ac{CTR} mode only requires implementing the encryption direction.
       \Ac{CTR} decryption: identical to encryption---the same keystream is 
       XORed with the ciphertext.
     }[fig:ctr-dec]
-      \centering
+      \flushright
       \input{figs/ctr-dec.tex}
     \end{sidecaption}
   \end{figure}
