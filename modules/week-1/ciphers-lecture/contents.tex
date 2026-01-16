@@ -1184,12 +1184,13 @@ rounds.
 
 \begin{frame}
   \begin{figure}
-    \includegraphics[width=0.8\linewidth]{figs/spn.png}
-    \caption{%
+    \begin{sidecaption}{%
       Structure of a \acl{SPN}.
       Each round applies substitution (S-boxes) for confusion and permutation 
       (P-boxes) for diffusion, with round keys mixed in.
-    }
+    }[fig:spn]
+      \includegraphics[width=0.7\linewidth]{figs/spn.png}
+    \end{sidecaption}
   \end{figure}
 \end{frame}
 
@@ -1437,12 +1438,13 @@ pattern leakage of \ac{ECB}.
 \begin{frame}
   \frametitle{\Ac{CBC} mode encryption}
   \begin{figure}
-    \centering
-    \input{figs/cbc-enc.tex}
-    \caption{%
+    \begin{sidecaption}{%
       \Ac{CBC} encryption: each plaintext block is XORed with the previous 
       ciphertext before encryption.
-    }
+    }[fig:cbc-enc]
+      \centering
+      \input{figs/cbc-enc.tex}
+    \end{sidecaption}
   \end{figure}
 \end{frame}
 
@@ -1457,12 +1459,13 @@ to recover the plaintext:
 \begin{frame}
   \frametitle{\Ac{CBC} mode decryption}
   \begin{figure}
-    \centering
-    \input{figs/cbc-dec.tex}
-    \caption{%
+    \begin{sidecaption}{%
       \Ac{CBC} decryption: each ciphertext block is decrypted, then XORed with 
       the previous ciphertext.
-    }
+    }[fig:cbc-dec]
+      \centering
+      \input{figs/cbc-dec.tex}
+    \end{sidecaption}
   \end{figure}
 \end{frame}
 
@@ -1500,12 +1503,13 @@ within a message.
 \begin{frame}
   \frametitle{\Ac{CTR} mode encryption}
   \begin{figure}
-    \centering
-    \input{figs/ctr-enc.tex}
-    \caption{%
+    \begin{sidecaption}{%
       \Ac{CTR} encryption: the block cipher encrypts counter values to produce 
       a keystream, which is XORed with the plaintext.
-    }
+    }[fig:ctr-enc]
+      \centering
+      \input{figs/ctr-enc.tex}
+    \end{sidecaption}
   \end{figure}
 \end{frame}
 
@@ -1522,12 +1526,13 @@ This means \ac{CTR} mode only requires implementing the encryption direction.
 \begin{frame}
   \frametitle{\Ac{CTR} mode decryption}
   \begin{figure}
-    \centering
-    \input{figs/ctr-dec.tex}
-    \caption{%
+    \begin{sidecaption}{%
       \Ac{CTR} decryption: identical to encryption---the same keystream is 
       XORed with the ciphertext.
-    }
+    }[fig:ctr-dec]
+      \centering
+      \input{figs/ctr-dec.tex}
+    \end{sidecaption}
   \end{figure}
 \end{frame}
 
