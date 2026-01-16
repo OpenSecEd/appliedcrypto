@@ -569,8 +569,17 @@ We use it here purely for illustration, not as a model of secure encryption.
 The question of what makes a cipher \emph{secure} is more subtle, and we turn 
 to it next.
 
-% XXX add description of Vigénère and point out that it was believed to be 
-% unbreakable for 300 years.
+An obvious improvement to the shift cipher is to use multiple shifts in 
+sequence.
+The \emph{Vigénère cipher} does exactly this: instead of a single shift 
+applied to every letter, a short keyword determines a sequence of shifts that 
+repeat cyclically.
+This was considered so strong that it was called \enquote{le chiffre 
+indéchiffrable}---the unbreakable cipher---and resisted cryptanalysis for 
+nearly 300 years.
+We will examine the Vigénère cipher in detail when we study why classical 
+ciphers fail, and we will see that its downfall comes from the key being 
+\emph{shorter than the message} and reused.
 
 \section{Security}
 
@@ -664,7 +673,11 @@ Decryption is the same operation, since XOR is its own inverse.
   \end{example}
 \end{frame}
 
-% XXX add remark that OTP is just a binary version of Vigénère.
+The \ac{OTP} can be viewed as a binary version of the Vigénère cipher, with 
+two crucial differences: the key is as long as the message (so there is no 
+repetition), and the key is used only once.
+These differences are precisely what gives the \ac{OTP} perfect secrecy, 
+whereas Vigénère's key repetition proved its undoing.
 
 The one-time pad is provably unbreakable, but it has severe practical 
 limitations.
@@ -767,7 +780,18 @@ Once a single letter is guessed correctly, the key is revealed.
 \end{frame}
 }
 
-% add figure of polar plot for caesar cipher.
+\begin{frame}
+\begin{figure}
+  \begin{sidecaption}{%
+    Polar plot of letter frequencies in plaintext (inner) and Caesar-encrypted
+    ciphertext (outer). The distribution is simply rotated by the key value,
+    preserving the characteristic pattern.
+  }[fig:polar-caesar]
+    \flushright
+    \includegraphics[width=0.8\linewidth]{figs/polar-caesar.png}
+  \end{sidecaption}
+\end{figure}
+\end{frame}
 
 The \emph{substitution cipher} generalizes the shift cipher by allowing an 
 arbitrary permutation of the alphabet.
@@ -812,7 +836,19 @@ exist.
 \end{frame}
 }
 
-% add graph of substitution cipher frequency analysis.
+\begin{frame}
+\begin{figure}
+  \begin{sidecaption}{%
+    Frequency analysis of a substitution cipher.
+    Even though individual letters are permuted, the overall frequency
+    distribution remains, allowing an attacker to match ciphertext letters to
+    their likely plaintext counterparts.
+  }[fig:freq-caesar]
+    \flushright
+    \includegraphics[width=0.9\linewidth]{figs/freq-caesar.png}
+  \end{sidecaption}
+\end{figure}
+\end{frame}
 
 The \emph{Vigenère cipher} attempts to defeat frequency analysis by using a 
 repeating key.
@@ -885,7 +921,24 @@ plaintext letter affects multiple ciphertext letters, and vice versa.
 However, it has a fatal flaw: it is \emph{linear}.
 This makes it vulnerable to \emph{known-plaintext attacks}.
 
-% XXX move frame about breaking the Hill cipher here.
+\begin{frame}
+  \begin{block}{Known-plaintext attack on Hill cipher}
+    \begin{itemize}
+      \item Attacker knows \(m\) plaintext-ciphertext pairs: 
+        \((\mathbf{p}_1, \mathbf{c}_1), \ldots, (\mathbf{p}_m, \mathbf{c}_m)\).
+      \item Form matrices \(P = [\mathbf{p}_1 \cdots \mathbf{p}_m]\) and 
+        \(C = [\mathbf{c}_1 \cdots \mathbf{c}_m]\).
+      \item Then \(C = K \cdot P\), so \(K = C \cdot P^{-1} \bmod n\).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+If an attacker knows \(m\) plaintext-ciphertext block pairs (where \(m\) is 
+the block size), they can form matrices and solve a system of linear equations 
+to recover the key matrix directly.
+This attack is practical whenever the attacker can guess or obtain even a 
+small amount of plaintext---and in practice, messages often have predictable 
+headers, signatures, or standard phrases.
 
 \subsubsection{Attack models}
 
@@ -893,7 +946,20 @@ To analyze cipher security rigorously, we must specify what capabilities we
 grant the adversary.
 Different attack models capture different realistic scenarios.
 
-% XXX add question about alternatives to known plaintext attacks.
+\begin{frame}
+  \begin{exercise}
+    We broke the classical ciphers using only the ciphertext (frequency 
+    analysis).
+    But what other information might an attacker realistically have access to?
+  \end{exercise}
+
+  \ltnote{%
+    Try-first: students brainstorm adversary capabilities before seeing the 
+    formal attack model hierarchy.
+    This surfaces intuitions about real-world scenarios (known headers, chosen 
+    messages, oracle access) that motivate the definitions.
+  }
+\end{frame}
 
 \begin{frame}
   \begin{block}{Attack models}
@@ -932,21 +998,8 @@ In a \emph{known-plaintext attack}, the adversary knows some
 plaintext-ciphertext pairs.
 This is realistic: messages often have predictable headers, signatures, or 
 standard phrases.
-The Hill cipher succumbs immediately: given \(m\) known plaintext-ciphertext 
-block pairs, the attacker can set up a system of linear equations and solve 
-for the key matrix.
-
-\begin{frame}
-  \begin{block}{Known-plaintext attack on Hill cipher}
-    \begin{itemize}
-      \item Attacker knows \(m\) plaintext-ciphertext pairs: 
-        \((\mathbf{p}_1, \mathbf{c}_1), \ldots, (\mathbf{p}_m, \mathbf{c}_m)\).
-      \item Form matrices \(P = [\mathbf{p}_1 \cdots \mathbf{p}_m]\) and 
-        \(C = [\mathbf{c}_1 \cdots \mathbf{c}_m]\).
-      \item Then \(C = K \cdot P\), so \(K = C \cdot P^{-1} \bmod n\).
-    \end{itemize}
-  \end{block}
-\end{frame}
+As we saw with the Hill cipher, this can be devastating for ciphers with 
+algebraic structure.
 
 In \emph{chosen-plaintext} and \emph{chosen-ciphertext} attacks, the 
 adversary has even more power: they can request encryptions or decryptions of 
@@ -1045,6 +1098,42 @@ challenge ciphertext.
   }
 \end{frame}
 
+The consequences of bit flipping depend on the cipher's structure.
+In \ac{SPN}-style block ciphers like \ac{AES}, the diffusion property means 
+that flipping a single bit in the ciphertext affects many bits in the 
+decrypted plaintext---the result is essentially random garbage.
+The attacker cannot predict or control what the modified plaintext will be.
+
+Stream ciphers, including the \ac{OTP} and block ciphers in \ac{CTR} mode, 
+behave very differently.
+Since encryption is simply XOR with a keystream, flipping a bit in the 
+ciphertext flips exactly the corresponding bit in the plaintext.
+This is called \emph{bit-by-bit malleability}: the attacker has precise 
+control over which plaintext bits change.
+If the attacker knows (or can guess) part of the plaintext, they can modify 
+it to any value they choose.
+
+\begin{frame}
+  \begin{block}{Bit flipping: block ciphers vs stream ciphers}
+    \begin{description}
+      \item[\Ac{SPN} block ciphers (\acs{AES})] Diffusion spreads the effect.
+        Flipping one ciphertext bit corrupts many plaintext bits 
+        unpredictably.
+      \item[Stream ciphers (\acs{OTP}, \acs{CTR} mode)] No diffusion across 
+        bits.
+        Flipping one ciphertext bit flips exactly one plaintext bit.
+        This is \emph{bit-by-bit malleability}.
+    \end{description}
+  \end{block}
+
+  \pause
+
+  \begin{remark}
+    Neither detects tampering!
+    \Ac{SPN} ciphers just make tampering less predictable, not impossible.
+  \end{remark}
+\end{frame}
+
 \subsection{Building modern block ciphers}
 
 The failures of classical ciphers teach us what properties a secure cipher 
@@ -1091,6 +1180,17 @@ rounds.
     \emph{compose} simple building blocks rather than relying on one clever 
     trick.
   }
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.8\linewidth]{figs/spn.png}
+    \caption{%
+      Structure of a \acl{SPN}.
+      Each round applies substitution (S-boxes) for confusion and permutation 
+      (P-boxes) for diffusion, with round keys mixed in.
+    }
+  \end{figure}
 \end{frame}
 
 The \ac{AES} is the most widely used block cipher today.
@@ -1182,6 +1282,13 @@ But real messages are rarely exactly one block long.
 How do we encrypt longer messages?
 The answer is a \emph{mode of operation}: a method for applying the block 
 cipher to a sequence of blocks.
+
+Unlike the \ac{OTP}, a block cipher like \ac{AES} is designed to be used with 
+the \emph{same key} for multiple blocks and multiple messages.
+This is what makes it practical: a short key (128--256 bits) can protect 
+gigabytes of data.
+But this reuse comes with risks that must be managed carefully through the 
+choice of mode.
 
 The choice of mode matters enormously.
 A poorly chosen mode can leak information even if the underlying block cipher 
@@ -1313,6 +1420,58 @@ be parallelized, how errors propagate, and whether random access is possible.
   }
 \end{frame}
 
+\subsection{\Acl{CBC}}
+
+\Ac{CBC} mode chains the encryption of each block to the previous one.
+The first plaintext block is XORed with a random \ac{IV} before encryption; 
+each subsequent block is XORed with the previous ciphertext block.
+Mathematically:
+\begin{align*}
+  C_0 &= \Enc_k(P_0 \oplus \text{IV}) \\
+  C_i &= \Enc_k(P_i \oplus C_{i-1}) \quad \text{for } i \geq 1
+\end{align*}
+This chaining ensures that identical plaintext blocks produce different 
+ciphertext blocks (unless they follow identical histories), defeating the 
+pattern leakage of \ac{ECB}.
+
+\begin{frame}
+  \frametitle{\Ac{CBC} mode encryption}
+  \begin{figure}
+    \centering
+    \input{figs/cbc-enc.tex}
+    \caption{%
+      \Ac{CBC} encryption: each plaintext block is XORed with the previous 
+      ciphertext before encryption.
+    }
+  \end{figure}
+\end{frame}
+
+Decryption reverses the process: each ciphertext block is decrypted, then 
+XORed with the previous ciphertext block (or the \ac{IV} for the first block) 
+to recover the plaintext:
+\begin{align*}
+  P_0 &= \Dec_k(C_0) \oplus \text{IV} \\
+  P_i &= \Dec_k(C_i) \oplus C_{i-1} \quad \text{for } i \geq 1
+\end{align*}
+
+\begin{frame}
+  \frametitle{\Ac{CBC} mode decryption}
+  \begin{figure}
+    \centering
+    \input{figs/cbc-dec.tex}
+    \caption{%
+      \Ac{CBC} decryption: each ciphertext block is decrypted, then XORed with 
+      the previous ciphertext.
+    }
+  \end{figure}
+\end{frame}
+
+The \ac{IV} in \ac{CBC} must be \emph{unpredictable}, not merely unique.
+If an attacker can predict the \ac{IV}, they can craft plaintexts that interact 
+with it in controlled ways, leading to chosen-plaintext attacks.
+In practice, the \ac{IV} is typically generated randomly and transmitted 
+alongside the ciphertext.
+
 \begin{frame}
   \begin{block}{\Ac{CBC} --- properties}
     \begin{itemize}
@@ -1324,13 +1483,59 @@ be parallelized, how errors propagate, and whether random access is possible.
   \end{block}
 \end{frame}
 
-\Ac{CBC} mode XORs each plaintext block with the previous ciphertext block 
-before encryption.
-This breaks the pattern leakage of \ac{ECB}: even identical plaintext blocks 
-produce different ciphertext blocks (unless they appear after identical 
-prefixes).
-\Ac{CBC} requires an \ac{IV} for the first block, which must be random and 
-unpredictable.
+\subsection{\Acl{CTR}}
+
+\Ac{CTR} mode takes a completely different approach: it turns the block cipher 
+into a stream cipher.
+Instead of encrypting the plaintext directly, the cipher encrypts a sequence 
+of counter values to produce a \emph{keystream}, which is then XORed with the 
+plaintext:
+\[
+  C_i = P_i \oplus \Enc_k(\text{nonce} \| i)
+\]
+The nonce (number used once) is a value that must be unique for each message 
+encrypted under the same key; the counter \(i\) increments for each block 
+within a message.
+
+\begin{frame}
+  \frametitle{\Ac{CTR} mode encryption}
+  \begin{figure}
+    \centering
+    \input{figs/ctr-enc.tex}
+    \caption{%
+      \Ac{CTR} encryption: the block cipher encrypts counter values to produce 
+      a keystream, which is XORed with the plaintext.
+    }
+  \end{figure}
+\end{frame}
+
+Decryption in \ac{CTR} mode is identical to encryption: generate the same 
+keystream and XOR it with the ciphertext.
+Since XOR is its own inverse, this recovers the plaintext:
+\[
+  P_i = C_i \oplus \Enc_k(\text{nonce} \| i)
+\]
+Note that decryption uses the \emph{encryption} function of the block cipher, 
+not the decryption function.
+This means \ac{CTR} mode only requires implementing the encryption direction.
+
+\begin{frame}
+  \frametitle{\Ac{CTR} mode decryption}
+  \begin{figure}
+    \centering
+    \input{figs/ctr-dec.tex}
+    \caption{%
+      \Ac{CTR} decryption: identical to encryption---the same keystream is 
+      XORed with the ciphertext.
+    }
+  \end{figure}
+\end{frame}
+
+Because each block's keystream depends only on the nonce and counter (not on 
+other blocks), \ac{CTR} mode is fully parallelizable and supports random 
+access: you can decrypt block \(i\) without processing blocks \(0\) through 
+\(i-1\).
+However, the nonce must \emph{never} be reused with the same key.
 
 \begin{frame}
   \begin{block}{\Ac{CTR} --- properties}
@@ -1342,13 +1547,6 @@ unpredictable.
     \end{itemize}
   \end{block}
 \end{frame}
-
-\Ac{CTR} mode turns a block cipher into a stream cipher.
-The cipher encrypts a sequence of counter values (nonce concatenated with a 
-counter) to produce a keystream, which is XORed with the plaintext.
-This is highly parallelizable and allows random access to any block.
-However, nonce reuse is catastrophic: if the same nonce is used twice, the 
-XOR of the two ciphertexts equals the XOR of the two plaintexts.
 
 \begin{frame}
   \mode<presentation>{%
