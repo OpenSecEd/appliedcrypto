@@ -140,54 +140,41 @@ must be provable, not merely hoped for.
 Modern cryptography can be organized into three broad categories, each with 
 its own flavor and historical development.
 
+\begin{frame}
 \begin{description}
   \item[Shared-key (symmetric) cryptography]
-    The oldest form, where the same secret key is shared between the 
-    communicating parties.
-    This is the focus of this lecture.
-    The main challenge is \emph{key distribution}: how do Alice and Bob agree 
-    on a shared secret in the first place?
+    \only<presentation>{Stems from the classical crypto where a key is shared 
+    between two users.}
+    \only<article>{The oldest form, where the same secret key is shared between 
+      the communicating parties.
+      This is the focus of this lecture.
+      The main challenge is \emph{key distribution}: how do Alice and Bob agree 
+    on a shared secret in the first place?}
 
   \item[Public-key (asymmetric) cryptography]
-    A revolutionary development from the 1970s.
-    Each user has a pair of keys: a public key (known to everyone) and a 
-    private key (known only to the owner).
-    This elegantly solves the key distribution problem but introduces new 
-    computational assumptions.
+    \only<presentation>{This is more modern crypto, from 1970s.
+    Each user has a public and a private key.}
+    \only<article>{A revolutionary development from the 1970s.
+      Each user has a pair of keys: a public key (known to everyone) and a 
+      private key (known only to the owner).
+      This elegantly solves the key distribution problem but introduces new 
+    computational assumptions.}
 
   \item[Counter-intuitive cryptography]
-    Modern developments, from the 1980s onward.
-    These include zero-knowledge proofs (proving you know something without 
-    revealing what), secure multi-party computation (computing on secret 
-    inputs without revealing them), and other seemingly impossible feats.
+    \only<presentation>{More modern, from 1980s and onwards.
+      How to do computations on secret inputs, prove knowledge without 
+    revealing of what.}
+    \only<article>{Modern developments, from the 1980s onward.
+      These include zero-knowledge proofs (proving you know something without 
+      revealing what), secure multi-party computation (computing on secret inputs 
+    without revealing them), and other seemingly impossible feats.}
 
   \item[Fully homomorphic encryption]
     More recent (early 2000s) allowing arbitrary computations on encrypted data 
     without decrypting it first.
-    This has profound implications for cloud computing and data privacy.
+    This has implications for cloud computing and data privacy.
 \end{description}
-
-\mode<presentation>{%
-\begin{frame}
-  \begin{description}
-    \item[Shared-key]
-      Stems from the classical crypto where a key is shared between two users.
-
-      \pause
-
-    \item[Public-key]
-      This is more modern crypto, from 1970s.
-      Each user has a public and a private key.
-
-      \pause
-
-    \item[Counter-intuitive]
-      More modern, from 1980s and onwards.
-      How to do computations on secret inputs, prove knowledge without revealing 
-      of what.
-  \end{description}
 \end{frame}
-}
 
 
 \section{Shared-key cryptography}
@@ -226,7 +213,7 @@ secrets people already use in everyday life.
   Invariant: message exchange; Varies: representation (m vs c)
 }
 \begin{frame}
-  \begin{block}{Cipher (Symmetric Cryptosystem)}
+  \begin{question}
     Is the following possible?
     \begin{enumerate}
       \item Alice transforms her message \(m\) into a garbled string \(c\).
@@ -236,7 +223,7 @@ secrets people already use in everyday life.
 
     \medskip
     \emph{Goal:} \(c\) hides the content of \(m\).
-  \end{block}
+  \end{question}
 
   \begin{onlyenv}<2>
   \begin{exercise}
@@ -551,6 +538,7 @@ Swedish alphabet), and encryption simply adds the key to each letter.
   \end{definition}
 
   \pause{}
+  \mode<presentation>{\only<2>{\vspace{-2em}}}
 
   \begin{example}
     With key \(k = 3\), we encrypt individual letters as follows:
@@ -676,6 +664,8 @@ Decryption is the same operation, since XOR is its own inverse.
   \end{example}
 \end{frame}
 
+% XXX add remark that OTP is just a binary version of Vigénère.
+
 The one-time pad is provably unbreakable, but it has severe practical 
 limitations.
 The key must be as long as the message, must be truly random, must be shared 
@@ -719,17 +709,6 @@ Modern block ciphers like \ac{AES} are designed to be \acsp{PRP}: given a
 128-bit key, \ac{AES} maps 128-bit blocks to 128-bit blocks in a way that is 
 computationally indistinguishable from a random permutation.
 
-\subsection{Summary}
-
-\begin{frame}
-  \begin{block}{Symmetric encryption in one line}
-    \begin{itemize}
-      \item Same key for encryption and decryption.
-      \item Main practical challenge: \emph{key distribution}.
-    \end{itemize}
-  \end{block}
-\end{frame}
-
 \subsection{Why classical ciphers fail}
 
 Before modern cryptography, people designed ciphers based on intuition and 
@@ -757,7 +736,6 @@ But how would you break it if you intercepted a Caesar-encrypted message?
 \begin{frame}
   \begin{exercise}
     You intercept a Caesar-encrypted message, but you do not know the key.
-
     How would you try to break it?
   \end{exercise}
 
@@ -1515,4 +1493,16 @@ storage for nonces).
   \end{center}
 \end{frame}
 }
+
+\section{Summary}
+
+\begin{frame}
+  \begin{block}{Symmetric encryption in one line}
+    \begin{itemize}
+      \item Same key for encryption and decryption.
+      \item Main practical challenge: \emph{key distribution}.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
 
