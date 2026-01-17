@@ -3,8 +3,8 @@ MODULE_RE ?= Week 1
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
-PAGES += lecture-intro.md
-PAGES += lecture-ciphers.md
+PAGES += lecture-intro.html
+PAGES += lecture-ciphers.html
 
 QUIZZES += INL1Quiz-ciphers.json
 
@@ -21,8 +21,12 @@ include ../module.mk
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
 pull-pages:
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture .*: Intro" > lecture-intro.html \
+		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Lecture .*: Intro" > lecture-intro.html
 	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture .*: Intro" > lecture-intro.md \
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Lecture .*: Intro" > lecture-intro.md
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture .*: Ciphers" > lecture-ciphers.html \
+		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Lecture .*: Ciphers" > lecture-ciphers.html
 	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture .*: Ciphers" > lecture-ciphers.md \
 		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Lecture .*: Ciphers" > lecture-ciphers.md
 

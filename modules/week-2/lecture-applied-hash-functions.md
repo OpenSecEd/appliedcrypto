@@ -7,16 +7,6 @@ editing_roles: teachers
 modules:
 - Week 2 (calendar week 4)
 ---
-## Conclusion
-
-The last session will be more like a Q&A session. I let those who show
-up direct what I talk about.
-
-We have the applied hash functions tutorial below that we haven\'t
-talked about, so I leave the material below.
-
-## Applied hash functions
-
 ## Content
 
 Fingerprinting, commitments, chaining, block chains, tree hashing, keyed
