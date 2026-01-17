@@ -1434,7 +1434,6 @@ ciphertext blocks (unless they follow identical histories), defeating the
 pattern leakage of \ac{ECB}.
 
 \begin{frame}
-  \frametitle{\Ac{CBC} mode encryption}
   \begin{figure}
     \begin{sidecaption}{%
       \Ac{CBC} encryption: each plaintext block is XORed with the previous 
@@ -1456,7 +1455,6 @@ to recover the plaintext:
 \end{align*}
 
 \begin{frame}
-  \frametitle{\Ac{CBC} mode decryption}
   \begin{figure}
     \begin{sidecaption}{%
       \Ac{CBC} decryption: each ciphertext block is decrypted, then XORed with 
@@ -1501,7 +1499,6 @@ encrypted under the same key; the counter \(i\) increments for each block
 within a message.
 
 \begin{frame}
-  \frametitle{\Ac{CTR} mode encryption}
   \begin{figure}
     \begin{sidecaption}{%
       \Ac{CTR} encryption: the block cipher encrypts counter values to produce 
@@ -1525,7 +1522,6 @@ not the decryption function.
 This means \ac{CTR} mode only requires implementing the encryption direction.
 
 \begin{frame}
-  \frametitle{\Ac{CTR} mode decryption}
   \begin{figure}
     \begin{sidecaption}{%
       \Ac{CTR} decryption: identical to encryption---the same keystream is 
