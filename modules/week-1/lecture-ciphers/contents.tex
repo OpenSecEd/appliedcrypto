@@ -787,7 +787,8 @@ Once a single letter is guessed correctly, the key is revealed.
     ciphertext (outer). The distribution is simply rotated by the key value,
     preserving the characteristic pattern.
   }[fig:polar-caesar]
-    \flushright
+    \only<article>{\flushright}
+    \only<presentation>{\centering}
     \includegraphics[width=0.8\linewidth]{figs/polar-caesar.png}
   \end{sidecaption}
 \end{figure}
@@ -844,7 +845,8 @@ exist.
     distribution remains, allowing an attacker to match ciphertext letters to
     their likely plaintext counterparts.
   }[fig:freq-caesar]
-    \flushright
+    \only<article>{\flushright}
+    \only<presentation>{\centering}
     \includegraphics[width=0.9\linewidth]{figs/freq-caesar.png}
   \end{sidecaption}
 \end{figure}
@@ -1189,7 +1191,8 @@ rounds.
       Each round applies substitution (S-boxes) for confusion and permutation 
       (P-boxes) for diffusion, with round keys mixed in.
     }[fig:spn]
-      \flushright
+      \only<article>{\flushright}
+    \only<presentation>{\centering}
       \includegraphics[width=0.7\linewidth]{figs/spn.png}
     \end{sidecaption}
   \end{figure}
@@ -1443,7 +1446,8 @@ pattern leakage of \ac{ECB}.
       \Ac{CBC} encryption: each plaintext block is XORed with the previous 
       ciphertext before encryption.
     }[fig:cbc-enc]
-      \flushright
+      \only<article>{\flushright}
+    \only<presentation>{\centering}
       \input{figs/cbc-enc.tex}
     \end{sidecaption}
   \end{figure}
@@ -1464,7 +1468,8 @@ to recover the plaintext:
       \Ac{CBC} decryption: each ciphertext block is decrypted, then XORed with 
       the previous ciphertext.
     }[fig:cbc-dec]
-      \flushright
+      \only<article>{\flushright}
+    \only<presentation>{\centering}
       \input{figs/cbc-dec.tex}
     \end{sidecaption}
   \end{figure}
@@ -1508,7 +1513,8 @@ within a message.
       \Ac{CTR} encryption: the block cipher encrypts counter values to produce 
       a keystream, which is XORed with the plaintext.
     }[fig:ctr-enc]
-      \flushright
+      \only<article>{\flushright}
+    \only<presentation>{\centering}
       \input{figs/ctr-enc.tex}
     \end{sidecaption}
   \end{figure}
@@ -1531,7 +1537,8 @@ This means \ac{CTR} mode only requires implementing the encryption direction.
       \Ac{CTR} decryption: identical to encryption---the same keystream is 
       XORed with the ciphertext.
     }[fig:ctr-dec]
-      \flushright
+      \only<article>{\flushright}
+    \only<presentation>{\centering}
       \input{figs/ctr-dec.tex}
     \end{sidecaption}
   \end{figure}
