@@ -1,0 +1,277 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Ciphers",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Hash Functions lectures. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 14,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Hash functions",
+        "item_body": "<p>Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Hash functions provide a deterministic transformation from input data to a fixed-size output.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Cryptographic hash functions are designed to be easily invertible so that the original input can be recovered from the output.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Hash functions are widely used to verify data integrity by comparing a computed hash with a known value.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>One common use of hash functions is to securely store passwords by hashing them before saving in a database.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Collision resistance means that it is computationally infeasible for two different inputs to produce the same hash output.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Collision resistance means that it is computationally infeasible to find two different inputs that produce the same hash output.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Hash functions can be used for encrypting sensitive data, ensuring that an attacker cannot read it.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Hash functions can be used to link blocks together into a secure the chain. If an adversary wants to change one block, all the following hashes must be recomputed---which will change the hash of the block at the tip of the chain, allowing detection.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Digital signature schemes often rely on hash functions to create a digest of the message before signing.</p>"
+            },
+            {
+              "position": 10,
+              "item_body": "<p>Hash functions can be used to generate unique identifiers for large files, making it easier to detect duplicates.</p>"
+            },
+            {
+              "position": 11,
+              "item_body": "<p>A challenge in designing hash functions is that they must be slow to compute in order to resist brute-force attacks.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            3,
+            4,
+            6,
+            8,
+            9,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "position": 15,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "MACs",
+        "item_body": "<p>What does MAC stand for in cryptographic contexts?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Message Authentication Code</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Media Access Control</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Multiple Access Channel</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Message Authorization Component</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "position": 16,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "MACs",
+        "item_body": "<p>What is the purpose of a MAC?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>To encrypt messages.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>To verify the authenticity and integrity of a message.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>To generate public and private keys.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>To be a part of establishing a secure communication channel.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            2,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 17,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "MACs",
+        "item_body": "<p>Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>MACs are designed to be computationally efficient to generate and verify, making them suitable for real-time applications.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>An attacker with access to several valid message-MAC pairs can easily compute a valid MAC for a new message.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The security of a MAC depends on the secrecy of the shared key, not on keeping the algorithm itself secret.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Cryptographic hash functions and MACs have identical security goals since both focus solely on collision resistance.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Although many MACs (like HMAC) are based on hash functions, they add the use of a secret key to provide unforgeability.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>MACs produce a fixed-size output regardless of the length of the input message.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>A valid MAC guarantees that a message has not been altered and that it was created by someone with knowledge of the secret key.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>A valid MAC guarantees that a message has not been altered and that it is delivered by a sender with knowledge of the secret key.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Any alteration to a message will result in a MAC that does not match the original, thus detecting tampering.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            3,
+            5,
+            6,
+            7,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}
