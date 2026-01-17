@@ -1,0 +1,49 @@
+% CBC encryption diagram
+\begin{tikzpicture}[
+    >=Stealth,
+    box/.style={draw, minimum width=1.2cm, minimum height=0.8cm},
+    xor/.style={draw, circle, minimum size=0.5cm, inner sep=0pt},
+    every node/.style={font=\small},
+    node distance=0.8cm and 1.8cm
+  ]
+  
+  % Block 0
+  \node (p0) {$P_0$};
+  \node[xor, below=of p0] (xor0) {$\oplus$};
+  \node[box, below=of xor0] (enc0) {$\Enc_k$};
+  \node[below=of enc0] (c0) {$C_0$};
+  \node[left=1.2cm of xor0] (iv) {IV};
+  
+  % Block 1
+  \node[right=of p0] (p1) {$P_1$};
+  \node[xor, below=of p1] (xor1) {$\oplus$};
+  \node[box, below=of xor1] (enc1) {$\Enc_k$};
+  \node[below=of enc1] (c1) {$C_1$};
+  
+  % Block 2
+  \node[right=of p1] (p2) {$P_2$};
+  \node[xor, below=of p2] (xor2) {$\oplus$};
+  \node[box, below=of xor2] (enc2) {$\Enc_k$};
+  \node[below=of enc2] (c2) {$C_2$};
+  
+  % Arrows for block 0
+  \draw[->] (p0) -- (xor0);
+  \draw[->] (iv) -- (xor0);
+  \draw[->] (xor0) -- (enc0);
+  \draw[->] (enc0) -- (c0);
+  
+  % Arrows for block 1
+  \draw[->] (p1) -- (xor1);
+  \draw[->] (xor1) -- (enc1);
+  \draw[->] (enc1) -- (c1);
+  
+  % Arrows for block 2
+  \draw[->] (p2) -- (xor2);
+  \draw[->] (xor2) -- (enc2);
+  \draw[->] (enc2) -- (c2);
+  
+  % Chaining arrows (from ciphertext to next XOR)
+  \draw[->] ($(enc0.south)!0.5!(c0.north)$) -| ($(xor1.west)$);
+  \draw[->] ($(enc1.south)!0.5!(c1.north)$) -| ($(xor2.west)$);
+  
+\end{tikzpicture}
