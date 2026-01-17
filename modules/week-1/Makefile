@@ -32,9 +32,8 @@ pull-pages:
 
 .PHONY: pull-quizzes
 pull-quizzes:
-	canvaslms quizzes view -c "${COURSE}" -M "${MODULE_RE}" \
-		-a "INL1Quiz Ciphers" \
-		> quizzes/INL1Quiz-ciphers.json
+	canvaslms quizzes export -Ic "${COURSE}" -a "^INL1Quiz Ciphers$$" \
+		> INL1Quiz-ciphers.json
 
 .PHONY: pull-assignments
 pull-assignments:
