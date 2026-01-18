@@ -5,7 +5,7 @@ published: true
 front_page: false
 editing_roles: teachers
 modules:
-- Week 2 (calendar week 4)
+- Week 2
 ---
 ## Content
 
@@ -14,12 +14,8 @@ hash functions, password hashing, proof-of-work, BitTorrent, Git.
 
 ## Resources
 
-These materials are provided as interactive learning material through
-FeedbackFruits. See [Access to
-videos](https://canvas.kth.se/courses/59543/pages/access-to-videos "Access to videos"){api-endpoint="https://canvas.kth.se/api/v1/courses/59543/pages/access-to-videos"
-api-returntype="Page"}.
-
-**Focus on watching the videos before the lecture.**
+**I'll update these, and you just need to do the hash function lecture before 
+this lecture**.
 
 Fingerprinting:
 
