@@ -53,7 +53,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -89,7 +89,7 @@
             },
             {
               "position": 8,
-              "item_body": "<p>Hash functions can be used to link blocks together into a secure the chain. If an adversary wants to change one block, all the following hashes must be recomputed---which will change the hash of the block at the tip of the chain, allowing detection.</p>"
+              "item_body": "<p>Hash functions can be used to link blocks together into a secure chain. If an adversary wants to change one block, all the following hashes must be recomputed---which will change the hash of the block at the tip of the chain, allowing detection. (But then we must remember that value at the tip.)</p>"
             },
             {
               "position": 9,
@@ -130,7 +130,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -150,7 +150,7 @@
             },
             {
               "position": 4,
-              "item_body": "<p>Message Authorization Component</p>"
+              "item_body": "<p>Mandatory Access Control</p>"
             }
           ]
         },
@@ -173,7 +173,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -217,7 +217,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -285,7 +285,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -330,7 +330,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -374,7 +374,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -424,7 +424,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -470,7 +470,7 @@
           "shuffle_rules": {
             "choices": {
               "to_lock": [],
-              "shuffled": true
+              "shuffled": false
             }
           }
         },
@@ -491,6 +491,10 @@
             {
               "position": 4,
               "item_body": "<p>Collision resistance is still useful in block chains for other reasons (e.g., to prevent an attacker from replacing old content with different content that has the same hash).</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>With hash-based PoW systems widely deployed, hash functions are no longer secure. The mining networks spend all their time finding preimages, so we can easily find preimages of hash functions with that compute power.</p>"
             }
           ]
         },

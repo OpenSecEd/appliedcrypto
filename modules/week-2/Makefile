@@ -7,6 +7,8 @@ PAGES += lecture-hash-functions.html
 PAGES += lecture-applied-hash-functions.md
 PAGES += lecture-asymmetric-crypto.html
 
+QUIZZES += INL1Quiz-hash.json
+
 ASSIGNMENTS += assignments/hac-ch9-hash-functions.md
 ASSIGNMENTS += assignments/hac-ch8-public-key-encryption.md
 ASSIGNMENTS += assignments/hac-ch11-digital-signatures.md
