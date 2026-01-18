@@ -1,7 +1,7 @@
 {
   "quiz_type": "new",
   "settings": {
-    "title": "INL1Quiz Ciphers",
+    "title": "INL1Quiz Hash functions",
     "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Hash Functions lectures. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
     "time_limit": null,
     "points_possible": 1.0,
@@ -42,7 +42,7 @@
   },
   "items": [
     {
-      "position": 14,
+      "position": 1,
       "points_possible": 1.0,
       "entry": {
         "title": "Hash functions",
@@ -119,7 +119,7 @@
       }
     },
     {
-      "position": 15,
+      "position": 2,
       "points_possible": 1.0,
       "entry": {
         "title": "MACs",
@@ -162,7 +162,7 @@
       }
     },
     {
-      "position": 16,
+      "position": 3,
       "points_possible": 1.0,
       "entry": {
         "title": "MACs",
@@ -206,7 +206,7 @@
       }
     },
     {
-      "position": 17,
+      "position": 4,
       "points_possible": 1.0,
       "entry": {
         "title": "MACs",
@@ -269,6 +269,236 @@
             6,
             7,
             9
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Hash functions",
+        "item_body": "<p>Proof-of-work (PoW) and block chains relate to hash functions. Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>A typical PoW puzzle is to find a nonce <code>n</code> such that <code>H(block || n)</code> satisfies some condition (e.g., the hash is smaller than a target).</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>This kind of PoW puzzle is essentially a preimage-style search problem: find an input whose hash output lies in a specified set.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>PoW fundamentally requires finding collisions in the hash function (two different inputs with the same hash).</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Hash chaining makes tampering detectable because changing one block changes its hash and thus changes all following links.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Hash functions",
+        "item_body": "<p>Assume an ideal hash function with <code>n</code>-bit output. Recall: <em>\"k-bit security\" means about <code>2^k</code> operations to break</em>. Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>To get about 128-bit security against <em>preimage</em> attacks, we need roughly <code>n &gt;= 128</code> (because brute force is about <code>2^n</code>).</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>To get about 128-bit security against <em>collision</em> attacks, we need roughly <code>n &gt;= 256</code> (because generic collision search costs about <code>2^{n/2}</code>).</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>If <code>n = 128</code>, then collision security is about 128 bits (i.e., it costs about <code>2^{128}</code> operations to find a collision).</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>If <code>n = 256</code>, then preimage security is about 128 bits.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "position": 7,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Passwords",
+        "item_body": "<p>Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>When passwords are stored as hashes, an attacker who steals the database can often do offline guessing (verify guesses without interacting with the system).</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>To slow down offline guessing, it is useful to use a deliberately slow password hashing function (e.g., bcrypt/Argon2), rather than a fast general-purpose hash.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>A per-user salt should be unique, but it does not need to be secret.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>A salt primarily exists to make computing the hash faster.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>If the database stores a single unsalted hash per user, then an attacker can guess one password and check it against all users at once.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 8,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Hash chaining",
+        "item_body": "<p>Hash chaining can give tamper evidence, but it does not automatically provide authenticity. Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Hash chaining can make tampering evident: if one block is changed, the hash links of all following blocks change too.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Hash chaining by itself does not tell you who created the data; for that you typically need something like digital signatures or a MAC.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>If you publish only the hash of the latest block, then later you can detect if any earlier block was changed (because the chain would no longer match).</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>If the hash of the latest block is published (anchored) and blocks are hash-chained, then an attacker cannot delete an earlier block without detection (the recomputed tip hash will differ).</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 9,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Hash functions",
+        "item_body": "<p>Proof-of-work (PoW) uses hash functions, but it relies on a different security property than collision resistance. Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>In PoW, miners typically do brute-force search over nonces until the hash output satisfies a target condition.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Finding such a nonce is mainly a preimage-style problem (unstructured search), not a collision-finding problem.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>If collision resistance were broken, the PoW searching-for-a-nonce step would still be a preimage-style brute-force search, but other security goals of the chain could break (e.g., rewriting history could become easier).</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Collision resistance is still useful in block chains for other reasons (e.g., to prevent an attacker from replacing old content with different content that has the same hash).</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4
           ]
         }
       }
