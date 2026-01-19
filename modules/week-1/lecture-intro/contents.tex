@@ -1,0 +1,366 @@
+\mode*
+
+\section{The goal}
+
+\begin{frame}[fragile]
+  \begin{center}
+    \Large
+    Primitives
+    \qquad
+    \qquad
+    Constructions
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Primitives}
+        \begin{itemize}
+          \item Block ciphers
+          \item Stream ciphers
+          \item Hash functions
+          \item Message authentication codes
+          \item Digital signatures
+          \item Public key encryption
+          \item Zero-knowledge proofs
+          \item Secure multi-party computation
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Constructions}
+        \begin{itemize}
+          \item Key exchange protocols
+          \item Identification and authentication protocols
+          \item Complex constructions from primitives
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Primitives}
+
+\begin{frame}[fragile]
+  \begin{example}[Primitives: OTP]
+    \begin{itemize}
+      \item The One-Time Pad is perfectly secure.
+      \item It is a stream cipher.
+      \item It's also malleable---predictable bit flips!
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[Primitives: RSA and ElGamal]
+    \begin{itemize}
+      \item RSA and ElGamal are public key encryption schemes.
+      \item They secure the connection to our internet bank.
+      \item Is it a good idea to send
+        \begin{center}
+          Enc(\texttt{``Transfer 1000 SEK from 1234 to 1235''}, k)
+        \end{center}
+        to the bank?
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\subsection{Constructions}
+
+\begin{frame}[fragile]
+  \begin{example}[Construction: BankID]
+    \begin{itemize}
+      \item BankID is a construction based on public key encryption.
+      \item It is used to authenticate users.
+      \item It is also used to sign transactions.
+      \item How should this be constructed to minimize attacks?
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[Construction: Tor]
+    \begin{itemize}
+      \item Tor is a construction based on onion routing.
+      \item It is used to anonymize internet traffic.
+      \item It uses crypto a lot.
+      \item How should this be constructed to minimize attacks?
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[Example: The Signal Protocol]
+    \begin{itemize}
+      \item The Signal Protocol is used for secure messaging.
+      \item It provides end-to-end encryption for messages.
+      \item Key features include perfect forward secrecy and deniability.
+      \item Widely used in applications like WhatsApp and Facebook Messenger.
+      \item How to do group messaging securely?
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[Example: Remote Attestation Protocols]
+    \begin{itemize}
+      \item Remote Attestation validates the integrity of a device.
+      \item It leverages cryptographic proofs to verify software states.
+      \item Commonly used in trusted computing environments.
+      \item Helps in ensuring the device has not been tampered with.
+      \item How can we use this and how can we do it correctly?
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[Example: Keyless Entry to Cars]
+    \begin{itemize}
+      \item Keyless entry systems use wireless communication.
+      \item Protocols allow unlocking and starting the vehicle without a 
+        physical key.
+      \item Vulnerable to relay attacks if not properly secured.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\subsection{Intended learning outcomes}
+
+\begin{frame}[fragile]
+  \begin{block}{Intended learning outcomes}
+    After passing the course, the student should be able to:
+    \begin{itemize}
+      \item use basic terminology in 
+        computer security and cryptography correctly
+      \item describe cryptographic concepts and explain their security 
+        properties
+      \item find and use documentation of cryptographic libraries and standards
+      \item identify and categorise threats against a cryptographic IT-system 
+        at a conceptual level, suggest appropriate countermeasures and present 
+        the reasoning to others
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Purpose}
+    \dots in order to
+    \begin{itemize}
+      \item as citizen and engineer be able to discuss applied cryptography in 
+        general, and risks of using/developing cryptography in particular
+      \item in professional life and/or research and development project be 
+        able to evaluate challenges in software development related to 
+        cryptography.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{In other words ...}
+    \begin{itemize}
+      \item<+> You should be able to write your own version of BankID.
+      \item<+> You should be able to make well-founded contributions to 
+        discussions about things like ChatControl.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\section{The content}
+
+\subsection{Lectures}
+
+\begin{frame}[fragile]
+  \begin{block}{Lecture format}
+    \begin{itemize}
+      \item Most on Zoom and campus.
+      \item Some flipped (watch videos, read material before class).
+    \end{itemize}
+  \end{block}
+
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/lecture-mode.png}
+    \caption{Screenshot from Canvas showing the lecture mode.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Lecture content}
+    \begin{itemize}
+      \item Crypto primitives
+      \item Practical applications
+      \item Issues and higher level problems
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Lecture content (cont.)}
+    \begin{itemize}
+      \item The lectures are complemented by reading material.
+      \item \alert<2>{However, not all of them are published yet.}
+    \end{itemize}
+  \end{block}
+
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{figs/lecture-mode.png}
+    \caption{Screenshot from Canvas showing the lecture mode.}
+  \end{figure}
+\end{frame}
+
+\subsection{Assignments}
+
+\begin{frame}[fragile]
+  \begin{block}{LADOK modules}
+    \begin{itemize}
+      \item LAB1
+      \item INL1
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{LAB1, mandatory}
+    \begin{itemize}
+      \item Cryptanalysis of Ciphertexts
+      \item Implement AES (Kattis Problem)
+      \item AES presentation
+      \item MANDATORY Seminar: usability (Sonja)  ON CAMPUS
+      \item MANDATORY Seminar: Impact considerations around crypto systems 
+        (Sonja)  ON CAMPUS
+      \item MANDATORY Design Considerations (after the impact considerations seminar)
+      \item MANDATORY Lab: Introduction to ProVerif  (Karl and Jesper)  ON 
+        CAMPUS
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{LAB1, optional}
+    \begin{itemize}
+      \item Optional: Cryptopals (C, B, A)
+      \item Optional: Side channels (C, B, A)
+      \item Optional: Secure multi-party computation (C, B, A)
+    \end{itemize}
+  \end{block}
+
+  \begin{remark}[Higher grades]
+    \begin{itemize}
+      \item To get a higher grade, you need to do some of the optional 
+        assignments.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{INL1}
+    \begin{itemize}
+      \item	INL1Quiz Cryptographic Concepts, split per lecture
+      \item	INL1Written
+      \item	INL1Oral
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Assignment format}
+    \begin{itemize}
+      \item Most can be done at any time.
+      \item Some have a specified lab session.
+        \begin{itemize}
+          \item MANDATORY Seminar: usability (Sonja)  ON CAMPUS
+          \item MANDATORY Seminar: Impact considerations around crypto systems 
+            (Sonja)  ON CAMPUS
+          \item MANDATORY Lab: Introduction to ProVerif  (Karl and Jesper)  ON 
+            CAMPUS
+        \end{itemize}
+      \item All assignments are individual.
+    \end{itemize}
+  \end{block}
+
+  \begin{remark}[LabWeek]
+    \begin{itemize}
+      \item If you miss, you can catch up in LabWeek in June.
+    \end{itemize}
+  \end{remark}
+\end{frame}
+
+\subsection{Structure}
+
+\begin{frame}[fragile]
+  \begin{center}
+    \huge
+    Canvas
+  \end{center}
+\end{frame}
+
+
+\section{What you should be able to do in the end}
+
+\begin{frame}[fragile]
+  \begin{block}{What you should be able to to do}
+    \begin{itemize}
+      \item Let's look at INL1Written
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Introductory example: Parcel boxes (\enquote{postboxes})}
+
+\begin{frame}[fragile]
+  \begin{block}{Scenario: delivering parcels}
+    \begin{itemize}
+      \item Parcels are delivered when recipients are away.
+      \item A shared parcel box (a \enquote{postbox}) stores parcels temporarily.
+      \item A backend coordinates access and notifications.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{What must the system achieve?}
+    \begin{itemize}
+      \item Only the right person can retrieve the right parcel.
+      \item The delivery company can operate efficiently.
+      \item Disputes can be resolved (\enquote{delivered or not?}).
+      \item The system should leak as little metadata as possible.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{example}[What can go wrong?]
+    \begin{itemize}
+      \item Impersonation: attacker pretends to be customer or delivery person.
+      \item Replay: attacker reuses a captured access message.
+      \item Compromise: a box or backend is hacked or tampered with.
+      \item Insider abuse: authorized actors misuse their privileges.
+      \item Privacy leakage: pickup patterns reveal habits, locations, relationships.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Crypto toolbox you need to learn}
+    \begin{itemize}
+      \item Hash functions: identifiers, integrity checks, commitments
+      \item MACs and authenticated encryption: protect tokens and stored data
+      \item Digital signatures: accountability and verifiable records
+      \item Secure channels and key exchange: protect communication with backends
+      \item Key management: provisioning, rotation, revocation, trust anchors
+      \item Randomness and nonces: freshness, replay resistance, safe protocols
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Course topics $\rightarrow$ scenario needs}
+    \begin{description}
+      \item[Confidentiality] parcel details and access data
+      \item[Integrity] tokens, logs, and device state
+      \item[Authentication] customer and delivery identities
+      \item[Authorization] who may open which compartment, when
+      \item[Accountability] audit trails and dispute handling
+      \item[Privacy] minimize metadata leakage and linkability
+    \end{description}
+  \end{block}
+\end{frame}
