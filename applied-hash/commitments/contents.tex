@@ -44,6 +44,295 @@
 
 \section{Commitments}
 
+\begin{frame}
+  \begin{example}[I want to be fair, but I don't trust you (and you don't trust me)]
+    \begin{itemize}
+      \item Alice wants to write down a prediction (or a bid) \emph{now}.
+      \item Alice wants to reveal it \emph{later}, after Bob has made a choice.
+    \end{itemize}
+  \end{example}
+
+  \pause{}
+
+  \begin{exercise}[Try first]
+    Design a protocol for this situation.
+
+    \begin{itemize}
+      \item Alice should not be able to change her mind after seeing Bob's
+        message.
+      \item Bob should not learn Alice's choice before he sends his message.
+    \end{itemize}
+
+    What could Alice send in the first round?
+  \end{exercise}
+
+  \ltnote{%
+    \textbf{Try-first--tell-later}: We start with a concrete fairness problem.
+
+    \textbf{Variation pattern}: Generalization
+
+    Students have already seen week 2 protocols with two phases
+    (send something, then send something else) and security properties
+    (confidentiality vs integrity). Here we keep the idea of a short tag
+    invariant, and vary the trust setting: no shared secret with the verifier.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{From week 2: hash functions and \acp{MAC}}
+    \begin{description}
+      \item[\acp{MAC}] detect modifications using a shared secret.
+      \item[Commitments] \emph{no shared secret} with the verifier.
+    \end{description}
+
+    \pause{}
+
+    \begin{itemize}
+      \item We want to \emph{lock in} a value now and \emph{reveal} it later.
+      \item This comes up in sealed bids, predictions, coin flipping, \dots
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Commitment scheme (informal)]
+    A commitment scheme is a two-phase protocol:
+    \begin{description}
+      \item[Commit] choose message \(m\) and randomness \(r\), output a
+        commitment \(c\).
+      \item[Open] reveal \((m, r)\); the verifier checks that it matches \(c\).
+    \end{description}
+  \end{definition}
+
+  \pause{}
+
+  \begin{definition}[Security goals]
+    \begin{description}
+      \item[Hiding] seeing \(c\) should not reveal \(m\).
+      \item[Binding] after sending \(c\), it should be hard to open it to a
+        different message.
+    \end{description}
+  \end{definition}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast
+
+    We explicitly contrast the two goals (hiding vs binding). Students often
+    conflate them, or only reason about one adversary. This prepares the later
+    coin-flipping example where different failures benefit different parties.
+  }
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{exercise}
+    Suppose Alice commits to \(m\) by sending \(c = H(m)\).
+
+    \begin{itemize}
+      \item Is this hiding?
+      \item Is this binding?
+      \item When would it be obviously insecure?
+    \end{itemize}
+  \end{exercise}
+
+  \pause{}
+
+  \begin{remark}[Why we need randomness]
+    \begin{itemize}
+      \item If \(m\) comes from a small set (\enquote{yes/no}, \enquote{0--9},
+        short passwords), Bob can try all candidates.
+      \item So we commit to \emph{(randomness, message)}, not just the message.
+    \end{itemize}
+  \end{remark}
+
+  \ltnote{%
+    \textbf{Try-first--tell-later}: Students first analyze an almost-correct
+    construction.
+
+    \textbf{Variation pattern}: Contrast
+
+    \textbf{What varies}: Whether the commitment uses randomness \(r\) or not.
+
+    \textbf{What stays invariant}: Same hash function \(H\) and the same goal:
+    \enquote{send a short string now, open later}.
+
+    This makes the critical aspect \enquote{entropy for hiding} discernible.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Hash-based commitment]
+    Fix a hash function \(H\). To commit to message \(m\):
+    \begin{enumerate}
+      \item Pick fresh, high-entropy randomness \(r\).
+      \item Compute \(c = \Hash[\Enc[r\concat m]]\) (i.e., hash an
+        unambiguous encoding of \(r\) and \(m\)).
+      \item Send \(c\).
+    \end{enumerate}
+
+    \pause{}
+
+    To open, reveal \((m, r)\). Verifier checks
+    \(\Hash[\Enc[r\concat m]] \stackrel?= c\).
+  \end{definition}
+
+  \pause{}
+
+  \begin{exercise}
+    Which property of \(H\) from week 2 do you think relates most to binding?
+  \end{exercise}
+
+  \ltnote{%
+    \textbf{Try-first--tell-later}: Ask the linking question before giving the
+    proof idea.
+
+    \textbf{Variation pattern}: Generalization
+
+    Not new primitives: same hash notions as in week 2, new use case.
+    We keep \(H\) invariant and only vary the surrounding protocol.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{remark}[Intuition: why the properties hold]
+    \begin{description}
+      \item[Binding] If Alice can open \(c\) as \((m, r)\) and also as
+        \((m', r')\) with \(m\neq m'\), then she found a collision:
+        \(\Hash[\Enc[r\concat m]] = \Hash[\Enc[r'\concat m']]\).
+      \item[Hiding] If \(r\) is fresh and unpredictable, then \(c\) does not
+        reveal \(m\) (informally: it looks like a random hash output).
+    \end{description}
+  \end{remark}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Fusion
+
+    Here we tie together two critical aspects at the same time:
+    (1) collision resistance \(\Rightarrow\) binding, and
+    (2) randomness/entropy \(\Rightarrow\) hiding.
+
+    Students need both in view simultaneously to reason about who can cheat and
+    how.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{example}[Coin flipping over the network]
+    \begin{enumerate}
+      \item Alice chooses a random bit \(a\) and randomness \(r\).
+        She sends \(c = \Hash[\Enc[r\concat a]]\).
+      \item Bob chooses a random bit \(b\) and sends \(b\).
+      \item Alice opens by sending \((a, r)\). Result is \(a\oplus b\).
+    \end{enumerate}
+  \end{example}
+
+  \pause{}
+
+  \begin{exercise}
+    Who could cheat if (1) hiding failed? (2) binding failed?
+  \end{exercise}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast
+
+    We contrast two failure modes: \enquote{hiding fails} vs \enquote{binding
+    fails}. Invariant: the same protocol.
+
+    This makes it clear that the two security goals benefit different parties.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}[Try first]
+    Alice commits to \((r,m)\) by sending the string
+    \(\Enc[r]\concat\Enc[m]\).
+
+    \begin{itemize}
+      \item What could go wrong if \(\Enc\) is just
+        \enquote{write the bits with no delimiter and no length}?
+      \item Can you find two different pairs \((r,m)\neq(r',m')\) that yield the
+        same concatenation?
+    \end{itemize}
+  \end{exercise}
+
+  \pause{}
+
+  \begin{remark}[Encoding must be unambiguous]
+    Two common fixes:
+    \begin{description}
+      \item[Length-prefix] Encode as
+        \(\Enc[ r,m ]=\langle |r|,r,m\rangle\) (store the bit-length of \(r\) first).
+      \item[Structured format] Use a canonical serialization (e.g., CBOR/ASN.1/
+        Protocol Buffers) with domain separation.
+    \end{description}
+
+    In practice, prefer a standard commitment/serialization rather than inventing
+    one.
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}[Pitfalls and good practice]
+    \begin{itemize}
+      \item Use fresh randomness \(r\) for every commitment.
+      \item Ensure \(r\) has enough entropy (think: at least 128 bits).
+      \item Use an unambiguous encoding of \((r, m)\) before hashing.
+      \item Avoid ad-hoc constructions in real systems; use standard schemes.
+    \end{itemize}
+  \end{remark}
+
+  \ltnote{%
+    \textbf{Design note}: This stays at the level of \enquote{practical red
+    flags}, not a fully formal treatment.
+
+    For an applied crypto course it is enough that students can recognize when a
+    commitment is obviously unsafe (low entropy, reusing randomness, ambiguous
+    serialization).
+  }
+\end{frame}
 
 \section{Keyed hash functions}
+
+\begin{frame}
+  \begin{block}{How this relates to \ac{HMAC} (week 2)}
+    \begin{description}
+      \item[\ac{HMAC}] integrity/authenticity with a shared secret key \(k\).
+      \item[Commitment] 
+        \begin{itemize}
+          \item no shared secret with verifier,
+          \item randomness \(r\) is revealed later,
+          \item goal is \emph{time separation}: commit now, open later.
+        \end{itemize}
+    \end{description}
+  \end{block}
+
+  \pause{}
+
+  \begin{exercise}
+    If you \emph{did} share a secret key with the verifier, would you still need
+    randomness \(r\) to hide the message?
+  \end{exercise}
+
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast
+
+    Students compare \enquote{shared secret key} (MAC) with \enquote{randomness
+    revealed later} (commitment).
+
+    This supports concept separation: the key gives authenticity, the randomness
+    gives hiding in commitments.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{remark}[Take-away]
+    \begin{itemize}
+      \item Commitments are \emph{not} encryption and \emph{not} MACs.
+      \item Hash-based commitments are simple:
+        \(c = \Hash[\Enc[r\concat m]]\) with an unambiguous encoding.
+      \item Binding \(\approx\) collision resistance; hiding \(\approx\)
+        high-entropy randomness \(r\).
+    \end{itemize}
+  \end{remark}
+\end{frame}
 
