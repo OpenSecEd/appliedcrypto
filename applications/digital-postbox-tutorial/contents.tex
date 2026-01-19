@@ -1,0 +1,241 @@
+\mode*
+
+\section{Digital Postbox}
+
+Traditionally we send paper mail by addressing a letter to a physical address 
+(including the recipient's name).
+We write the address on an envelope and send it.
+We want a digital transformation.
+You should design a digital postbox and delivery service.
+
+\mode<presentation>{%
+\begin{frame}
+  \begin{idea}[Digital mail]
+    \begin{itemize}
+      \item We send paper mail by writing an address on an envelope.
+      \item We want to have a digital version.
+    \end{itemize}
+  \end{idea}
+
+  \begin{remark}
+    \begin{itemize}
+      \item We have a few already: Kivra, eBoks, Digimail, Min myndighetspost.
+      \item Managed by DIGG\footnote{%
+          See \url{https://www.digg.se/digital-post}.
+        }
+    \end{itemize}
+  \end{remark}
+\end{frame}
+}
+
+\begin{frame}
+\begin{exercise}[Functionality]
+  What functionality do we need? (High level)
+\end{exercise}
+
+\begin{onlyenv}<2>
+  \begin{solution}
+    We'd need at least the following:
+    \begin{itemize}
+      \item Registration
+      \item Sending mail
+      \item Reading mail
+    \end{itemize}
+  \end{solution}
+\end{onlyenv}
+\end{frame}
+
+\begin{frame}
+\begin{exercise}[Requirements]
+  What are the requirements on the service?
+\end{exercise}
+\end{frame}
+
+We have the following requirements on the service:
+\begin{frame}
+\begin{description}
+  \item[Registration]
+    A user can register for a post box.
+    As this post service will replace physical mail, it must be tied to a real 
+    identity with a physical address.
+
+    \pause
+
+  \item[Sending mail]
+    A sender should be able to send mail to a recipient.
+    This mail should not be readable by any intermediary.
+
+  \item[Reading mail]
+    The owner can read the mail.
+    Only the owner should be able to do this --- no one else, not even service 
+    staff!
+    Recipient must be able to verify the authenticity of mail.
+%
+%  \item[Anonymous mail] (Extra feature)
+%    A sender can send a letter to a recipient, but neither the recipient nor 
+%    the service will learn the identity of the sender.
+%    The service will not learn the recipient either.
+\end{description}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}
+    DIGG\footnote{Myndigheten för digital förvaltning} sets the official 
+    requirements, see
+    \url{https://www.digg.se/digitala-tjanster/digital-post/digital-post-for-dig-som-leverantor/allmanna-villkor/allmanna-villkor-fr.o.m.-16-januari-2023/bilaga-1-krav-pa-sakerhet-for-brevladeoperatorer}.
+  \end{remark}
+\end{frame}
+
+%\begin{frame}[fragile]
+%  \begin{remark}[Requirement]
+%    \begin{itemize}
+%      \item Must work with EIDAS\@.
+%      \item Implementations from other countries might use other algorithms.
+%    \end{itemize}
+%  \end{remark}
+%\end{frame}
+
+Solving this assignment will touch upon almost every topic in the course.
+Make sure to base your designs on the theory of the course, add references 
+(that will help you).
+\enquote{This feels secure} is not a convincing argument.
+Likewise, \enquote{all connections should use TLS} will not cut it either; why 
+do you want TLS, what properties do you need and which of those will TLS 
+provide and why?
+
+\mode<presentation>{%
+  \begin{frame}
+    \begin{exercise}[Design the digital mail service]
+      \begin{description}
+        \item[Registration]
+          Alice can register for a post box.
+
+        \item[Sending mail]
+          Alice should be able to send mail to a recipient Bob.
+          Mail should not be readable by any intermediary.
+
+        \item[Reading mail]
+          Bob can read all his received mail.
+          Service staff should not be able to read mail!
+          Must be able to verify the authenticity.
+      \end{description}
+    \end{exercise}
+  \end{frame}
+
+  \begin{frame}
+    \begin{exercise}
+      \begin{itemize}
+        \item Registration
+        \item Sending mail
+        \item Reading mail
+      \end{itemize}
+    \end{exercise}
+
+    \begin{block}{Organization}
+      \begin{itemize}
+        \item Groups of around three--four people.
+        \item Pick one of the three functionalities.
+        \item \alert<2>{Design a solution: detail the crypto protocol.}
+        \item Document at \url{https://tinyurl.com/tilkry25-postbox}
+        \item Work for 20 minutes.
+        \item Group presentations and discussions.
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \begin{solution}
+      \begin{itemize}
+        \item Presentation from groups.
+        \item Comments from everyone else.
+      \end{itemize}
+    \end{solution}
+
+    \begin{question}
+      \begin{itemize}
+        \item Obstacles?
+        \item Limitations?
+        \item Recovery from failure?
+        \item In whom do we trust?
+      \end{itemize}
+    \end{question}
+  \end{frame}
+}
+
+Notes from the session:
+\begin{itemize}
+  \item Same as Signal protocol.
+  \item Just tie in BankID to get real identities.
+  \item The problem of end-to-end encryption: lost keys doesn't work. But it 
+    still works with the existing digital mail services.
+\end{itemize}
+
+\begin{frame}
+  \begin{exercise}[Data and metadata]
+    What data and metadata are revealed to whom?
+    How does this compare to the physical mail service?
+  \end{exercise}
+\end{frame}
+
+\mode<presentation>{%
+  \begin{frame}
+    \begin{exercise}[Adapt for anonymity]
+      \begin{description}
+        \item[Weak sender anonymity]
+          Alice can send a letter to Bob, but the service will not learn the 
+          identity of the sender.
+
+        \item[Sender anonymity]
+          Alice can send a letter to Bob, but neither Bob nor the service will 
+          learn the identity of the sender.
+
+        \item[Sender--receiver anonymity]
+          Same, but the service will not learn that Bob is the recipient 
+          either.
+      \end{description}
+    \end{exercise}
+
+    \pause
+
+    \begin{block}{Organization}
+      \begin{itemize}
+        \item Groups of around three--four people.
+        \item Work for 20 minutes, document: 
+          \url{https://tinyurl.com/tilkry25-anon-postbox}.
+        \item Group presentations and discussions.
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \begin{solution}
+      \begin{itemize}
+        \item Presentation from groups.
+        \item Comments from everyone else.
+      \end{itemize}
+    \end{solution}
+
+    \begin{question}
+      \begin{itemize}
+        \item Obstacles?
+        \item Limitations?
+        \item Recovery from failure?
+        \item In whom do we trust?
+      \end{itemize}
+    \end{question}
+  \end{frame}
+}
+
+
+\section{Digital identity}
+
+\begin{frame}
+  \begin{exercise}
+    \begin{itemize}
+      \item What requirements do we have on digital identity for our postbox 
+        system?
+        How can we achieve those requirements?
+      \item Document: \url{https://tinyurl.com/tilkry25-identity}.
+    \end{itemize}
+  \end{exercise}
+\end{frame}

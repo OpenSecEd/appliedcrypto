@@ -1,0 +1,1210 @@
+\chapter{Delivering parcels}\label{ParcelBoxes}
+\chapterprecis{%
+  This chapter is from DD2520 Applied Crypto, spring 2025, at KTH\@.
+}
+
+As shopping has moved online, the transportation of goods from shops to homes
+has moved from people bringing what they have bought home themselves to
+delivery services delivering them home.
+However, people are not always at home---they work or study---which complicates
+things.
+There are a few such services around, such as
+\begin{description}
+  \item[PostNord, DHL and Schenker] deliver parcels to the door for signing,
+    they can leave it outside the door if nobody is at home,
+    they can also drop it at a service centre where the recipient can fetch it.
+    PostNord can additionally drop it in a mail box, or
+    they deliver it to a parcel box where the recipient can fetch it.
+  \item[Budbee and Instabox] deliver parcels to the nearest parcel box, then
+    the recipient must fetch the package there.
+\end{description}
+
+We want to design a general system that these companies can use for
+implementing their services.
+We want it to be as usable and as secure as possible.
+It should also consider privacy in its design.
+
+\ltnote{%
+  The idea is to use more open form of pQBL~\parencite{pQBL}.
+  This means that we start with a question.
+  This lets the reader think about the problem, try to explore it based on what
+  they currently know.
+  When we later tell them, the knowledge will be more
+  reinforced~\parencite{Szekely1950}.
+  This also helps the reader to discern relevant
+  aspects~\parencite{NecessaryConditionsOfLearning}.
+
+  The intention of \cref{ParcelBenefits,ParcelDrawbacks} is to let the
+  reader discover the relevant security and usability properties that we want
+  to capture in the coming protocol design.
+}
+\begin{exercise}\label{ParcelBenefits}
+  What are the benefits of parcel boxes compared to home delivery or
+  service centre pickup?
+\end{exercise}
+
+Parcel boxes offer convenience: recipients can pick up parcels at any time
+without coordinating schedules with delivery personnel.
+The delivery company can deliver more efficiently since they only visit fixed
+locations rather than individual homes.
+
+\begin{exercise}\label{ParcelDrawbacks}
+  What are the security and privacy concerns with parcel boxes?
+\end{exercise}
+
+There are several concerns:
+\begin{itemize}
+  \item Who can open the box? We need to ensure only the intended recipient
+    can retrieve their parcel.
+  \item How do we prove the parcel was delivered? The sender and delivery
+    company need proof in case of disputes.
+  \item What if the box is tampered with? We need to detect if someone has
+    modified the box's hardware or software.
+  \item Privacy: the system operator learns when and where people pick up
+    parcels, revealing shopping habits and locations.
+\end{itemize}
+
+\begin{exercise}
+  Think about how you would design a system using cryptographic primitives to
+  ensure the functionality, usability and security of the system.
+\end{exercise}
+
+\ltnote{%
+  The idea is to create the simplest solution possible.
+  Then we will focus one aspect at a time by making one small change to the
+  solution at a time.
+  This will introduce the contrast necessary to bring the aspect into
+  focus \parencite[as dictated by][]{NecessaryConditionsOfLearning}.
+  We will do this until we have touched on all aspects and arrived at the
+  perfect solution.
+  (One could also think of this as a sequence of games, as used in cryptography
+  \parencite{Shoup2004Sequences}.
+  Arguably, the reason why the sequences of games method by
+  \citeauthor{Shoup2004Sequences} is good for humans is explained by
+  \citeauthor{NecessaryConditionsOfLearning}.)
+}
+
+In this chapter, we will iteratively develop a cryptographic solution,
+refining it step by step.
+\chapterminitoc
+\section{A first solution}\label{ParcelFirstSolution}
+
+Now we'll start with a first solution to the problem.
+We can identify several entities in \cref{ParcelBoxes}:
+\begin{itemize}
+  \item the customer~\(C\) who orders goods and will pick them up,
+  \item the delivery person~\(D\) who delivers parcels to boxes,
+  \item the parcel box~\(B\) where parcels are temporarily stored,
+  \item the backend server~\(S\) that coordinates the system.
+\end{itemize}
+
+\begin{exercise}
+  What is the goal of the system, in terms of these entities?
+\end{exercise}
+
+The goal is that the delivery person~\(D\) can deposit a parcel in box~\(B\),
+and only the intended customer~\(C\) can retrieve it.
+The server~\(S\) coordinates who has access to which compartment and when.
+
+\begin{exercise}
+  Design a cryptographic system that ensures only authorized parties can
+  access the parcel box.
+\end{exercise}
+
+\subsection{Symmetric key approach}
+
+\NewVariable{\KBS}{k_{BS}}
+\NewVariable{\KToken}{k_{\text{token}}}
+\NewAlgorithm{\MAC}{HMAC}
+\NewAlgorithm{\Enc}{Enc}
+\NewAlgorithm{\Dec}{Dec}
+
+The simplest design uses a shared symmetric key~\(\KBS\) between each
+box~\(B\) and the server~\(S\).
+The server stores all box keys in a secure database.
+
+When a customer~\(C\) needs to access a box, they authenticate to the
+server~\(S\) (for example, using BankID or similar strong authentication).
+The server then generates an access token for that specific box and
+compartment.
+
+\begin{exercise}
+  How should the access token be constructed?
+\end{exercise}
+
+The token needs to specify:
+\begin{itemize}
+  \item which box and compartment to access,
+  \item who is authorized (the customer's identity),
+  \item when the token is valid (time window),
+  \item what operations are allowed (deposit or retrieve).
+\end{itemize}
+
+We can construct the token as:
+\[
+  \text{token} = (\text{box\_id}, \text{compartment}, \text{user\_id},
+  t_{\text{start}}, t_{\text{end}}, \text{permission})
+\]
+and compute an HMAC to authenticate it:
+\[
+  \tau = \MAC[\KBS, \text{token}].
+\]
+
+The customer receives \((\text{token}, \tau)\) from the server via the
+mobile app.
+When they approach the box, the app transmits the token and HMAC via
+Bluetooth Low Energy (BLE).
+The box verifies: \(\tau \stackrel{?}{=} \MAC[\KBS, \text{token}]\).
+
+See \cref{fig:ParcelAccess} for the protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Access protocol for parcel box]{%
+    The customer~\(C\) authenticates to server~\(S\), receives an access
+    token with HMAC, and presents it to box~\(B\).
+    The box verifies the HMAC using its shared key with the server.
+    If valid and the time window is current, access is granted.
+  }[fig:ParcelAccess]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.35\linewidth]
+    {Parcel box access protocol}
+      \declinst{cust}{Customer \(C\)}{App}
+      \declinst{serv}{Server \(S\)}{\(\KBS\) for all boxes}
+      \declinst{box}{Box \(B\)}{\(\KBS\)}
+      \mess{Authenticate (BankID)}{cust}{serv}
+      \nextlevel[2]
+      \mscaction{Generate token, \(\tau = \MAC[\KBS, \text{token}]\)}{serv}
+      \nextlevel[2]
+      \mess{token, \(\tau\)}{serv}{cust}
+      \nextlevel[2]
+      \mess{token, \(\tau\) (via BLE)}{cust}{box}
+      \nextlevel
+      \mscaction{Verify \(\tau \stackrel{?}{=} \MAC[\KBS, \text{token}]\)}{box}
+      \mscaction{Check time window and permissions}{box}
+      \nextlevel
+      \mess{Access granted/denied}{box}{cust}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Preventing token replay}
+
+\begin{exercise}
+  What happens if an attacker intercepts the BLE transmission and replays
+  the token later?
+\end{exercise}
+
+The token includes a time window \((t_{\text{start}}, t_{\text{end}})\).
+The box has a trusted clock (synchronized via the network or GPS).
+A replayed token will fail if the current time is outside the window.
+
+However, within the valid time window, replay is possible.
+To prevent this, the box can cache recently used tokens and reject duplicates.
+A better approach: include a nonce in the token that the box marks as
+\enquote{used} after the first access.
+
+\subsection{Securing the BLE channel}
+
+\ltnote{%
+  We introduce BLE security to highlight that the wireless channel itself is an 
+  attack surface.
+  This creates contrast with the token-level security discussed above.
+  Students should discern that secure tokens transmitted over an insecure 
+  channel can still be intercepted.
+  The variation pattern: we keep the token security invariant while varying the 
+  channel security.
+}
+
+\begin{exercise}
+  The token and HMAC are transmitted via Bluetooth Low Energy (BLE).
+  What attacks are possible on this wireless channel, and how can we protect 
+  against them?
+\end{exercise}
+
+BLE communication between the customer's phone and the parcel box is vulnerable 
+to:
+\begin{description}
+  \item[Eavesdropping] An attacker within range (typically 10--100 meters) can 
+    capture the BLE packets containing the token.
+  \item[Man-in-the-middle (MITM)] An attacker can impersonate the box to the 
+    phone and vice versa, relaying and potentially modifying messages.
+  \item[Replay] Even with a secure channel, if the attacker records a session, 
+    they might replay it later (addressed by nonces, as above).
+\end{description}
+
+\begin{exercise}
+  How does BLE establish a secure channel?
+  What are the different pairing modes and their security properties?
+\end{exercise}
+
+BLE provides several pairing methods with different security levels:
+\begin{description}
+  \item[Just Works] No user interaction; vulnerable to MITM attacks.
+    Should not be used for security-critical applications.
+  \item[Passkey Entry] User enters a 6-digit code displayed on one device into 
+    the other.
+    Provides MITM protection but requires user interaction.
+  \item[Numeric Comparison] Both devices display a 6-digit number; user 
+    confirms they match.
+    Provides MITM protection with less user burden than passkey entry.
+  \item[Out-of-Band (OOB)] Uses a separate channel (NFC, QR code) to exchange 
+    pairing information.
+    Strongest protection when implemented correctly.
+\end{description}
+
+For parcel boxes, we can use a hybrid approach:
+\begin{enumerate}
+  \item The box displays a QR code containing its BLE address and a pairing 
+    key.
+  \item The customer's app scans the QR code (out-of-band channel).
+  \item The app establishes an encrypted BLE connection using the OOB pairing 
+    data.
+  \item The token is transmitted over this encrypted channel.
+\end{enumerate}
+
+Alternatively, since our tokens are already authenticated with HMAC (or 
+signatures in later designs), we can accept that the BLE channel provides only 
+transport---the token's authenticity doesn't depend on BLE security.
+However, encrypting the channel prevents eavesdroppers from learning which box 
+and compartment a customer is accessing, protecting privacy.
+
+\subsection{Key management}
+
+\begin{exercise}
+  How should the symmetric keys be managed?
+\end{exercise}
+
+Each box~\(B\) is provisioned with its key~\(\KBS\) during manufacturing or
+installation.
+The key is stored in a secure element (TPM or similar) within the box.
+The server stores all keys in an encrypted database, with the database
+encryption key protected by an HSM.
+
+Keys should be rotated periodically.
+Since boxes may not always be online, we can use key derivation:
+\[
+  k_{BS}^{(i+1)} = \KDF[\text{next key}, k_{BS}^{(i)}].
+\]
+Both the box and server derive the new key at predetermined intervals.
+
+\subsection{Consequences of the design}\label{ParcelConsequencesFirst}
+
+\begin{exercise}
+  Evaluate this design.
+  What are its consequences (advantages and disadvantages)?
+\end{exercise}
+
+The design has several consequences:
+\begin{enumerate}
+  \item The box must have a trusted clock for time-based token validation.
+    If the clock drifts or is manipulated, security is compromised.
+  \item The server knows exactly when and where each customer accesses
+    parcels---a significant privacy concern.
+  \item There is no proof of delivery.
+    If a dispute arises about whether a parcel was delivered, there is no
+    cryptographic evidence.
+  \item The box must be online to receive key rotations or can use
+    predetermined key derivation.
+  \item Token replay within the valid time window is a concern; caching
+    used tokens helps but requires storage.
+\end{enumerate}
+
+
+\section{Adding proof of delivery}\label{ProofOfDelivery}
+
+\ltnote{%
+  We now introduce the concept of non-repudiation through digital signatures.
+  This creates contrast with the previous symmetric-key-only approach,
+  helping students discern the difference between authentication
+  (which symmetric keys provide) and non-repudiation (which requires
+  asymmetric cryptography).
+}
+
+The first solution lacks proof of delivery.
+If a customer claims they never received their parcel, or if the delivery
+company claims they delivered it, there is no way to resolve the dispute
+cryptographically.
+
+\begin{exercise}
+  How can we provide proof that a parcel was delivered to a specific box?
+\end{exercise}
+
+\subsection{Signed delivery records}
+
+\NewAlgorithm{\Sign}{Sign}
+\NewAlgorithm{\Ver}{Verify}
+\NewVariable{\SKD}{sk_D}
+\NewVariable{\PKD}{pk_D}
+
+When the delivery person~\(D\) deposits a parcel, they should create a
+signed record that cannot later be denied.
+We give each delivery person a key pair \((\SKD, \PKD)\) for digital
+signatures.
+
+The delivery record contains:
+\[
+  \text{record} = (\text{parcel\_id}, \text{box\_id}, \text{compartment},
+  \text{timestamp}, \text{photo\_hash})
+\]
+where \(\text{photo\_hash}\) is a hash of a photo taken at delivery time.
+
+The delivery person signs this record:
+\[
+  \sigma = \Sign[\SKD, \text{record}].
+\]
+
+This signature provides non-repudiation: the delivery person cannot later
+deny having made the delivery, since only they possess~\(\SKD\).
+
+\begin{exercise}
+  How should the delivery person's keys be managed?
+\end{exercise}
+
+\subsection{Per-shift certificates}
+
+Managing long-term keys for potentially thousands of delivery personnel is
+complex.
+A better approach: generate temporary key pairs for each work shift.
+
+At the start of a shift:
+\begin{enumerate}
+  \item The delivery person authenticates to the server (e.g., via the
+    company app).
+  \item The app generates a fresh key pair \((\SKD, \PKD)\).
+  \item The app sends \(\PKD\) and a certificate signing request to the
+    server.
+  \item The server signs a certificate binding \(\PKD\) to the delivery
+    person's identity, valid only for this shift.
+\end{enumerate}
+
+The private key~\(\SKD\) never leaves the delivery person's device.
+At shift end, the key pair is discarded.
+If a dispute arises, the server can verify signatures using the archived
+certificate.
+
+See \cref{fig:DeliveryProof} for the delivery protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Proof of delivery protocol]{%
+    The delivery person~\(D\) deposits a parcel, takes a photo, and signs
+    a delivery record.
+    The signed record and photo are uploaded to the server.
+    The box also logs the delivery event.
+  }[fig:DeliveryProof]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.35\linewidth]
+    {Proof of delivery}
+      \declinst{del}{Delivery \(D\)}{\(\SKD\), cert}
+      \declinst{box}{Box \(B\)}{\(\KBS\)}
+      \declinst{serv}{Server \(S\)}{Certificates}
+      \mscaction{Take photo of delivery}{del}
+      \mscaction{Create record, \(\sigma = \Sign[\SKD, \text{record}]\)}{del}
+      \nextlevel[3]
+      \mess{Access token (via BLE)}{del}{box}
+      \nextlevel
+      \mscaction{Verify token, open compartment}{box}
+      \nextlevel
+      \mess{Deposit confirmation}{box}{del}
+      \nextlevel
+      \mscaction{Log delivery event}{box}
+      \nextlevel[2]
+      \mess{Upload (record, \(\sigma\), photo, cert)}{del}{serv}
+      \nextlevel
+      \mscaction{Verify \(\sigma\), store proof}{serv}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Photo privacy considerations}
+
+\begin{exercise}
+  What privacy concerns arise from delivery photos?
+\end{exercise}
+
+Photos may capture bystanders, building entrances, or other sensitive
+information.
+Under GDPR and similar regulations, this personal data must be protected.
+
+Mitigations:
+\begin{itemize}
+  \item Process photos only in memory; never write unencrypted photos to
+    disk on the delivery device.
+  \item Encrypt photos immediately with the server's public key before
+    transmission.
+  \item Define data retention policies: delete photos after dispute
+    resolution deadlines pass.
+  \item Minimize what the photo captures: focus on the box compartment,
+    not the surroundings.
+\end{itemize}
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate this improved design.
+  What are its new consequences?
+\end{exercise}
+
+\begin{enumerate}
+  \item Non-repudiation: delivery personnel cannot deny deliveries they
+    made, providing dispute resolution capability.
+  \item Photo storage creates GDPR compliance obligations.
+  \item The server must manage certificates and maintain an archive for
+    potential disputes.
+  \item Per-shift key generation requires the delivery person's device to
+    have secure key generation capabilities.
+  \item The customer still lacks cryptographic proof of pickup (only the
+    delivery is proven, not the retrieval).
+\end{enumerate}
+
+
+\section{Offline operation with signed tokens}\label{OfflineOperation}
+
+\ltnote{%
+  We now introduce asymmetric signatures for access tokens, creating
+  contrast with the HMAC-based tokens from \cref{ParcelFirstSolution}.
+  This helps students discern that asymmetric signatures enable offline
+  verification (the box only needs the server's public key), while HMAC
+  requires shared secrets.
+}
+
+In \cref{ParcelFirstSolution}, the box needs the shared key~\(\KBS\) to
+verify HMAC tokens.
+What if the box cannot reach the server to receive key updates, or if we
+want boxes to be completely standalone?
+
+\begin{exercise}
+  How can we design access tokens that boxes can verify without any
+  shared secret with the server?
+\end{exercise}
+
+\subsection{Asymmetrically signed tokens}
+
+\NewVariable{\SKS}{sk_S}
+\NewVariable{\PKS}{pk_S}
+
+Instead of HMAC, the server signs tokens using its private key~\(\SKS\).
+Each box is provisioned with the server's public key~\(\PKS\) during
+installation.
+
+The token is now:
+\[
+  \text{token} = (\text{box\_id}, \text{compartment}, \text{user\_id},
+  t_{\text{start}}, t_{\text{end}}, \text{permission}, \text{nonce})
+\]
+with signature:
+\[
+  \sigma_{\text{token}} = \Sign[\SKS, \text{token}].
+\]
+
+The box verifies: \(\Ver[\PKS, \text{token}, \sigma_{\text{token}}]
+\stackrel{?}{=} \text{true}\).
+
+This is similar to JSON Web Signatures (JWS) used in many web
+authentication systems.
+
+\begin{exercise}
+  What algorithm should we use for the signatures?
+\end{exercise}
+
+We should use ECDSA (Elliptic Curve Digital Signature Algorithm) with a
+curve like P-256 or P-384.
+ECDSA provides strong security with smaller signatures and faster
+verification than RSA, which is important for resource-constrained boxes
+communicating via BLE.
+
+\subsection{Certificate chain for boxes}
+
+\begin{exercise}
+  How can boxes trust that \(\PKS\) is authentic?
+\end{exercise}
+
+We establish a PKI (Public Key Infrastructure):
+\begin{description}
+  \item[Root CA] The delivery company (or a trusted third party) operates
+    a root certificate authority.
+  \item[Server certificate] The server's public key \(\PKS\) is certified
+    by the root CA.
+  \item[Box provisioning] Each box is manufactured with the root CA's
+    public key embedded in its secure element.
+\end{description}
+
+During installation or first boot, the box receives the server's
+certificate and verifies it against the root CA.
+This enables the box to trust~\(\PKS\) even if it never contacts the
+server directly afterwards.
+
+See \cref{fig:OfflineAccess} for the offline-capable protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Offline-capable access protocol]{%
+    The customer receives a signed token from the server.
+    The box verifies the signature using the server's public key, which
+    it obtained during provisioning.
+    No real-time connection to the server is needed.
+  }[fig:OfflineAccess]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.35\linewidth]
+    {Offline access protocol}
+      \declinst{cust}{Customer \(C\)}{App}
+      \declinst{serv}{Server \(S\)}{\(\SKS\)}
+      \declinst{box}{Box \(B\)}{\(\PKS\)}
+      \mess{Authenticate, request token}{cust}{serv}
+      \nextlevel[2]
+      \mscaction{\(\sigma = \Sign[\SKS, \text{token}]\)}{serv}
+      \nextlevel[2]
+      \mess{token, \(\sigma\)}{serv}{cust}
+      \nextlevel[3]
+      \mess{token, \(\sigma\) (via BLE)}{cust}{box}
+      \nextlevel
+      \mscaction{Verify \(\Ver[\PKS, \text{token}, \sigma]\)}{box}
+      \mscaction{Check time, nonce not reused}{box}
+      \nextlevel
+      \mess{Access granted/denied}{box}{cust}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Token revocation challenges}
+
+\begin{exercise}
+  What if a token needs to be revoked before it expires?
+\end{exercise}
+
+With asymmetric tokens, the box doesn't contact the server during access.
+This means the server cannot revoke a token mid-validity.
+
+Mitigations:
+\begin{itemize}
+  \item Use short validity windows (e.g., 15 minutes) to limit exposure.
+  \item For high-value parcels, require online verification.
+  \item When boxes do connect (for maintenance, logs upload), they can
+    download a revocation list.
+\end{itemize}
+
+\subsection{App and device attestation}
+
+\ltnote{%
+  We introduce the concept of trusting the client device and app.
+  This creates contrast with our previous focus on trusting tokens and servers.
+  Students should discern that even with perfect token security, a compromised 
+  or malicious app can undermine the system.
+  The variation pattern: we keep the cryptographic protocol invariant while 
+  varying the trust model for the client.
+}
+
+\begin{exercise}
+  Our security relies on the customer's app correctly handling tokens and 
+  communicating with the box.
+  What if the app has been modified by an attacker, or the phone is 
+  compromised?
+\end{exercise}
+
+A malicious or compromised app could:
+\begin{itemize}
+  \item Leak tokens to attackers who then access parcels.
+  \item Manipulate the user interface to trick users into authorizing 
+    unintended actions.
+  \item On a rooted/jailbroken phone, extract secrets from the app's storage.
+\end{itemize}
+
+\begin{exercise}
+  How can the server verify that the customer is using a legitimate, 
+  unmodified app on an uncompromised device?
+\end{exercise}
+
+Mobile platforms provide attestation mechanisms:
+\begin{description}
+  \item[Android: Play Integrity API] The app requests an integrity verdict from 
+    Google's servers.
+    The verdict indicates whether the app is the genuine version from the Play 
+    Store, and whether the device passes integrity checks (not rooted, bootloader 
+    locked, etc.).
+  \item[iOS: App Attest] Apple's DeviceCheck framework allows the server to 
+    verify that requests come from a legitimate instance of the app on a 
+    genuine Apple device.
+\end{description}
+
+The attestation can be incorporated into token requests:
+\begin{enumerate}
+  \item The app requests an attestation token from the platform.
+  \item The app sends the attestation along with the token request to our 
+    server.
+  \item The server verifies the attestation with Google/Apple before issuing 
+    the access token.
+  \item Optionally, the attestation result can be encoded in the access token, 
+    allowing the box to apply different policies (e.g., reject tokens from 
+    unverified apps for high-value compartments).
+\end{enumerate}
+
+Limitations:
+\begin{itemize}
+  \item Attestation requires network connectivity to Google/Apple servers, 
+    conflicting with offline operation goals.
+  \item Determined attackers can sometimes bypass attestation on rooted 
+    devices.
+  \item Privacy-conscious users may object to platform attestation.
+\end{itemize}
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate this design.
+  What are its consequences compared to the HMAC approach?
+\end{exercise}
+
+\begin{enumerate}
+  \item Boxes can operate completely offline after initial provisioning.
+    This improves reliability and reduces infrastructure requirements.
+  \item Tokens cannot be revoked in real-time.
+    Short validity windows partially mitigate this.
+  \item The box needs a trusted clock; if manipulated, expired tokens
+    could be accepted.
+  \item Key management is simpler: boxes only need one public key
+    (or a certificate chain), not unique shared secrets.
+  \item If the server's private key~\(\SKS\) is compromised, all tokens
+    can be forged.
+    The key must be protected in an HSM.
+\end{enumerate}
+
+
+\section{Privacy-preserving design}\label{PrivacyDesign}
+
+\ltnote{%
+  We now explore advanced cryptographic techniques to address privacy
+  concerns.
+  This creates contrast with all previous designs where the server knows
+  exactly who accesses what.
+  Students should discern that privacy often requires more complex
+  cryptographic machinery (blind signatures, zero-knowledge proofs).
+}
+
+In all previous designs, the server learns exactly when and where each
+customer picks up parcels.
+This reveals shopping habits, home locations, and daily schedules---a
+significant privacy concern.
+
+\begin{exercise}
+  How can we design a system where the server cannot learn which box a
+  customer accesses?
+\end{exercise}
+
+\subsection{Blind signatures for access tokens}
+
+\NewAlgorithm{\Blind}{Blind}
+\NewAlgorithm{\Unblind}{Unblind}
+
+One approach uses blind signatures.
+The customer blinds their access request before sending it to the server:
+
+\begin{enumerate}
+  \item Customer wants token for box~\(B\), compartment~\(c\).
+  \item Customer creates: \(\text{request} = (B, c, \text{nonce})\).
+  \item Customer blinds: \(\text{blinded} = \Blind[\text{request}, r]\)
+    using random blinding factor~\(r\).
+  \item Customer sends \(\text{blinded}\) to server with proof of
+    authorization (without revealing~\(B\) or~\(c\)).
+  \item Server signs blindly: \(\sigma' = \Sign[\SKS, \text{blinded}]\).
+  \item Customer unblinds: \(\sigma = \Unblind[\sigma', r]\).
+  \item Now \(\sigma\) is a valid signature on the original request, but
+    the server never saw it.
+\end{enumerate}
+
+\begin{exercise}
+  How does the server know the customer is authorized without seeing
+  which box they want to access?
+\end{exercise}
+
+This requires a separate authorization proof.
+The customer proves (perhaps using zero-knowledge techniques) that they
+have a valid delivery notification for \emph{some} box, without revealing
+which one.
+
+This is complex to implement correctly.
+Simpler alternatives include:
+\begin{itemize}
+  \item Using an anonymizing proxy or onion routing so the server sees
+    the request but not who sent it.
+  \item Decentralizing: have boxes generate their own tokens after
+    verifying a capability from the server.
+\end{itemize}
+
+\subsection{Trade-offs}
+
+\begin{exercise}
+  What are the trade-offs of privacy-preserving designs?
+\end{exercise}
+
+\begin{description}
+  \item[Complexity] Blind signatures and zero-knowledge proofs require
+    careful implementation and are computationally heavier.
+  \item[Auditability] If the server doesn't know who accessed what,
+    investigating abuse becomes harder.
+  \item[Dispute resolution] Non-repudiation may conflict with privacy if
+    we need to prove a specific person picked up a parcel.
+  \item[Regulatory requirements] Some jurisdictions may require audit
+    trails that conflict with strong privacy.
+\end{description}
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item Strong privacy: the server learns only that \emph{someone}
+    authorized accessed \emph{some} box, not who or which.
+  \item Significant implementation complexity; requires cryptographic
+    expertise to implement securely.
+  \item Dispute resolution becomes harder since the link between customer
+    and access is obscured.
+  \item May conflict with legal requirements for audit trails.
+\end{enumerate}
+
+
+\section{Hardware security and legal considerations}\label{HardwareLegal}
+
+\ltnote{%
+  We now consider aspects beyond pure cryptographic protocol design:
+  the physical security of devices and legal/regulatory requirements.
+  This helps students discern that a complete system design must consider
+  implementation security, not just protocol security.
+}
+
+\begin{exercise}
+  Even with perfect cryptographic protocols, what could go wrong if the
+  box hardware is compromised?
+\end{exercise}
+
+\subsection{Secure boot and firmware integrity}
+
+The box runs software that implements our protocols.
+If an attacker can modify this software, they can bypass all
+cryptographic protections.
+
+To prevent this:
+\begin{itemize}
+  \item The box uses secure boot: at power-on, a chain of trust verifies
+    that each software component is signed by the manufacturer.
+  \item Firmware updates are signed; the box only accepts updates signed
+    with the manufacturer's key.
+  \item The signing keys for firmware are protected in HSMs, with
+    multi-person authorization required for signing.
+\end{itemize}
+
+\subsection{Tamper detection}
+
+\begin{exercise}
+  How can we detect if someone has physically tampered with a box?
+\end{exercise}
+
+Physical security measures include:
+\begin{itemize}
+  \item Tamper-evident seals that show if the enclosure has been opened.
+  \item Tamper-responsive modules that erase cryptographic keys if
+    physical intrusion is detected.
+  \item Regular integrity checks where boxes report their status to the
+    server.
+\end{itemize}
+
+If a box is compromised, its keys should be revoked and the box taken
+out of service.
+
+\subsection{Legal and regulatory requirements}
+
+\begin{exercise}
+  What legal requirements must the system satisfy?
+\end{exercise}
+
+\begin{description}
+  \item[GDPR] Personal data (access logs, photos) must be protected.
+    Data minimization: collect only what's necessary.
+    Data retention: delete data after the purpose is fulfilled.
+    Data subject rights: customers can request their data.
+  \item[Consumer protection] Proof of delivery may be required for
+    consumer disputes.
+    The cryptographic proof we generate serves this purpose.
+  \item[Accessibility] Boxes should be usable by people with disabilities.
+    This may affect authentication methods (not purely app-based).
+  \item[Proportionality] Security measures should be proportionate to
+    the value being protected.
+    A parcel box doesn't need military-grade security.
+\end{description}
+
+\subsection{Usability considerations}
+
+\begin{exercise}
+  How do we make the system usable for non-technical users?
+\end{exercise}
+
+All cryptographic operations should be invisible to users:
+\begin{itemize}
+  \item The mobile app handles authentication, token management, and
+    BLE communication.
+  \item Users simply tap \enquote{open box} in the app and approach the box.
+  \item Error messages should be user-friendly: \enquote{Your access
+    window has expired, please request a new code} rather than
+    \enquote{ECDSA signature verification failed}.
+\end{itemize}
+
+For delivery personnel, the app should:
+\begin{itemize}
+  \item Automatically generate and manage shift certificates.
+  \item Make photo capture and signing seamless.
+  \item Work reliably even in areas with poor network coverage.
+\end{itemize}
+
+\subsection{Final design summary}
+
+Our complete system combines:
+\begin{enumerate}
+  \item Asymmetrically signed tokens (JWS-style) for offline-capable
+    box access.
+  \item Per-shift certificates for delivery personnel.
+  \item Signed delivery records with photo evidence for non-repudiation.
+  \item PKI with certificate chains for trust establishment.
+  \item Secure hardware (TPM, secure boot) for implementation security.
+  \item GDPR-compliant data handling with appropriate retention policies.
+\end{enumerate}
+
+\begin{exercise}
+  Propose potential improvements or alternative approaches to this design.
+  Consider scenarios such as: What if both the customer's phone and the
+  box are compromised? What if the delivery company is the adversary?
+\end{exercise}
+
+
+\section{Fallback and recovery mechanisms}\label{FallbackMechanisms}
+
+\ltnote{%
+  We introduce failure modes to create contrast with our assumption that the 
+  primary system always works.
+  Students should discern that real-world systems need graceful degradation 
+  when components fail.
+  The variation pattern is generalization: we keep the security requirement 
+  invariant while varying the access method.
+}
+
+Our system relies on the customer having a working smartphone with the app 
+installed, Bluetooth enabled, and (for some designs) network connectivity.
+What happens when these assumptions fail?
+
+\begin{exercise}
+  What could prevent a customer from accessing their parcel using the standard 
+  app-based method?
+  How should the system handle these situations?
+\end{exercise}
+
+\subsection{Failure scenarios}
+
+Common failure scenarios include:
+\begin{description}
+  \item[Dead phone battery] The customer arrives at the box but their phone has 
+    died.
+  \item[App crash or corruption] The app fails to start or has lost its 
+    credentials.
+  \item[BLE failure] The phone's Bluetooth is broken, or radio interference 
+    prevents communication.
+  \item[Lost or stolen phone] The customer no longer has access to the device 
+    with their credentials.
+  \item[No smartphone] Some customers (elderly, children receiving parcels) may 
+    not have smartphones.
+\end{description}
+
+\subsection{Fallback authentication methods}
+
+\begin{exercise}
+  Design alternative authentication methods that maintain security while 
+  providing fallback access.
+\end{exercise}
+
+Several fallback options exist, each with different security/usability 
+trade-offs:
+
+\begin{description}
+  \item[SMS one-time code] The server sends a 6-digit code via SMS.
+    The customer enters it on a keypad on the box.
+    Requires the box to have a keypad and network connectivity, and the 
+    customer to have their phone number.
+    Vulnerable to SIM-swapping attacks.
+  \item[Email backup code] When the parcel is assigned, the customer receives 
+    an email with a backup code.
+    Lower security (email accounts are often poorly protected), but works 
+    without a phone.
+  \item[Physical keypad with pre-generated code] The delivery notification 
+    includes a printed or emailed one-time code.
+    The box has a keypad; entering the code grants access.
+    The code must be long enough to prevent guessing (e.g., 8--12 digits) and 
+    rate-limited.
+  \item[Customer service override] A human operator can remotely authorize 
+    access after verifying the customer's identity through alternative means.
+    Requires the box to be online; introduces human factors into security.
+\end{description}
+
+See \cref{fig:FallbackAccess} for the fallback protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Fallback access protocol]{%
+    When app-based access fails, the customer can request an SMS code or use a 
+    pre-generated backup code on the box's keypad.
+    The box verifies the code against its stored hash or contacts the server.
+  }[fig:FallbackAccess]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.35\linewidth]
+    {Fallback access}
+      \declinst{cust}{Customer \(C\)}{No app access}
+      \declinst{serv}{Server \(S\)}{}
+      \declinst{box}{Box \(B\)}{Keypad}
+      \mess{Request fallback code (via web/phone)}{cust}{serv}
+      \nextlevel[2]
+      \mscaction{Generate OTP, store hash}{serv}
+      \nextlevel[2]
+      \mess{Send OTP via SMS/email}{serv}{cust}
+      \nextlevel[2]
+      \mess{Enter OTP on keypad}{cust}{box}
+      \nextlevel
+      \condition{Box online?}{box}
+      \nextlevel
+      \mess{Verify OTP with server}{box}{serv}
+      \nextlevel
+      \mess{Valid/invalid}{serv}{box}
+      \nextlevel
+      \mess{Access granted/denied}{box}{cust}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Security considerations for fallback}
+
+\begin{exercise}
+  Fallback methods are often weaker than primary authentication.
+  How can we limit the risk they introduce?
+\end{exercise}
+
+Mitigations for fallback risks:
+\begin{itemize}
+  \item \emph{Rate limiting}: Lock out after a few failed attempts on the 
+    keypad.
+  \item \emph{Time limits}: Fallback codes expire quickly (e.g., 30 minutes).
+  \item \emph{Audit logging}: All fallback access attempts are logged and 
+    flagged for review.
+  \item \emph{Notification}: The primary phone (if reachable) receives a 
+    notification when fallback access is used.
+  \item \emph{Value-based restrictions}: High-value parcels may not allow 
+    fallback access; customer must use primary authentication or visit 
+    customer service.
+\end{itemize}
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Improved availability] Customers can access parcels even when primary 
+    methods fail.
+  \item[Increased attack surface] Each fallback method is a potential attack 
+    vector.
+  \item[Hardware requirements] Keypads add cost and maintenance requirements to 
+    boxes.
+  \item[Complexity] Multiple authentication paths increase system complexity 
+    and testing burden.
+\end{description}
+
+
+\section{Multi-provider architecture}\label{MultiProvider}
+
+\ltnote{%
+  We introduce the complexity of multiple delivery companies sharing 
+  infrastructure.
+  This creates contrast with our implicit assumption of a single operator.
+  Students should discern that multi-tenant systems introduce trust boundaries 
+  and data separation challenges.
+  The variation pattern is generalization: we keep the security primitives 
+  invariant while varying the organizational structure.
+}
+
+In practice, parcel boxes may be shared among multiple delivery companies 
+(PostNord, DHL, Budbee, Instabox, etc.).
+A box operator (such as a property management company) may want to offer box 
+access to any delivery service.
+
+\begin{exercise}
+  What challenges arise when multiple competing delivery companies share the 
+  same parcel boxes?
+\end{exercise}
+
+\subsection{Trust and data separation}
+
+Key challenges include:
+\begin{description}
+  \item[Competitive sensitivity] PostNord should not learn which compartments 
+    DHL is using, or how many parcels they deliver.
+  \item[Customer data] A customer's delivery history with one provider should 
+    not be visible to others.
+  \item[Access control] Each provider should only be able to open compartments 
+    assigned to their deliveries.
+  \item[Accountability] If a parcel goes missing, logs should identify which 
+    provider's delivery person last accessed the compartment.
+\end{description}
+
+\subsection{Federated architecture}
+
+\begin{exercise}
+  Design an architecture where multiple delivery providers can use shared boxes 
+  while maintaining data separation.
+\end{exercise}
+
+\NewVariable{\SKProv}{sk_{\text{prov}}}
+\NewVariable{\PKProv}{pk_{\text{prov}}}
+
+We introduce a \emph{box operator} as a trusted intermediary:
+\begin{enumerate}
+  \item The box operator manages the physical boxes and their keys.
+  \item Each delivery provider has a contractual relationship with the box 
+    operator.
+  \item Providers are issued credentials (key pairs certified by the operator) 
+    to authorize their delivery personnel.
+  \item The operator's server mediates compartment allocation without revealing 
+    which provider is using which compartment.
+\end{enumerate}
+
+Token structure for multi-provider access:
+\[
+  \text{token} = (\text{box\_id}, \text{compartment}, \text{provider\_id}, 
+  \text{user\_id}, t_{\text{start}}, t_{\text{end}}, \text{permission})
+\]
+The provider signs tokens for their users:
+\[
+  \sigma_{\text{prov}} = \Sign[\SKProv, \text{token}].
+\]
+The box verifies both:
+\begin{itemize}
+  \item The provider's signature using their certified public key.
+  \item That the provider is authorized for this compartment (via a separate 
+    authorization from the box operator).
+\end{itemize}
+
+See \cref{fig:MultiProvider} for the multi-provider protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Multi-provider access protocol]{%
+    The box operator allocates compartments to providers.
+    Each provider issues tokens to their customers, signed with the provider's 
+    key.
+    The box verifies both the provider's authorization and the customer's 
+    token.
+  }[fig:MultiProvider]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.32\linewidth]
+    {Multi-provider access}
+      \declinst{prov}{Provider}{PostNord, DHL, \ldots}
+      \declinst{oper}{Operator}{Box keys}
+      \declinst{box}{Box \(B\)}{\(\PKProv\) for all providers}
+      \mess{Request compartment}{prov}{oper}
+      \nextlevel[2]
+      \mscaction{Allocate, create authorization}{oper}
+      \nextlevel
+      \mess{Compartment ID + authorization token}{oper}{prov}
+      \nextlevel[2]
+      \mscaction{Provider issues customer token}{prov}
+      \nextlevel[2]
+      \mess{Customer presents token (via BLE)}{prov}{box}
+      \nextlevel
+      \mscaction{Verify provider authorization}{box}
+      \mscaction{Verify customer token signature}{box}
+      \nextlevel
+      \mess{Access granted/denied}{box}{prov}
+      \nextlevel
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{Privacy between providers}
+
+\begin{exercise}
+  How can we prevent the box operator from learning sensitive business 
+  information about each provider's operations?
+\end{exercise}
+
+To minimize what the operator learns:
+\begin{itemize}
+  \item Compartment allocation can be anonymized: providers request 
+    \enquote{a compartment at location X} without revealing the customer or 
+    parcel details.
+  \item Access logs on the box record only that \enquote{provider P accessed 
+    compartment C}, not customer identity.
+  \item Providers encrypt any customer-identifying information in their tokens 
+    so only they can read it.
+\end{itemize}
+
+Full privacy from the operator is difficult: they control the boxes and can 
+observe physical access patterns.
+The trust model must acknowledge that the operator has some visibility.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Scalability] Multiple providers can share infrastructure, reducing 
+    costs.
+  \item[Complexity] Three-party trust relationships are harder to manage than 
+    two-party.
+  \item[Single point of failure] The box operator becomes a critical 
+    dependency; if compromised, all providers are affected.
+  \item[Competitive concerns] Providers must trust the operator not to favor 
+    competitors or leak business intelligence.
+  \item[Standardization] Requires agreement on token formats, APIs, and 
+    security requirements across providers.
+\end{description}
+
+
+\section{Future work and open problems}\label{ParcelFutureWork}
+
+Several aspects of parcel box systems remain active areas of development:
+
+\begin{description}
+  \item[Denial-of-service protection] How do we prevent attackers from 
+    exhausting compartments, flooding the server with requests, or jamming BLE 
+    communications?
+    Rate limiting, proof-of-work, and physical design (tamper-resistant radios) 
+    are partial solutions.
+  \item[Supply chain security] How do we ensure boxes haven't been tampered 
+    with during manufacturing or installation?
+    Hardware attestation, secure boot chains, and physical inspection 
+    procedures are relevant.
+  \item[Post-quantum migration] Like body cameras, parcel box systems should 
+    plan for the transition to post-quantum cryptography, especially for 
+    long-lived keys.
+  \item[Location privacy] Even with encrypted tokens, network observers can see 
+    which boxes customers approach.
+    Techniques like dummy traffic or location obfuscation could help, at the 
+    cost of complexity.
+  \item[Smart home integration] Customers may want parcels delivered to 
+    connected lockers in their buildings, integrated with home automation 
+    systems.
+    This introduces new trust relationships and attack surfaces.
+  \item[Environmental sensors] Boxes could include temperature, humidity, or 
+    shock sensors to prove parcels were stored correctly.
+    Cryptographically signed sensor logs would extend the chain of custody.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach designing a 
+  solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
+\end{exercise}
+
+
+\section*{Acknowledgements}
+
+This chapter was written by Daniel Bosk with the assistance of Dan-Claude van 
+Thropic.
+The following students from DD2520 Applied Cryptography, Spring 2025, 
+contributed additional perspectives through their solutions to the INL1Written 
+assignment:
+Amin Nouiser,
+Emil Wallgren,
+Praveen Kannappan Manikandan.

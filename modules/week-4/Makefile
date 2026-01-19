@@ -1,0 +1,40 @@
+MODULE ?= Week 4 (calendar week 6)
+MODULE_RE ?= Week 4
+PULL_COURSE ?= tilkry25
+PULL_MODULE_RE ?= $(MODULE_RE)
+
+PAGES += lecture-randomness.md
+PAGES += lecture-voting.md
+
+ASSIGNMENTS += assignments/prep-impact-considerations.md
+ASSIGNMENTS += assignments/hac-ch4-public-key-parameters.md
+ASSIGNMENTS += assignments/hac-ch5-pseudorandom-bits.md
+ASSIGNMENTS += assignments/seminar-impact-considerations.md
+ASSIGNMENTS += assignments/design-considerations.md
+ASSIGNMENTS += assignments/inl1quiz-cryptographic-concepts.md
+
+include ../module.mk
+
+# Note: Canvas treats module/page selectors as regexes.
+.PHONY: pull-pages
+pull-pages:
+	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "Randomness" > lecture-randomness.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Randomness" > lecture-randomness.md
+	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "voting" > lecture-voting.md \
+		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "voting" > lecture-voting.md
+
+.PHONY: pull-assignments
+pull-assignments:
+	@mkdir -p assignments
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "Preparation for impact considerations" > assignments/prep-impact-considerations.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "Preparation for impact considerations" > assignments/prep-impact-considerations.md
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "HAC Ch 4" > assignments/hac-ch4-public-key-parameters.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "HAC Ch 4" > assignments/hac-ch4-public-key-parameters.md
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "HAC Ch 5" > assignments/hac-ch5-pseudorandom-bits.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "HAC Ch 5" > assignments/hac-ch5-pseudorandom-bits.md
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "Impact considerations around crypto systems" > assignments/seminar-impact-considerations.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "Impact considerations around crypto systems" > assignments/seminar-impact-considerations.md
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "Design Considerations" > assignments/design-considerations.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "Design Considerations" > assignments/design-considerations.md
+	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "INL1Quiz Cryptographic Concepts" > assignments/inl1quiz-cryptographic-concepts.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "INL1Quiz Cryptographic Concepts" > assignments/inl1quiz-cryptographic-concepts.md

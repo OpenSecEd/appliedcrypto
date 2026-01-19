@@ -1,0 +1,24 @@
+\documentclass[a4paper,10pt,article,oneside,oldfontcommands]{memoir}
+
+\let\subsubsection\subsection
+\let\subsection\section
+\let\section\chapter
+
+\input{preamble.tex}
+\noweboptions{longxref,breakcode}
+
+% beamer (loaded via beamerarticle) normally loads amssymb.
+% With memoir/newpx this can cause a hard clash (\Bbbk redefinition).
+% We disable amssymb in beamer and also undefine \Bbbk just in case.
+\makeatletter
+%\let\Bbbk\@undefined
+\makeatother
+\usepackage[noamssymb,noamsthm,notheorems]{beamerarticle}
+\setjobnamebeamerversion{slides}
+
+%\usepackage{authblk}
+%\let\institute\affil
+
+\begin{document}
+\input{contents.tex}
+\end{document}

@@ -1,0 +1,49 @@
+% CTR decryption diagram
+\begin{tikzpicture}[
+    >=Stealth,
+    box/.style={draw, minimum width=1.2cm, minimum height=0.8cm},
+    xor/.style={draw, circle, minimum size=0.5cm, inner sep=0pt},
+    every node/.style={font=\small},
+    node distance=0.8cm and 1.8cm
+  ]
+  
+  % Block 0
+  \node (nonce0) {nonce $\|$ 0};
+  \node[box, below=of nonce0] (enc0) {$\Enc_k$};
+  \node[xor, below=of enc0] (xor0) {$\oplus$};
+  \node[below=of xor0] (p0) {$P_0$};
+  \node[left=1.2cm of xor0] (c0) {$C_0$};
+  
+  % Block 1
+  \node[right=of nonce0] (nonce1) {nonce $\|$ 1};
+  \node[box, below=of nonce1] (enc1) {$\Enc_k$};
+  \node[xor, below=of enc1] (xor1) {$\oplus$};
+  \node[below=of xor1] (p1) {$P_1$};
+  \node[left=1.2cm of xor1] (c1) {$C_1$};
+  
+  % Block 2
+  \node[right=of nonce1] (nonce2) {nonce $\|$ 2};
+  \node[box, below=of nonce2] (enc2) {$\Enc_k$};
+  \node[xor, below=of enc2] (xor2) {$\oplus$};
+  \node[below=of xor2] (p2) {$P_2$};
+  \node[left=1.2cm of xor2] (c2) {$C_2$};
+  
+  % Arrows for block 0
+  \draw[->] (nonce0) -- (enc0);
+  \draw[->] (enc0) -- (xor0);
+  \draw[->] (c0) -- (xor0);
+  \draw[->] (xor0) -- (p0);
+  
+  % Arrows for block 1
+  \draw[->] (nonce1) -- (enc1);
+  \draw[->] (enc1) -- (xor1);
+  \draw[->] (c1) -- (xor1);
+  \draw[->] (xor1) -- (p1);
+  
+  % Arrows for block 2
+  \draw[->] (nonce2) -- (enc2);
+  \draw[->] (enc2) -- (xor2);
+  \draw[->] (c2) -- (xor2);
+  \draw[->] (xor2) -- (p2);
+  
+\end{tikzpicture}

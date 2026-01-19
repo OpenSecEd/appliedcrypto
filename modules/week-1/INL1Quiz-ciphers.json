@@ -1,0 +1,488 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Ciphers",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Ciphers lectures. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 1,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Which of the following best describes symmetric encryption?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Uses the same key for both encryption and decryption.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Uses different keys for encryption and decryption.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Uses a public key for encryption and a private key for decryption.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Utilizes digital certificates for authentication.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "position": 2,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Which algorithms are examples of symmetric encryption?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "PartialScore",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>RSA</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Diffie-Hellman</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>AES</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>ElGamal</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>DES</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The One-Time Pad</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>SHA1</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>MD5</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>SHA3</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            3,
+            5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 3,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Which of the following are challenges associated with symmetric encryption in distributed systems?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Generating keys</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Distributing keys</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Ensuring high computational speed</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Verifying digital signatures</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "position": 4,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Which modes of operation are used to prevent pattern leakage in symmetric encryption?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>ECB</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>CBC</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>RSA</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>CTR</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            2,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Which property ensures that even if two plaintext blocks are identical, their ciphertext blocks will differ?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The use of an initialization vector (IV, i.e. a random nonce).</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The application of a fixed-key schedule.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The use of public and private keys.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The use of hash functions.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encrytion",
+        "item_body": "<p>In symmetric encryption, how does the size of the key influence security?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Larger keys increase the computational effort required for a brute-force attack.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Larger keys generally reduce security by slowing down encryption.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Key size has little to no effect on security.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The smaller key size of symmetric algorithms (256 bits) compared to assymmetric algorithms (4096 bits), makes symmetric cryptography less secure.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1
+          ]
+        }
+      }
+    },
+    {
+      "position": 7,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>What is the significance of using a secure mode of operation in symmetric encryption?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>It ensures that encrypting the same plaintext will always produce the same ciphertext.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>It provides both confidentiality and resistance to analysis by introducing randomness.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>It eliminates the need for an initialization vector or nonce.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>It guarantees that the key can be reused indefinitely without compromise.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "position": 8,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Which attribute is most essential in a secure symmetric encryption algorithm to protect against cryptanalysis?</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Frequent changes to the encryption algorithm.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Strong key randomness and adequate key length.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Automatic use of digital signatures on every encryption.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Integration with asymmetric encryption techniques.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "position": 9,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric encryption",
+        "item_body": "<p>Alice sends a message c = Enc(k_AB, m) to Bob. Bob receives c', computes m' = Dec(k_AB, c'). Enc is an algorithm such as AES. Select all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [
+                5,
+                6
+              ],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The encryption algorithm used is symmetric.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Alice and Bob must have securely shared the key k_AB before Bob can run Dec.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>An eavesdropper who intercepts the ciphertext c can easily recover the plaintext m.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Bob’s decryption process correctly inverts the encryption process, yielding m' equal to m under normal conditions.&nbsp;</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>The confidentiality of message m depends on the secrecy of the key k_AB.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>If Enc is a secure scheme, it ensures that the ciphertext c reveals no useful information about the plaintext m to an attacker.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>If Enc is a secure scheme, it ensures that when Alice sends her second message c_2 = Enc(k_AB, m_2), the ciphertext c_2 reveals no useful information about the plaintexts m and m_2 to an attacker.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>The encryption process automatically guarantees the integrity and authenticity of the message m.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Bob must reject the message if the ciphertext c has been tampered with during transit. But Bob doesn't know if it has been tampered with.</p>"
+            },
+            {
+              "position": 10,
+              "item_body": "<p>If k_AB is chosen randomly, then no matter how the message m (which fits in one block) is chosen, the ciphertext c will be just as random as k_AB.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4,
+            5,
+            6,
+            9,
+            10
+          ]
+        }
+      }
+    }
+  ]
+}

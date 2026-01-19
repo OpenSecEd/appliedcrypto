@@ -22,6 +22,19 @@
         what she's thinking of.
     \end{itemize}
   \end{exercise}
+
+  \begin{onlyenv}<2>
+    \begin{solution}
+      \begin{itemize}
+        \item Eve commits to her choice,
+          \(C = H(\text{what Eve is thinking about})\).
+        \item Eve gives \(C\) to Alice.
+        \item Alice asks her 20 questions.
+        \item Eve reveals her choice.
+        \item Alice checks that \(C = H(\text{what Eve was thinking about})\).
+      \end{itemize}
+    \end{solution}
+  \end{onlyenv}
 \end{frame}
 
 \begin{frame}
@@ -48,6 +61,85 @@
   \end{exercise}
 \end{frame}
 
+\begin{frame}
+  \begin{exercise}[More secure 20 questions]
+    \begin{itemize}
+      \item Alice says: \enquote{I asked \(X\) and you answered \(Y\),
+        but should've answered \(Y'\).}
+      \item Eve says: \enquote{No, you asked \(X'\) and I answered \(Y\) 
+        correctly.}
+      \item \dots
+    \end{itemize}
+  \end{exercise}
+
+  \begin{question}
+    \begin{itemize}
+      \item What are the properties we want?
+    \end{itemize}
+  \end{question}
+
+  \pause
+
+  \begin{solution}[Desired properties]
+    \begin{itemize}
+      \item Alice can't change her question.
+      \item Eve can't change her answer.
+      \item An answer is tied to the correct question.
+      \item The order of the questions and answers is preserved.
+    \end{itemize}
+  \end{solution}
+\end{frame}
+
+\begin{frame}
+  \begin{solution}[Alice nor Eve can change their statements]
+    \begin{itemize}
+      \item Each must store the other's messages.
+      \item Hash is useful to save space.
+      \item However, problems in recreating the \emph{exact} message.
+    \end{itemize}
+  \end{solution}
+
+  \pause
+
+  \begin{question}
+    \begin{itemize}
+      \item Is a hash function sufficient?
+      \item Is storing the entire message sufficient?
+    \end{itemize}
+  \end{question}
+\end{frame}
+
+\begin{frame}
+  \begin{solution}[An answer is tied to the correct question]
+    \begin{itemize}
+      \item The answer can include the hash value of the question.
+    \end{itemize}
+  \end{solution}
+
+  \begin{question}
+    \begin{itemize}
+      \item And what not to forget?
+      \item So what would it look like exactly?
+    \end{itemize}
+  \end{question}
+\end{frame}
+
+\begin{frame}
+  \begin{solution}[The order of the questions and answers is preserved]
+    \begin{itemize}
+      \item Each message can include the hash value of the previous message.
+      \item This way, the order is preserved also for individual 
+        question--answer pairs.
+    \end{itemize}
+  \end{solution}
+
+  \begin{question}
+    \begin{itemize}
+      \item So what would it look like exactly?
+    \end{itemize}
+  \end{question}
+\end{frame}
+
 \section{Proving quotes from a document}
 
 \begin{frame}
@@ -68,5 +160,28 @@
         of the love letter.
     \end{itemize}
   \end{exercise}
+\end{frame}
+
+\begin{frame}
+  \begin{solution}
+    \begin{itemize}
+      \item We need a tree structure where we can access sufficiently different 
+        parts of the letter.
+    \end{itemize}
+  \end{solution}
+
+  \pause
+
+  \begin{question}
+    \begin{itemize}
+      \item What should be in the leaves?
+    \end{itemize}
+  \end{question}
+
+  \begin{question}
+    \begin{itemize}
+      \item How much is revealed about the hidden parts?
+    \end{itemize}
+  \end{question}
 \end{frame}
 

@@ -99,6 +99,22 @@ acs-*.bib
 _minted*
 *.pyg
 
+# pythontex
+pythontex-files-*/
+*.pytxcode
+
+# latexmk output directory
+ltxobj/
+
+# XeTeX intermediates
+*.xdv
+
+# beamerarticle/memoir helper
+*.unq
+
+# LaTeX errors saved by editors/tools
+*-SAVE-ERROR
+
 # morewrites
 *.mw
 
@@ -124,3 +140,11 @@ sympy-plots-for-*.tex/
 # WinEdt
 *.bak
 *.sav
+
+## Canvas push stamps:
+.pushed
+.pushed.d/
+.pushed-pages
+.pushed-pages.d/
+.pushed-assignments
+.pushed-assignments.d/
