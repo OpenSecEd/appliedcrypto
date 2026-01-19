@@ -12,8 +12,4 @@ cryptography. This session covers the basic property, hash functions and
 
 *Reading:* The content is covered by the following literature:
 
--    (Van Tilborg and Jajodia 2011).
-
-Van Tilborg, Henk CA, and Sushil Jajodia. 2011. *Encyclopedia of
-Cryptography and Security*. Springer Science & Business Media.
-<https://link.springer.com/referencework/10.1007%2F978-1-4419-5906-5>.
+-    .
