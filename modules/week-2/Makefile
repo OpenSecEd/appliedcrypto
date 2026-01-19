@@ -2,10 +2,13 @@ MODULE ?= Week 2 (calendar week 4)
 MODULE_RE ?= Week 2
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
+COURSE_DIR ?= $(HOME)/public_html/tilkry
 
 PAGES += lecture-hash-functions.html
 PAGES += lecture-applied-hash-functions.md
 PAGES += lecture-asymmetric-crypto.html
+
+SLIDES += ${COURSE_DIR}/one-way-slides.pdf
 
 QUIZZES += INL1Quiz-hash.json
 
@@ -14,6 +17,9 @@ ASSIGNMENTS += assignments/hac-ch8-public-key-encryption.md
 ASSIGNMENTS += assignments/hac-ch11-digital-signatures.md
 
 include ../module.mk
+
+${COURSE_DIR}/one-way-slides.pdf: lecture-hash-functions/one-way-slides.pdf
+	${LINK}
 
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
