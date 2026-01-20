@@ -1,9 +1,5 @@
 \mode*
 
-\section[Hash functions]{What was a hash function now again?}
-
-\mode<all>{\input{../hash-review.tex}}
-
 
 \section{Commitments}
 
@@ -21,6 +17,16 @@
     Design a protocol.
     What could Eve send before the game starts?
   \end{exercise}
+
+  \only<article>{%
+    Intuition: Eve wants to ``lock in'' her choice without revealing it.
+    This is a two-party fairness problem: if Eve can change her mind after seeing
+    Alice's guess, the game is pointless; if Alice can learn \(m\) too early,
+    she wins trivially.
+
+    A commitment should therefore support two phases:
+    commit first (before Alice acts), then open later (after Alice has acted).
+  }
 
   \ltnote{%
     \textbf{Try-first--tell-later}: We start with a concrete two-party fairness
@@ -40,6 +46,16 @@
         guessing.
     \end{description}
   \end{definition}
+
+  \only<article>{%
+    It helps to remember \emph{who benefits} from each property:
+    hiding protects Eve's secret from Alice during the guessing phase, while
+    binding protects Alice from Eve changing the secret after seeing Alice's
+    behavior.
+
+    In other words: hiding prevents the guesser from learning early; binding
+    prevents the committer from adapting late.
+  }
 
   \begin{block}{Hash functions and \acp{MAC}}
     \begin{itemize}
@@ -61,6 +77,12 @@
   \begin{exercise}
     Will this work?
   \end{exercise}
+
+  \only<article>{%
+    Hint: ask whether \(m\) comes from a small or guessable set. If Alice can
+    enumerate likely messages, she can just hash each candidate and compare with
+    \(c\) (``dictionary attack'').
+  }
 \end{frame}
 
 \begin{frame}
@@ -89,6 +111,20 @@
   \begin{exercise}
     Will this work?
   \end{exercise}
+
+  \only<article>{%
+    In the Random Oracle Model (ROM), think of \(\Hash\) as a public random function with a global
+    table of query-answer pairs.
+
+    The only way Alice can test a guess \(m_0\) before opening is to query the
+    oracle at the exact point \(\Encode(r,m_0)\).
+    But since \(r\) is fresh and hidden, Alice cannot form that input.
+
+    More explicitly: if \(r\in\{0,1\}^\lambda\) is uniform (say \(\lambda=128\)),
+    then even if Alice tries many guesses \(m_0\), each attempt would still
+    require guessing \(r\). The success probability is about
+    \(q/2^\lambda\) after \(q\) oracle queries.
+  }
 \end{frame}
 
 \begin{frame}
@@ -124,6 +160,29 @@
   \begin{exercise}
     Will this work?
   \end{exercise}
+
+  \only<article>{%
+    Try-first discussion:
+
+    \emph{Hiding} looks good for the same reason as in the hash+randomness scheme:
+    without knowing the fresh key \(r\), Alice cannot check a message guess \(m_0\)
+    by herself.
+
+    \emph{Binding} is more subtle. If \(\Mac\) is a secure MAC (unforgeable under
+    chosen-message attack), then after committing with \(t = \Mac[r][m]\), Eve
+    should not be able to later open the same \(t\) to a different message \(m'\neq
+    m\): that would require producing a valid tag for a new message under the same
+    secret key \(r\).
+
+    But note the caveat: in this commitment protocol, the verifier sees only one
+    tag (on one message) and learns \(r\) only at the end. So we never need
+    \emph{multi-use} security or many-message authentication; a one-time or standard
+    MAC is enough here.
+
+    Practical note: this construction is essentially a \emph{message authentication}
+    problem in disguise; in practice one can also implement commitments using a
+    secret AEAD/MAC key that is revealed only at opening.
+  }
 \end{frame}
 
 \begin{frame}
@@ -197,6 +256,23 @@
   \end{exercise}
 \end{frame}
 
+In the hash-based commitment constructions, binding is closest to
+\emph{collision resistance}: if a committer can open the same commitment as both
+\((m,r)\) and \((m',r')\) with \((m,r)\neq (m',r')\), then they have found a
+collision
+\(\Hash[\Encode(r,m)] = \Hash[\Encode(r',m')]\).
+
+It is worth contrasting this with related properties:
+\begin{description}
+  \item[Second-preimage resistance] is a weaker, one-target property: given a
+    fixed input \(x\), it is hard to find \(x'\neq x\) with \(\Hash[x]=\Hash[x']\).
+    Binding needs to rule out a committer that is free to choose \emph{both}
+    openings (two-target), which is why collision resistance is the more natural
+    fit.
+  \item[Preimage resistance] is about inverting \(\Hash\); it is not what stops a
+    committer from compressing two different openings to the same hash.
+\end{description}
+
 \begin{frame}
   \begin{remark}[Intuition: why the properties hold]
     \begin{description}
@@ -206,6 +282,30 @@
       \item[Hiding] If \(r\) is fresh and unpredictable, then \(c\) does not
         reveal \(m\) (informally: it looks like a random hash output).
     \end{description}
+
+    \only<article>{%
+      Sketch of the hiding argument in the Random Oracle Model (ROM):
+      the oracle \(\Hash\) is a random function with a global table.
+
+      Let \(c = \Hash[\Encode(r,m)]\) where \(r\gets\{0,1\}^\lambda\) is uniform.
+      Fix any (efficient) adversary that sees \(c\) and makes at most \(q\) oracle
+      queries.
+
+      The only way the adversary learns anything about \(m\) is if it ever queries
+      \(\Hash\) on \(\Encode(r,m)\), because only then is \(c\) linked to a known
+      input in the table.
+      But since \(r\) is uniform and hidden, each query hits the right input with
+      probability at most \(1/2^\lambda\).
+      By a union bound, the probability of ever hitting it is at most
+      \(q/2^\lambda\).
+
+      Therefore, except with probability \(q/2^\lambda\), the value \(c\) is just
+      a fresh random oracle output on an unqueried point, and thus gives no
+      information about \(m\).
+
+      (This is why we need: fresh \(r\), enough entropy in \(r\), and an
+      unambiguous encoding of \((r,m)\).)
+    }
   \end{remark}
 
   \ltnote{%
@@ -234,6 +334,21 @@
     Who could cheat if (1) hiding failed? (2) binding failed?
   \end{exercise}
 
+  \only<article>{%
+    Failure analysis (intuition):
+    \begin{description}
+      \item[If hiding fails] Bob can adapt.
+        After receiving \(c\), Bob learns \(a\) and then chooses \(b\) so that
+        \(a\oplus b\) equals his preferred outcome.
+      \item[If binding fails] Alice can adapt.
+        After receiving \(b\), Alice can open \(c\) as either \((a,r)\) or
+        \((a',r')\) and choose whether the outcome becomes \(0\) or \(1\).
+    \end{description}
+
+    In the Random Oracle Model (ROM), hiding is exactly the same intuition as before: without
+    querying \(\Hash\) on \(\Encode(r,a)\), the commitment \(c\) looks random.
+  }
+
   \ltnote{%
     \textbf{Variation pattern}: Contrast
 
@@ -255,6 +370,17 @@
       \item Can you find two different pairs \((r,m)\neq(r',m')\) that yield the
         same concatenation?
     \end{itemize}
+
+    \only<article>{%
+      Concrete ambiguity example (bitstrings):
+      if you encode by concatenation with no delimiter, then
+      \(r=0\), \(m=01\) and \(r'=00\), \(m'=1\) both map to the same concatenation
+      \(001\).
+
+      In general, without a unique parse, the phrase \enquote{commit to
+      \((r,m)\)} is meaningless: the verifier cannot reliably recover which pair
+      was intended.
+    }
   \end{exercise}
 \end{frame}
 
