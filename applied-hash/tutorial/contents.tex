@@ -12,29 +12,62 @@
 
 \section{A secure guessing game}
 
-\begin{frame}
-  \begin{exercise}[Secure 20 questions]
-    \begin{itemize}
-      \item Eve says to Alice: \enquote{I'm thinking of something, guess what 
-        it is.}
-      \item Alice can't guess it in 20 questions, so she loses.
-      \item Make a construction so that Alice can be sure Eve doesn't change 
-        what she's thinking of.
-    \end{itemize}
-  \end{exercise}
+\begin{frame}[fragile]
+  \only<presentation>{%
+    \begin{onlyenv}<2>
+      \begin{solution}[Outline]
+        \begin{itemize}
+          \item Eve sends commitment \(c = \Hash{m}\).
+          \item After 20 questions: Eve reveals \(m\).
+          \item Alice checks: \(\Hash{m} \stackrel?= c\).
+        \end{itemize}
+      \end{solution}
+    \end{onlyenv}
+  }
 
-  \begin{onlyenv}<2>
-    \begin{solution}
-      \begin{itemize}
-        \item Eve commits to her choice,
-          \(C = H(\text{what Eve is thinking about})\).
-        \item Eve gives \(C\) to Alice.
-        \item Alice asks her 20 questions.
-        \item Eve reveals her choice.
-        \item Alice checks that \(C = H(\text{what Eve was thinking about})\).
-      \end{itemize}
+  \only<article>{%
+    A first attempt is to use a hash value as a commitment.
+
+    \begin{solution}[Hash-based commitment (informal)]
+      \begin{enumerate}
+        \item Eve chooses a secret message \(m\) (\enquote{what she's thinking of}).
+        \item Eve computes a commitment \(c \gets \Commit{m}\) as \(c = \Hash{m}\)
+          and sends \(c\) to Alice.
+        \item Alice asks up to 20 yes/no questions.
+        \item Eve opens the commitment by sending \(m\).
+        \item Alice verifies the opening by checking
+          \(\Verify{}{(c,m)}\), i.e., \(\Hash{m} \stackrel?= c\).
+      \end{enumerate}
     \end{solution}
-  \end{onlyenv}
+
+    This pins Eve down \emph{if} we assume Eve cannot find a different
+    \(m'\neq m\) with the same hash value.
+    Informally, this is the \emph{binding} property and corresponds to (second)
+    collision resistance.
+
+    However, \(c=\Hash{m}\) is typically \emph{not} hiding when \(m\) is guessable.
+    For example, if Eve is \enquote{thinking of a number between 1 and 1{,}000},
+    Alice can just try all candidates \(m_0\) and check whether
+    \(\Hash{m_0}=c\). In that case, Alice learns \(m\) before the game is over.
+
+    A standard fix is to randomize the commitment by choosing fresh randomness
+    \(r\gets\{0,1\}^\lambda\) and sending
+    \(c = \Hash{\Encode{(r,m)}}\). Eve later opens by revealing \((r,m)\).
+    Now Alice cannot test guesses without also guessing \(r\).
+  }
+
+  \ltnote{%
+    \textbf{Try-first--tell-later}: The exercise asks students to invent a
+    construction before we name the primitive.
+
+    \textbf{Critical aspects}: the two security goals (binding vs hiding) pull in
+    different directions.
+
+    \textbf{Variation pattern}: Contrast.
+    We contrast a naive hash-only commitment (fails hiding for low-entropy \(m\))
+    with the randomized variant (adds \(r\) while leaving the protocol structure
+    invariant).
+  }
 \end{frame}
 
 \begin{frame}
@@ -62,82 +95,267 @@
 \end{frame}
 
 \begin{frame}
-  \begin{exercise}[More secure 20 questions]
+  \only<presentation>{%
+    \begin{exercise}[More secure 20 questions]
+      \begin{itemize}
+        \item Alice says: \enquote{I asked \(X\) and you answered \(Y\),
+          but should've answered \(Y'\).}
+        \item Eve says: \enquote{No, you asked \(X'\) and I answered \(Y\)
+          correctly.}
+        \item \dots
+      \end{itemize}
+    \end{exercise}
+
+    \begin{question}
+      \begin{itemize}
+        \item What are the properties we want?
+      \end{itemize}
+    \end{question}
+
+    \pause
+
+    \begin{solution}[Desired properties]
+      \begin{itemize}
+        \item Alice can't change her question.
+        \item Eve can't change her answer.
+        \item An answer is tied to the correct question.
+        \item The order of the questions and answers is preserved.
+      \end{itemize}
+    \end{solution}
+  }
+
+  \only<article>{%
+    \begin{exercise}[More secure 20 questions]
+      We want a transcript mechanism that prevents later disputes:
+      Alice should not be able to change a question after seeing an answer, and
+      Eve should not be able to change an answer after seeing the public reaction.
+
+      Additionally, each answer must be bound to the \emph{specific} question it
+      responds to, and the overall order of the conversation must be fixed.
+    \end{exercise}
+
+    \begin{solution}[Properties (rephrased)]
+      \begin{description}
+        \item[Non-equivocation] Neither party can later claim a different message.
+        \item[Linking] Each answer is tied to its question.
+        \item[Append-only order] The transcript has a single consistent ordering.
+      \end{description}
+    \end{solution}
+  }
+
+  \ltnote{%
+    \textbf{Try-first--tell-later}: Students first list desired properties before
+    we provide a construction.
+
+    \textbf{Critical aspects}: integrity vs authenticity vs ordering vs linking.
+
+    \textbf{Variation pattern}: Fusion (later).
+    We will ultimately fuse these aspects into one transcript design.
+  }
+\end{frame}
+
+\begin{frame}
+  \only<presentation>{%
+    \begin{solution}[Outline]
+      \begin{itemize}
+        \item Store the transcript; hashes save space.
+        \item But: you must recreate the \emph{exact} message for verification.
+      \end{itemize}
+    \end{solution}
+
+    \pause
+
+    \begin{question}
+      \begin{itemize}
+        \item Is a hash function sufficient?
+        \item Is storing the entire message sufficient?
+      \end{itemize}
+    \end{question}
+  }
+
+  \only<article>{%
+    The core problem is \emph{non-equivocation}: once Alice has asked a question
+    and Eve has replied, neither party should be able to later claim a different
+    question/answer.
+
+    Storing the full transcript is conceptually sufficient \emph{between Alice
+    and Eve} if we assume honest storage and a shared understanding of what a
+    message is.
+    But in practice we need to be careful:
     \begin{itemize}
-      \item Alice says: \enquote{I asked \(X\) and you answered \(Y\),
-        but should've answered \(Y'\).}
-      \item Eve says: \enquote{No, you asked \(X'\) and I answered \(Y\) 
-        correctly.}
-      \item \dots
+      \item Small changes (whitespace, normalization, punctuation) can change the
+        meaning or lead to disputes about what was actually said.
+      \item If we want a third party to verify later, we need a canonical encoding
+        of messages (unambiguous serialization).
     \end{itemize}
-  \end{exercise}
 
-  \begin{question}
+    Hashing helps by producing a short digest that commits to a longer object.
+    But a hash by itself does \emph{not} prove who said what; it only helps once
+    the underlying message is known.
+
+    There are therefore two separate questions:
+    \begin{description}
+      \item[Did this message exist?] A hash can commit to it (integrity).
+      \item[Who said it?] We need authentication (e.g., a signature) for
+        public verifiability.
+    \end{description}
+  }
+
+  \ltnote{%
+    \textbf{Variation pattern}: Separation.
+    Students often conflate (1) integrity of content and (2) authenticity of
+    origin. We separate these aspects before fusing them again in the final
+    construction.
+  }
+\end{frame}
+
+\begin{frame}
+  \only<presentation>{%
+    \begin{solution}[Outline: bind A to Q]
+      \begin{itemize}
+        \item Let each answer include a digest of the corresponding question.
+      \end{itemize}
+    \end{solution}
+
+    \begin{question}
+      \begin{itemize}
+        \item And what not to forget?
+        \item So what would it look like exactly?
+      \end{itemize}
+    \end{question}
+  }
+
+  \only<article>{%
+    To prevent Eve from later claiming that a different question \(X'\) was
+    asked, Eve's answer must be \emph{cryptographically linked} to the question.
+
+    A simple way is to include a question digest inside the answer:
+    \[
+      A_i = \Encode{(\text{``A''}, i, Y_i, q_i)},\qquad
+      q_i = \Hash{\Encode{(\text{``Q''}, i, X_i)}}.
+    \]
+    Now disputing the question requires either changing \(q_i\) or finding a
+    second question \(X_i'\neq X_i\) with the same digest.
+
+    The remaining piece is: how does Alice later convince someone what \(X_i\)
+    and \(Y_i\) were? For that we must also store (or be able to reveal) the full
+    messages, and ensure the transcript preserves order.
+  }
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast.
+    Vary one aspect (add an explicit link \(q_i\) from answers to questions)
+    while keeping everything else about the game invariant.
+  }
+\end{frame}
+
+\begin{frame}
+  \only<presentation>{%
+    \begin{solution}[Outline: preserve order]
+      \begin{itemize}
+        \item Chain messages: include a digest of the previous message.
+        \item This creates an append-only transcript.
+      \end{itemize}
+    \end{solution}
+
+    \begin{question}
+      \begin{itemize}
+        \item So what would it look like exactly?
+      \end{itemize}
+    \end{question}
+  }
+
+  \only<article>{%
+    Order is preserved with a \emph{hash chain}.
+    Let \(d_0\) be a fixed initial value.
+    For message \(M_i\), define
+    \[
+      d_i = \Hash{\Encode{(d_{i-1}, M_i)}}.
+    \]
+    Each new message commits to the entire history via \(d_{i-1}\).
+
+    This ensures that if someone later changes, deletes, or reorders any message,
+    the digests will no longer match.
+
+    Note that a hash chain only gives integrity of an \emph{agreed transcript}.
+    To get public verifiability of \emph{who} said what, we add signatures in the
+    final construction.
+  }
+
+  \ltnote{%
+    \textbf{Variation pattern}: Generalization.
+    Students may already know hash chains from blockchains or git. We generalize
+    that idea to a Q/A transcript here.
+  }
+\end{frame}
+
+\ltnote{%
+  \textbf{Variation pattern}: Contrast.
+  We start with a hash-chain transcript (integrity/order) and then vary exactly
+  one aspect: add signatures to obtain public verifiability, leaving the rest
+  invariant.
+
+  \textbf{Critical aspects}: integrity is not the same as authenticity.
+}
+\begin{frame}<presentation>
+  \begin{solution}[Outline: final transcript construction]
     \begin{itemize}
-      \item What are the properties we want?
-    \end{itemize}
-  \end{question}
-
-  \pause
-
-  \begin{solution}[Desired properties]
-    \begin{itemize}
-      \item Alice can't change her question.
-      \item Eve can't change her answer.
-      \item An answer is tied to the correct question.
-      \item The order of the questions and answers is preserved.
+      \item Define canonical message format and encoding.
+      \item Chain messages with \(d_i = \Hash{\Encode{(d_{i-1}, M_i)}}\).
+      \item Bind each answer to the previous question.
+      \item (Public verifiability) Add signatures over each message+chain value.
     \end{itemize}
   \end{solution}
 \end{frame}
 
 \begin{frame}
-  \begin{solution}[Alice nor Eve can change their statements]
-    \begin{itemize}
-      \item Each must store the other's messages.
-      \item Hash is useful to save space.
-      \item However, problems in recreating the \emph{exact} message.
-    \end{itemize}
-  \end{solution}
+  \only<article>{%
+    \begin{solution}[Concrete construction]
+      We give two variants: first with integrity only for the two parties, then a
+      publicly verifiable variant.
 
-  \pause
+  \paragraph{Message format.}
+  Each message is a tuple
+  \(M_i = \Encode{(\mathsf{role}_i, \mathsf{type}_i, i, \mathsf{payload}_i)}\),
+  where \(\mathsf{role}_i\in\{\text{A},\text{E}\}\) and
+  \(\mathsf{type}_i\in\{\text{Q},\text{A}\}\).
+  We assume the encoding is unambiguous.
 
-  \begin{question}
-    \begin{itemize}
-      \item Is a hash function sufficient?
-      \item Is storing the entire message sufficient?
-    \end{itemize}
-  \end{question}
-\end{frame}
+  \paragraph{Hash chain (order + integrity).}
+  Fix an initial digest \(d_0\). Define
+  \[
+    d_i = \Hash{\Encode{(d_{i-1}, M_i)}}.
+  \]
+  Alice and Eve each store the sequence \((M_i, d_i)\).
 
-\begin{frame}
-  \begin{solution}[An answer is tied to the correct question]
-    \begin{itemize}
-      \item The answer can include the hash value of the question.
-    \end{itemize}
-  \end{solution}
+  \paragraph{Linking answers to questions.}
+  If question \(Q_i\) is message \(M_i\) and the corresponding answer \(A_i\)
+  is \(M_{i+1}\), then define the answer payload to explicitly include the
+  digest of the question: \[
+    \mathsf{payload}_{i+1} = \Encode{(Y_i, d_i)}.
+  \]
+  This binds the answer to the exact question (since \(d_i\) commits to
+  \(M_i\)).
 
-  \begin{question}
-    \begin{itemize}
-      \item And what not to forget?
-      \item So what would it look like exactly?
-    \end{itemize}
-  \end{question}
-\end{frame}
+  \paragraph{Public verifiability (add signatures).}
+  To allow any third party to verify who said what, have the sender sign each
+  message together with the previous digest:
+  \[
+    \sigma_i = \Sign{\mathsf{sk}_{\mathsf{role}_i}}{\Encode{(d_{i-1}, M_i)}}.
+  \]
+  Verification checks
+  \(\Verify{\mathsf{pk}_{\mathsf{role}_i}}{(\Encode{(d_{i-1}, M_i)},\sigma_i)}=1\)
+  for all \(i\), and recomputes the chain values.
 
-\begin{frame}
-  \begin{solution}[The order of the questions and answers is preserved]
-    \begin{itemize}
-      \item Each message can include the hash value of the previous message.
-      \item This way, the order is preserved also for individual 
-        question--answer pairs.
-    \end{itemize}
-  \end{solution}
-
-  \begin{question}
-    \begin{itemize}
-      \item So what would it look like exactly?
-    \end{itemize}
-  \end{question}
+  This gives:
+  \begin{description}
+    \item[Order] from the hash chain.
+    \item[Integrity] changing any message breaks the chain.
+    \item[Authenticity] signatures prove origin publicly.
+    \item[Linking] each answer includes the digest of the intended question.
+  \end{description}
+    \end{solution}
+  }
 \end{frame}
 
 \section{Proving quotes from a document}
@@ -163,25 +381,98 @@
 \end{frame}
 
 \begin{frame}
-  \begin{solution}
-    \begin{itemize}
-      \item We need a tree structure where we can access sufficiently different 
-        parts of the letter.
-    \end{itemize}
-  \end{solution}
+  \only<presentation>{%
+    \begin{solution}[Outline]
+      \begin{itemize}
+        \item Use a Merkle tree over chunks of the document.
+        \item Sign only the root; later reveal one chunk + authentication path.
+      \end{itemize}
+    \end{solution}
 
-  \pause
+    \pause
 
-  \begin{question}
-    \begin{itemize}
-      \item What should be in the leaves?
-    \end{itemize}
-  \end{question}
+    \begin{question}
+      \begin{itemize}
+        \item What should be in the leaves?
+      \end{itemize}
+    \end{question}
 
-  \begin{question}
+    \begin{question}
+      \begin{itemize}
+        \item How much is revealed about the hidden parts?
+      \end{itemize}
+    \end{question}
+  }
+
+  \only<article>{%
+    The natural tool is a \emph{Merkle tree}: a hash tree that commits to a set of
+    values while allowing selective disclosure.
+
+    \begin{solution}[Merkle commitment to a document]
+      \paragraph{Chunking.}
+      Split the letter into chunks (e.g., paragraphs). Let the chunks be
+      \(D_1,\dots,D_n\). The chunking strategy is a design choice: smaller chunks
+      enable more fine-grained disclosure but increase proof size.
+
+      \paragraph{Leaves.}
+      Put \emph{committed} chunks in the leaves, including their index to avoid
+      ambiguity:
+      \[
+        L_i = \Hash{\Encode{i, D_i}}.
+      \]
+      (Using \(i\) is a simple form of domain separation: it prevents swapping
+      equal-looking chunks between positions.)
+
+      \paragraph{Internal nodes and root.}
+      Hash pairs up the tree, e.g.
+      \(N = \Hash{\Encode{N_\mathrm{left}, N_\mathrm{right}}}\), until obtaining a
+      root \(R\).
+
+      \paragraph{Signature.}
+      Eve signs the root: \(\sigma = \Sign{\mathsf{sk}_E}{R}\). Alice stores
+      \((R,\sigma)\) as the commitment to the whole letter.
+
+      \paragraph{Selective disclosure (quote proof).}
+      Years later, to reveal only the \(P=NP\) proof chunk \(D_j\), Alice publishes:
+      \begin{enumerate}
+        \item the chunk \(D_j\),
+        \item the authentication path (the sibling hashes on the path to the
+          root),
+        \item Eve's signature \(\sigma\) on \(R\).
+      \end{enumerate}
+      Any verifier recomputes \(L_j = \Hash{\Encode{j,D_j}}\), then recomputes the
+      root \(R\) using the authentication path, and finally checks
+      \(\Verify{\mathsf{pk}_E}{(R,\sigma)}=1\).
+    \end{solution}
+
+    \paragraph{How much is revealed?}
+    The proof reveals:
     \begin{itemize}
-      \item How much is revealed about the hidden parts?
+      \item the disclosed chunk \(D_j\) (the quote),
+      \item enough sibling hashes to recompute the root,
+      \item typically also the position \(j\) and the tree depth (so information
+        about document structure/size).
     \end{itemize}
-  \end{question}
+    But it does \emph{not} reveal the contents of other chunks, assuming the hash
+    function is preimage resistant.
+
+    Informally: a sibling hash value looks like a random string; without inverting
+    \(\Hash{\cdot}\), it should be hard to learn anything about the corresponding hidden
+    chunk.
+  }
+
 \end{frame}
+
+\only<article>{
+  \ltnote{%
+    \textbf{Try-first--tell-later}: Students are prompted to invent
+    \enquote{a tree structure} before we name Merkle trees.
+
+    \textbf{Critical aspects}: selective disclosure requires committing to the
+    whole while revealing only a part; the authentication path is the key.
+
+    \textbf{Variation pattern}: Generalization.
+    This construction generalizes to transparency logs, git, and blockchains.
+  }
+}
 
