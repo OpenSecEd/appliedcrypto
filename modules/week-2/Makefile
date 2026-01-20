@@ -9,6 +9,7 @@ PAGES += lecture-applied-hash-functions.md
 PAGES += lecture-asymmetric-crypto.html
 
 SLIDES += ${COURSE_DIR}/one-way-slides.pdf
+SLIDES += ${COURSE_DIR}/applied-hash-slides.pdf
 
 QUIZZES += INL1Quiz-hash.json
 
@@ -19,6 +20,9 @@ ASSIGNMENTS += assignments/hac-ch11-digital-signatures.md
 include ../module.mk
 
 ${COURSE_DIR}/one-way-slides.pdf: lecture-hash-functions/one-way-slides.pdf
+	${LINK}
+
+${COURSE_DIR}/applied-hash-slides.pdf: lecture-applied-hash/slides.pdf
 	${LINK}
 
 # Note: Canvas treats module/page selectors as regexes.
