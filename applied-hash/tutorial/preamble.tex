@@ -4,13 +4,12 @@
 \usepackage{booktabs}
 
 \usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
-\addbibresource{tutorial.bib}
+%\addbibresource{tutorial.bib}
 
 \usepackage[all]{foreign}
 \renewcommand{\foreignfullfont}{}
 \renewcommand{\foreignabbrfont}{}
 
-\usepackage{newclude}
 \usepackage{import}
 
 \usepackage[strict]{csquotes}
@@ -18,14 +17,20 @@
 
 \usepackage{subcaption}
 
+\usepackage[marginparmargin=outer]{didactic}
+
+% Notation, citations, acronyms.
+\usepackage{bibsp}
+
 \usepackage[noend]{algpseudocode}
 \usepackage{xparse}
 
 \let\email\texttt
 
-%\usepackage[outputdir=ltxobj]{minted}
+%\\usepackage[outputdir=ltxobj]{minted}
 \usepackage{minted}
 \setminted{autogobble}
+
 
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -33,8 +38,17 @@
 \usepackage{amsthm}
 \usepackage{thmtools}
 \usepackage[unq]{unique}
-\DeclareMathOperator{\powerset}{\mathcal{P}}
+% bibsp already defines \powerset.
 
 \usepackage[binary-units]{siunitx}
 
-\usepackage[capitalize]{cleveref}
+% bibsp already loads cleveref.
+
+\NewAlgorithm{\Encode}{Encode}
+\NewAlgorithm{\Commit}{Commit}
+\NewAlgorithm{\Open}{Open}
+\NewAlgorithm{\KeyGen}{KeyGen}
+\NewAlgorithm{\Sign}{Sign}
+\NewAlgorithm{\Verify}{Vfy}
+\NewAlgorithm{\Hash}{H}
+\NewAlgorithm{\Mac}{Mac}
