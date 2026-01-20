@@ -5,6 +5,7 @@ LATEXFLAGS+=	-shell-escape
 
 SRC+=		preamble.tex
 SRC+=		abstract.tex contents.tex
+SRC+=		../hash-review.tex
 
 DEPENDS+=	bibsp.sty
 DEPENDS+=	crypto.bib

@@ -2,44 +2,7 @@
 
 \section[Hash functions]{What was a hash function now again?}
 
-\begin{frame}
-  \begin{definition}[One-way function\footfullcite{GoldreichFOC-1}]
-    \begin{itemize}
-      \item Let \(h\colon \{0,1\}^*\to \{0,1\}^*\).
-      \item \(h\) is \emph{one-way} if
-        \begin{enumerate}
-          \item there exists an efficient algorithm \(A\) such that \(A(x) 
-              = h(x)\);
-          \item for every efficient algorithm \(A^\prime\), every positive 
-            polynomial \(p(\cdot)\) and all sufficiently large \(n\)'s
-            \[\Prob{A^\prime(h(x), 1^n) \in h^{-1}(h(x))} < \frac{1}{p(n)}\]
-        \end{enumerate}
-    \end{itemize}
-  \end{definition}
-\end{frame}
-
-\begin{frame}
-  \begin{definition}[Preimage resistance (one way)]
-    \begin{description}
-      \item[Input] hash function~\(H\), value~\(y\).
-      \item[Output] Any \(x\) such that \(H(x) = y\).
-    \end{description}
-  \end{definition}
-
-  \begin{definition}[Second preimage resistance (weak collision resistance)]
-    \begin{description}
-      \item[Input] hash function~\(H\), value \(x\).
-      \item[Output] Any value \(x'\) such that \(H(x) = H(x')\).
-    \end{description}
-  \end{definition}
-
-  \begin{definition}[Collision resistance (strong collision resistance)]
-    \begin{description}
-      \item[Input] hash function~\(H\).
-      \item[Output] Any two \(x, x'\) such that \(H(x) = H(x')\).
-    \end{description}
-  \end{definition}
-\end{frame}
+\mode<all>{\input{../hash-review.tex}}
 
 
 \section{Commitments}
@@ -56,13 +19,6 @@
 
   \begin{exercise}[Try first]
     Design a protocol.
-
-    \begin{description}
-      \item[Hiding] Alice should not learn \(m\) from the first message.
-      \item[Binding] Eve should not be able to change \(m\) after Alice starts
-        guessing.
-    \end{description}
-
     What could Eve send before the game starts?
   \end{exercise}
 
@@ -77,6 +33,14 @@
 \end{frame}
 
 \begin{frame}
+  \begin{definition}[Needed properties]
+    \begin{description}
+      \item[Hiding] Alice should not learn \(m\) from the first message.
+      \item[Binding] Eve should not be able to change \(m\) after Alice starts
+        guessing.
+    \end{description}
+  \end{definition}
+
   \begin{block}{Hash functions and \acp{MAC}}
     \begin{itemize}
       \item Both take a long input and output a short string.
@@ -87,14 +51,26 @@
 \end{frame}
 
 \begin{frame}
-  \begin{block}{Solution attempt 1: hash only (no randomness)}
-    Eve sends \(c = \Hash[m]\).
-
-    Later, Eve reveals \(m\) and Alice checks \(\Hash[m] \stackrel?= c\).
+  \begin{block}{Solution attempt 1: hash function}
+    \begin{enumerate}
+      \item Eve sends \(c = \Hash[m]\).
+      \item Later, Eve reveals \(m\) and Alice checks \(\Hash[m] \stackrel?= c\).
+    \end{enumerate}
   \end{block}
+
+  \begin{exercise}
+    Will this work?
+  \end{exercise}
 \end{frame}
 
 \begin{frame}
+  \begin{block}{Solution attempt 1: hash function}
+    \begin{enumerate}
+      \item Eve sends \(c = \Hash[m]\).
+      \item Later, Eve reveals \(m\) and Alice checks \(\Hash[m] \stackrel?= c\).
+    \end{enumerate}
+  \end{block}
+
   \begin{description}
     \item[Binding] looks plausible (needs collision resistance).
     \item[Hiding] fails if \(m\) is guessable (brute force).
@@ -109,9 +85,21 @@
     Later, Eve reveals \((m,r)\). Alice checks
     \(\Hash[\Encode(r,m)] \stackrel?= c\).
   \end{block}
+
+  \begin{exercise}
+    Will this work?
+  \end{exercise}
 \end{frame}
 
 \begin{frame}
+  \begin{block}{Solution attempt 2: hash + randomness}
+    Eve samples fresh randomness \(r\) and sends
+    \[c = \Hash[\Encode(r,m)].\]
+
+    Later, Eve reveals \((m,r)\). Alice checks
+    \(\Hash[\Encode(r,m)] \stackrel?= c\).
+  \end{block}
+
   \begin{description}
     \item[Binding] still relates to collision resistance.
     \item[Hiding] improves if \(r\) has high entropy.
@@ -132,9 +120,19 @@
 
     Later, Eve reveals \((m,r)\). Alice checks \(\Mac[r][m] \stackrel?= t\).
   \end{block}
+
+  \begin{exercise}
+    Will this work?
+  \end{exercise}
 \end{frame}
 
 \begin{frame}
+  \begin{block}{Solution attempt 3: \ac{MAC} with one-time key}
+    Eve samples fresh randomness \(r\) and sends the tag
+    \[t = \Mac[r][m].\]
+
+    Later, Eve reveals \((m,r)\). Alice checks \(\Mac[r][m] \stackrel?= t\).
+  \end{block}
   \begin{description}
     \item[Hiding] Alice cannot test guesses without knowing \(r\).
     \item[Binding] Eve cannot easily find \(m'\neq m\) with the same tag.
@@ -161,7 +159,7 @@
 \end{frame}
 
 \begin{frame}
-  \begin{block}{Hiding vs binding: extremes}
+  \begin{example}{Hiding vs binding: extremes}
     \begin{description}
       \item[Perfectly binding, not hiding] send \(m\) directly.
       \item[Perfectly hiding, not binding] send a random \(c\) independent of
@@ -170,7 +168,7 @@
 
     A useful commitment needs \emph{both}: hiding for the guesser and binding for
     fairness.
-  \end{block}
+  \end{example}
 
   \ltnote{%
     \textbf{Variation pattern}: Contrast.
@@ -293,43 +291,5 @@
     commitment is obviously unsafe (low entropy, reusing randomness, ambiguous
     serialization).
   }
-\end{frame}
-
-\section{Keyed hash functions}
-
-\begin{frame}
-  \begin{block}{How this relates to \ac{HMAC}}
-    \begin{description}
-      \item[\ac{HMAC}] integrity/authenticity with a shared secret key \(k\).
-      \item[Commitment] use public verification: anyone can check an opening.
-    \end{description}
-  \end{block}
-
-
-  \ltnote{%
-    \textbf{Variation pattern}: Contrast.
-
-    Students compare \enquote{shared secret key} (HMAC) with \enquote{randomness
-    revealed later} (commitment).
-  }
-\end{frame}
-
-\begin{frame}
-  \begin{exercise}
-    If you \emph{did} share a secret key with the verifier, would you still need
-    randomness \(r\) to hide the message?
-  \end{exercise}
-\end{frame}
-
-\begin{frame}
-  \begin{remark}[Take-away]
-    \begin{itemize}
-      \item Commitments are \emph{not} encryption and \emph{not} MACs.
-      \item Hash-based commitments are simple:
-        \(c = \Hash[\Encode(r,m)]\) with an unambiguous encoding.
-      \item Binding \(\approx\) collision resistance; hiding \(\approx\)
-        high-entropy randomness \(r\).
-    \end{itemize}
-  \end{remark}
 \end{frame}
 
