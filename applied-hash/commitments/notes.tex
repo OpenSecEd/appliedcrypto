@@ -1,12 +1,14 @@
-\documentclass{article}
+\documentclass[a4paper,oneside,article,oldfontcommands]{memoir}
+\let\subsubsection\subsection
+\let\subsection\section
+\let\section\chapter
+\usepackage[noamsthm,notheorems]{beamerarticle}
+\setjobnamebeamerversion{slides}
 
 \usepackage[hyphens]{url}
 \usepackage[hidelinks]{hyperref}
 
 \input{preamble.tex}
-
-\usepackage[noamsthm,notheorems]{beamerarticle}
-\setjobnamebeamerversion{slides}
 
 %\usepackage{authblk}
 %\let\institute\affil
