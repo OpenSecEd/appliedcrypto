@@ -1,0 +1,152 @@
+\title{Transfer Results from Year to Year in Canvas}
+\author{Daniel Bosk}
+
+\maketitle
+\tableofcontents
+\clearpage
+
+\section{Overview}
+
+Often students finish some of the assignments, but not all.
+Then they return to the next year's course round and want to resume where they 
+left off.
+For this to be smooth, it is helpful to transfer the results from the previous 
+year to the current year.
+We want to tick off the assignments that the student has already completed.
+
+We'll do this as a shell script using the \texttt{canvaslms} command line tool.
+<<trnsfr-results.sh>>=
+#!/bin/bash
+
+<<constants>>
+<<functions>>
+
+# run main if script is executed (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
+@
+
+We'll read out all results from the previous year and write them into the 
+current year.
+However, since names on assignments might have changed slightly, like we might 
+add a prefix `Mandatory:' we'll need to regex match the core of the assignment 
+names.
+\begin{verbatim}
+$ canvaslms assignments list -c tilkry2[56] -A "(LAB|INL)1" \
+  | cut -f 2-3 | sort -u
+INL1	INL1Oral
+INL1	INL1Quiz Ciphers
+INL1	INL1Quiz Cryptographic Concepts v2025
+INL1	INL1Quiz Hash functions
+INL1	INL1Written
+LAB1	AES presentation
+LAB1	Cryptanalysis of Ciphertexts
+LAB1	Implement AES (Kattis Problem)
+LAB1	Mandatory: AES presentation
+LAB1	Mandatory: Cryptanalysis of Ciphertexts
+LAB1	MANDATORY Design Considerations (after the impact considerations seminar)
+LAB1	Mandatory: Implement AES (Kattis Problem)
+LAB1	MANDATORY Lab (20-21/2): Introduction to ProVerif  (Karl and Jesper)  ON CAMPUS
+LAB1	MANDATORY Lab (20, 26/2): Introduction to ProVerif  (Karl and Jesper)  ON CAMPUS
+LAB1	MANDATORY Seminar (29, 30/1): usability (Sonja)  ON CAMPUS
+LAB1	MANDATORY Seminar (31/1): usability (Sonja)  ON CAMPUS
+LAB1	MANDATORY Seminar (4, 5/2): Impact considerations around crypto systems (Sonja)  ON CAMPUS
+LAB1	MANDATORY Seminar (6/2): Impact considerations around crypto systems (Sonja)  ON CAMPUS
+LAB1	Optional: Cryptopals (C, B, A)
+LAB1	Optional: Secure multi-party computation (C, B, A)
+LAB1	Optional: Side channels (C, B, A)
+\end{verbatim}
+
+
+\section{INL1}
+
+We see that for INL1 we broke up the INL1Quiz from the whole to smaller parts.
+Fortunately, passing the big one means you passed all the small ones.
+So we just need to check the result for INL1Quiz in the previous year and then 
+set all the smaller ones in the current year.
+
+To do this, we must list the regexes of the core parts of the names of the 
+assignments to look for.
+<<constants>>=
+INL1_REGEXES=(
+  "^INL1Quiz Cryptographic Concepts",
+  "^INL1Written",
+  "^INL1Oral"
+)
+@
+
+
+\section{A transfer function}
+
+We want a function that takes a list of regexes for assignments.
+It looks for those assignments in all previous years (up until 2025) and 
+transfers the latest result to the current year.
+The results will look like this:
+\begin{verbatim}
+$ canvaslms submissions -c tilkry2[4-5] -l \
+  -A ^INL1 -a "^INL1Quiz Cryptographic Concepts" \
+    | cut -f 3-4,6 \
+    | sort -u \
+    | head -n 10
+jesperob@kth.se		N/A
+ludvigch@kth.se	P	2024-03-12 15:56
+arberl@kth.se	P	2024-03-14 17:26
+hsamanci@kth.se		N/A
+imdad@kth.se	F	2024-03-14 15:23
+anouiser@kth.se		N/A
+aradberg@kth.se	P	2024-03-14 17:33
+ronih@kth.se	P	2024-03-28 13:27
+afruz@kth.se		N/A
+ronasb@kth.se		N/A
+\end{verbatim}
+
+All we need to do now is that for every student in the current course,
+we simply look up their latest result from the previous years and set that 
+result in the current year using
+\begin{verbatim}
+$ canvaslms submissions grade -c tilkry26 \
+  -A ^INL1 -a "^INL1Quiz" \
+  -g P -u ludvigch@kth.se -m "Result from previous year."
+\end{verbatim}
+Using that regex ([[^INL1Quiz]]) will set all the small parts of INL1Quiz at 
+once.
+
+It's important to note here that we additionally use [[-A ^INL1]] to make sure 
+we match only assignments from INL1, in case there are other assignments with 
+similar names.
+For instance, we might match a reading assignment that matches.
+
+<<functions>>=
+transfer_results() {
+  # ...
+}
+@
+
+
+\section{LAB1}
+
+Now we can do the same for LAB1.
+We see here that we added prefixes like `Mandatory:' to some of the 
+assignments.
+<<constants>>=
+LAB1_REGEXES=(
+  "Cryptanalysis of Ciphertexts",
+  "AES presentation",
+  "Implement AES (Kattis Problem)",
+  "Design Considerations",
+  "Introduction to ProVerif",
+  "Seminar.*usability",
+  "Seminar.*Impact considerations",
+  "Cryptopals",
+  "Secure multi-party computation",
+  "Side channels"
+)
+@
+
+
+
+\section{The main program}
+
+Now we simply write [[main]] that calls the functions above to transfer all the 
+results.
