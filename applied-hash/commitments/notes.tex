@@ -1,23 +1,24 @@
-\documentclass{article}
+\documentclass[a4paper,oneside,article,oldfontcommands]{memoir}
+\let\subsubsection\subsection
+\let\subsection\section
+\let\section\chapter
+\usepackage[noamsthm,notheorems]{beamerarticle}
+\setjobnamebeamerversion{slides}
 
 \usepackage[hyphens]{url}
 \usepackage[hidelinks]{hyperref}
 
 \input{preamble.tex}
 
-\usepackage[noamsthm,notheorems]{beamerarticle}
-\setjobnamebeamerversion{slides}
-
 %\usepackage{authblk}
 %\let\institute\affil
 
 % The beamerarticle package + didactic/beamer already provide theorem-like
-% environments. Re-declaring them breaks with newer TeX Live releases.
-
+% environments. Re-declaring them breaks with the newer TeX Live releases.
 
 \begin{document}
 \title{%
-  Applied Hash Functions
+  Applied Hash Functions: Commitments
 }
 \author{Daniel Bosk}
 \institute{%

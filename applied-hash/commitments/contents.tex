@@ -1,0 +1,421 @@
+\mode*
+
+
+\section{Commitments}
+
+\begin{frame}
+  \begin{example}[Guess a number]
+    \begin{itemize}
+      \item Eve chooses a secret number/message \(m\).
+      \item Alice will guess \(m\).
+      \item Eve must \emph{commit} to \(m\) before Alice starts guessing.
+      \item Eve will try to cheat if she can.
+    \end{itemize}
+  \end{example}
+
+  \begin{exercise}[Try first]
+    Design a protocol.
+    What could Eve send before the game starts?
+  \end{exercise}
+
+  \only<article>{%
+    Intuition: Eve wants to ``lock in'' her choice without revealing it.
+    This is a two-party fairness problem: if Eve can change her mind after seeing
+    Alice's guess, the game is pointless; if Alice can learn \(m\) too early,
+    she wins trivially.
+
+    A commitment should therefore support two phases:
+    commit first (before Alice acts), then open later (after Alice has acted).
+  }
+
+  \ltnote{%
+    \textbf{Try-first--tell-later}: We start with a concrete two-party fairness
+    problem.
+
+    \textbf{Critical aspects}: two different goals (hiding vs binding).
+
+    \textbf{Variation pattern}: Generalization.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Needed properties]
+    \begin{description}
+      \item[Hiding] Alice should not learn \(m\) from the first message.
+      \item[Binding] Eve should not be able to change \(m\) after Alice starts
+        guessing.
+    \end{description}
+  \end{definition}
+
+  \only<article>{%
+    It helps to remember \emph{who benefits} from each property:
+    hiding protects Eve's secret from Alice during the guessing phase, while
+    binding protects Alice from Eve changing the secret after seeing Alice's
+    behavior.
+
+    In other words: hiding prevents the guesser from learning early; binding
+    prevents the committer from adapting late.
+  }
+
+  \begin{block}{Hash functions and \acp{MAC}}
+    \begin{itemize}
+      \item Both take a long input and output a short string.
+      \item We will use them to \emph{lock in} a value now and \emph{reveal} it
+        later.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Solution attempt 1: hash function}
+    \begin{enumerate}
+      \item Eve sends \(c = \Hash[m]\).
+      \item Later, Eve reveals \(m\) and Alice checks \(\Hash[m] \stackrel?= c\).
+    \end{enumerate}
+  \end{block}
+
+  \begin{exercise}
+    Will this work?
+  \end{exercise}
+
+  \only<article>{%
+    Hint: ask whether \(m\) comes from a small or guessable set. If Alice can
+    enumerate likely messages, she can just hash each candidate and compare with
+    \(c\) (``dictionary attack'').
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Solution attempt 1: hash function}
+    \begin{enumerate}
+      \item Eve sends \(c = \Hash[m]\).
+      \item Later, Eve reveals \(m\) and Alice checks \(\Hash[m] \stackrel?= c\).
+    \end{enumerate}
+  \end{block}
+
+  \begin{description}
+    \item[Binding] looks plausible (needs collision resistance).
+    \item[Hiding] fails if \(m\) is guessable (brute force).
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Solution attempt 2: hash + randomness}
+    Eve samples fresh randomness \(r\) and sends
+    \[c = \Hash[\Encode(r,m)].\]
+
+    Later, Eve reveals \((m,r)\). Alice checks
+    \(\Hash[\Encode(r,m)] \stackrel?= c\).
+  \end{block}
+
+  \begin{exercise}
+    Will this work?
+  \end{exercise}
+
+  \only<article>{%
+    In the Random Oracle Model (ROM), think of \(\Hash\) as a public random function with a global
+    table of query-answer pairs.
+
+    The only way Alice can test a guess \(m_0\) before opening is to query the
+    oracle at the exact point \(\Encode(r,m_0)\).
+    But since \(r\) is fresh and hidden, Alice cannot form that input.
+
+    More explicitly: if \(r\in\{0,1\}^\lambda\) is uniform (say \(\lambda=128\)),
+    then even if Alice tries many guesses \(m_0\), each attempt would still
+    require guessing \(r\). The success probability is about
+    \(q/2^\lambda\) after \(q\) oracle queries.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Solution attempt 2: hash + randomness}
+    Eve samples fresh randomness \(r\) and sends
+    \[c = \Hash[\Encode(r,m)].\]
+
+    Later, Eve reveals \((m,r)\). Alice checks
+    \(\Hash[\Encode(r,m)] \stackrel?= c\).
+  \end{block}
+
+  \begin{description}
+    \item[Binding] still relates to collision resistance.
+    \item[Hiding] improves if \(r\) has high entropy.
+  \end{description}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast.
+
+    We vary one critical aspect: add randomness \(r\). The protocol structure is
+    otherwise invariant.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Solution attempt 3: \ac{MAC} with one-time key}
+    Eve samples fresh randomness \(r\) and sends the tag
+    \[t = \Mac[r][m].\]
+
+    Later, Eve reveals \((m,r)\). Alice checks \(\Mac[r][m] \stackrel?= t\).
+  \end{block}
+
+  \begin{exercise}
+    Will this work?
+  \end{exercise}
+
+  \only<article>{%
+    Try-first discussion:
+
+    \emph{Hiding} looks good for the same reason as in the hash+randomness scheme:
+    without knowing the fresh key \(r\), Alice cannot check a message guess \(m_0\)
+    by herself.
+
+    \emph{Binding} is more subtle. If \(\Mac\) is a secure MAC (unforgeable under
+    chosen-message attack), then after committing with \(t = \Mac[r][m]\), Eve
+    should not be able to later open the same \(t\) to a different message \(m'\neq
+    m\): that would require producing a valid tag for a new message under the same
+    secret key \(r\).
+
+    But note the caveat: in this commitment protocol, the verifier sees only one
+    tag (on one message) and learns \(r\) only at the end. So we never need
+    \emph{multi-use} security or many-message authentication; a one-time or standard
+    MAC is enough here.
+
+    Practical note: this construction is essentially a \emph{message authentication}
+    problem in disguise; in practice one can also implement commitments using a
+    secret AEAD/MAC key that is revealed only at opening.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{Solution attempt 3: \ac{MAC} with one-time key}
+    Eve samples fresh randomness \(r\) and sends the tag
+    \[t = \Mac[r][m].\]
+
+    Later, Eve reveals \((m,r)\). Alice checks \(\Mac[r][m] \stackrel?= t\).
+  \end{block}
+  \begin{description}
+    \item[Hiding] Alice cannot test guesses without knowing \(r\).
+    \item[Binding] Eve cannot easily find \(m'\neq m\) with the same tag.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}[Commitment scheme]
+    A commitment scheme has two algorithms:
+    \begin{description}
+      \item[\Commit] take a message \(m\), output a commitment \(c\).
+      \item[\Open] reveal information that convinces the verifier that \(c\)
+        corresponds to \(m\).
+    \end{description}
+  \end{definition}
+
+  \begin{definition}[Security goals]
+    \begin{description}
+      \item[Hiding] seeing \(c\) should not reveal \(m\).
+      \item[Binding] after seeing \(c\), it should be hard to open it to a
+        different message \(m'\neq m\).
+    \end{description}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{example}{Hiding vs binding: extremes}
+    \begin{description}
+      \item[Perfectly binding, not hiding] send \(m\) directly.
+      \item[Perfectly hiding, not binding] send a random \(c\) independent of
+        \(m\).
+    \end{description}
+
+    A useful commitment needs \emph{both}: hiding for the guesser and binding for
+    fairness.
+  \end{example}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast.
+
+    We contrast the two extreme failure modes to make the tension between the
+    goals visible.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{remark}[Comparison: OTP and perfect secrecy]
+    \begin{description}
+      \item[OTP] perfectly hiding: \(c = m \oplus k\) with fresh random key \(k\).
+      \item[Commitment] must be both hiding and binding.
+    \end{description}
+
+    The OTP achieves perfect secrecy because the ciphertext distribution is
+    independent of \(m\). By contrast, a commitment cannot be independent of
+    \(m\), otherwise it would not bind.
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}
+    In the hash-based constructions, which hash property relates most to binding?
+  \end{exercise}
+\end{frame}
+
+In the hash-based commitment constructions, binding is closest to
+\emph{collision resistance}: if a committer can open the same commitment as both
+\((m,r)\) and \((m',r')\) with \((m,r)\neq (m',r')\), then they have found a
+collision
+\(\Hash[\Encode(r,m)] = \Hash[\Encode(r',m')]\).
+
+It is worth contrasting this with related properties:
+\begin{description}
+  \item[Second-preimage resistance] is a weaker, one-target property: given a
+    fixed input \(x\), it is hard to find \(x'\neq x\) with \(\Hash[x]=\Hash[x']\).
+    Binding needs to rule out a committer that is free to choose \emph{both}
+    openings (two-target), which is why collision resistance is the more natural
+    fit.
+  \item[Preimage resistance] is about inverting \(\Hash\); it is not what stops a
+    committer from compressing two different openings to the same hash.
+\end{description}
+
+\begin{frame}
+  \begin{remark}[Intuition: why the properties hold]
+    \begin{description}
+      \item[Binding] If Alice can open \(c\) as \((m, r)\) and also as
+        \((m', r')\) with \(m\neq m'\), then she found a collision:
+        \(\Hash[\Encode(r,m)] = \Hash[\Encode(r',m')]\).
+      \item[Hiding] If \(r\) is fresh and unpredictable, then \(c\) does not
+        reveal \(m\) (informally: it looks like a random hash output).
+    \end{description}
+
+    \only<article>{%
+      Sketch of the hiding argument in the Random Oracle Model (ROM):
+      the oracle \(\Hash\) is a random function with a global table.
+
+      Let \(c = \Hash[\Encode(r,m)]\) where \(r\gets\{0,1\}^\lambda\) is uniform.
+      Fix any (efficient) adversary that sees \(c\) and makes at most \(q\) oracle
+      queries.
+
+      The only way the adversary learns anything about \(m\) is if it ever queries
+      \(\Hash\) on \(\Encode(r,m)\), because only then is \(c\) linked to a known
+      input in the table.
+      But since \(r\) is uniform and hidden, each query hits the right input with
+      probability at most \(1/2^\lambda\).
+      By a union bound, the probability of ever hitting it is at most
+      \(q/2^\lambda\).
+
+      Therefore, except with probability \(q/2^\lambda\), the value \(c\) is just
+      a fresh random oracle output on an unqueried point, and thus gives no
+      information about \(m\).
+
+      (This is why we need: fresh \(r\), enough entropy in \(r\), and an
+      unambiguous encoding of \((r,m)\).)
+    }
+  \end{remark}
+
+  \ltnote{%
+    \textbf{Variation pattern}: Fusion
+
+    Here we tie together two critical aspects at the same time:
+    (1) collision resistance \(\Rightarrow\) binding, and
+    (2) randomness/entropy \(\Rightarrow\) hiding.
+
+    Students need both in view simultaneously to reason about who can cheat and
+    how.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{example}[Coin flipping over the network]
+    \begin{enumerate}
+      \item Alice chooses a random bit \(a\) and randomness \(r\).
+        She sends \(c = \Hash[\Encode(r,a)]\).
+      \item Bob chooses a random bit \(b\) and sends \(b\).
+      \item Alice opens by sending \((a, r)\). Result is \(a\oplus b\).
+    \end{enumerate}
+  \end{example}
+
+  \begin{exercise}
+    Who could cheat if (1) hiding failed? (2) binding failed?
+  \end{exercise}
+
+  \only<article>{%
+    Failure analysis (intuition):
+    \begin{description}
+      \item[If hiding fails] Bob can adapt.
+        After receiving \(c\), Bob learns \(a\) and then chooses \(b\) so that
+        \(a\oplus b\) equals his preferred outcome.
+      \item[If binding fails] Alice can adapt.
+        After receiving \(b\), Alice can open \(c\) as either \((a,r)\) or
+        \((a',r')\) and choose whether the outcome becomes \(0\) or \(1\).
+    \end{description}
+
+    In the Random Oracle Model (ROM), hiding is exactly the same intuition as before: without
+    querying \(\Hash\) on \(\Encode(r,a)\), the commitment \(c\) looks random.
+  }
+
+  \ltnote{%
+    \textbf{Variation pattern}: Contrast
+
+    We contrast two failure modes: \enquote{hiding fails} vs \enquote{binding
+    fails}. Invariant: the same protocol.
+
+    This makes it clear that the two security goals benefit different parties.
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{exercise}[Try first]
+    Alice commits to \((r,m)\) by sending the string
+    \(\Encode(r)\concat\Encode(m)\).
+
+    \begin{itemize}
+      \item What could go wrong if \(\Encode\) is just
+        \enquote{write the bits with no delimiter and no length}?
+      \item Can you find two different pairs \((r,m)\neq(r',m')\) that yield the
+        same concatenation?
+    \end{itemize}
+
+    \only<article>{%
+      Concrete ambiguity example (bitstrings):
+      if you encode by concatenation with no delimiter, then
+      \(r=0\), \(m=01\) and \(r'=00\), \(m'=1\) both map to the same concatenation
+      \(001\).
+
+      In general, without a unique parse, the phrase \enquote{commit to
+      \((r,m)\)} is meaningless: the verifier cannot reliably recover which pair
+      was intended.
+    }
+  \end{exercise}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}[Encoding must be unambiguous]
+    Two common fixes:
+    \begin{description}
+      \item[Length-prefix] Encode as
+        \(\Encode(r,m)=\langle |r|,r,m\rangle\) (store the bit-length of \(r\) first).
+      \item[Structured format] Use a canonical serialization (e.g., CBOR/ASN.1/
+        Protocol Buffers) with domain separation.
+    \end{description}
+
+    In practice, prefer a standard commitment/serialization rather than inventing
+    one.
+  \end{remark}
+\end{frame}
+
+\begin{frame}
+  \begin{remark}[Pitfalls and good practice]
+    \begin{itemize}
+      \item Use fresh randomness \(r\) for every commitment.
+      \item Ensure \(r\) has enough entropy (think: at least 128 bits).
+      \item Use an unambiguous encoding of \((r, m)\) before hashing.
+      \item Avoid ad-hoc constructions in real systems; use standard schemes.
+    \end{itemize}
+  \end{remark}
+
+  \ltnote{%
+    \textbf{Design note}: This stays at the level of \enquote{practical red
+    flags}, not a fully formal treatment.
+
+    For an applied crypto course it is enough that students can recognize when a
+    commitment is obviously unsafe (low entropy, reusing randomness, ambiguous
+    serialization).
+  }
+\end{frame}
+

@@ -3,9 +3,6 @@
 \usepackage[british]{babel}
 \usepackage{booktabs}
 
-\usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
-%\addbibresource{tutorial.bib}
-
 \usepackage[all]{foreign}
 \renewcommand{\foreignfullfont}{}
 \renewcommand{\foreignabbrfont}{}
@@ -15,40 +12,36 @@
 \usepackage[strict]{csquotes}
 \usepackage[single]{acro}
 
-\usepackage{subcaption}
+\usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
+\addbibresource{crypto.bib}
 
 \usepackage[marginparmargin=outer]{didactic}
 
-% Notation, citations, acronyms.
-\usepackage{bibsp}
+\usepackage{subcaption}
 
 \usepackage[noend]{algpseudocode}
 \usepackage{xparse}
 
 \let\email\texttt
 
-%\\usepackage[outputdir=ltxobj]{minted}
 \usepackage{minted}
-\setminted{autogobble}
-
+\setminted{autogobble,fontsize=\footnotesize}
 
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{amsthm}
-\usepackage{thmtools}
-\usepackage[unq]{unique}
-% bibsp already defines \powerset.
+\usepackage{unique}
+\DeclareMathOperator{\powerset}{\mathcal{P}}
 
 \usepackage[binary-units]{siunitx}
 
-% bibsp already loads cleveref.
+\usepackage{bibsp}
 
+% Crypto notation (see writing-crypto)
 \NewAlgorithm{\Encode}{Encode}
 \NewAlgorithm{\Commit}{Commit}
 \NewAlgorithm{\Open}{Open}
-\NewAlgorithm{\KeyGen}{KeyGen}
-\NewAlgorithm{\Sign}{Sign}
-\NewAlgorithm{\Verify}{Vfy}
-\NewAlgorithm{\Hash}{H}
-\NewAlgorithm{\Mac}{Mac}
+\NewFunction{\Hash}{H}
+\NewFunction{\Mac}{Mac}
+%\DeclareMathOperator{\concat}{\Vert}

@@ -16,7 +16,18 @@ ASSIGNMENTS += assignments/implement-aes-kattis.md
 ASSIGNMENTS += assignments/aes-presentation.md
 ASSIGNMENTS += assignments/optional-cryptopals.md
 
+COURSE_DIR ?= $(HOME)/public_html/tilkry
+
+SLIDES += ${COURSE_DIR}/intro-slides.pdf
+SLIDES += ${COURSE_DIR}/ciphers-slides.pdf
+
 include ../module.mk
+
+${COURSE_DIR}/intro-slides.pdf: lecture-intro/slides.pdf
+	${LINK}
+
+${COURSE_DIR}/ciphers-slides.pdf: lecture-ciphers/slides.pdf
+	${LINK}
 
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages

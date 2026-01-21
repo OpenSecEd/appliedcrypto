@@ -1,5 +1,7 @@
 COURSE ?= tilkry26
 
+LINK ?= mkdir -p $(dir $@) && ln -f $< $@ || cp $< $@
+
 STAMPDIR := .pushed.d
 
 # Backwards compat: old push stamps (unused).
@@ -17,6 +19,8 @@ pull-pages:
 pull-assignments:
 
 pull-quizzes:
+
+push-slides: ${SLIDES}
 
 PUSH_STAMPDIR_PAGES := .pushed-pages.d
 PUSH_STAMPDIR_ASSIGNMENTS := .pushed-assignments.d
