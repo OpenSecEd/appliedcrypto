@@ -15,11 +15,12 @@ year to the current year.
 We want to tick off the assignments that the student has already completed.
 
 We'll do this as a shell script using the \texttt{canvaslms} command line tool.
-<<trnsfr-results.sh>>=
+<<[[trnsfr-results.sh]]>>=
 #!/bin/bash
 
 <<constants>>
 <<functions>>
+<<main program>>
 
 # run main if script is executed (not sourced)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
@@ -61,30 +62,110 @@ LAB1	Optional: Side channels (C, B, A)
 
 \section{INL1}
 
-We see that for INL1 we broke up the INL1Quiz from the whole to smaller parts.
-Fortunately, passing the big one means you passed all the small ones.
-So we just need to check the result for INL1Quiz in the previous year and then 
-set all the smaller ones in the current year.
+We see that for INL1 we broke up the quiz from one big assignment to smaller
+parts.
+In [[tilkry24]] and [[tilkry25]] the quiz was one big assignment
+[[INL1Quiz Cryptographic Concepts]].
+In [[tilkry26]] it is split into parts (e.g., [[INL1Quiz Ciphers]],
+[[INL1Quiz Hash functions]]).
+So we take the latest grade for the big quiz in the previous years and apply it
+to all current quiz parts by grading with the regex [[^INL1Quiz]].
 
 To do this, we must list the regexes of the core parts of the names of the 
 assignments to look for.
 <<constants>>=
 INL1_REGEXES=(
-  "^INL1Quiz Cryptographic Concepts",
-  "^INL1Written",
+  "^INL1Quiz Cryptographic Concepts"
+  "^INL1Written"
   "^INL1Oral"
 )
 @
 
 
+\section{LAB1}
+
+Now we can do the same for LAB1.
+We see here that we added prefixes like `Mandatory:' to some of the 
+assignments.
+<<constants>>=
+LAB1_REGEXES=(
+  "Cryptanalysis of Ciphertexts"
+  "AES presentation"
+  "Implement AES"
+  "Design Considerations"
+  "Introduction to ProVerif"
+  "Seminar.*usability"
+  "Seminar.*Impact considerations"
+  "Cryptopals"
+  "Secure multi-party computation"
+  "Side channels"
+)
+@
+
+
+
 \section{A transfer function}
 
-We want a function that takes a list of regexes for assignments.
-It looks for those assignments in all previous years (up until 2025) and 
-transfers the latest result to the current year.
+The core task is to take a grade from a previous course instance and apply it to
+an assignment in the current instance.
+
+Since Canvas does not have a built-in grade transfer command, we implement the
+logic explicitly.
+The key is to be very precise about (1) which assignment we mean, (2) which
+attempt is the one we trust, and (3) which students we are allowed to touch.
+
+\subsection{The data flow}
+
+The transfer is easiest to understand as a small data pipeline:
+
+\begin{description}
+\item[Query] fetch submissions from previous courses for one assignment regex.
+\item[Reduce] keep only the latest grade per student.
+\item[Filter] keep only students enrolled in the current course.
+\item[Act] set that grade on the matching assignment(s) in the current course.
+\end{description}
+
+This is why we implement three small helper functions.
+They each correspond to one stage of the pipeline, and the top-level
+[[transfer_results]] just connects them.
+
+\subsection{Design choices}
+
+A few choices in the implementation are worth explaining because they are not
+obvious from the resulting shell pipeline alone.
+
+\begin{description}
+\item[Assignment matching with two filters]
+  We use both [[-A]] (assignment group) and [[-a]] (assignment name regex).
+  The group filter makes the name regex safer: it is easy to accidentally match
+  a similarly named quiz in another module.
+
+\item[Latest submission wins]
+  We can see multiple submissions for the same assignment across course
+  instances. To keep the rule simple and predictable, we pick the latest
+  timestamp from the previous years and transfer that grade.
+
+\item[Lexicographic timestamp comparison]
+  In [[latest_grades]] we compare timestamps as strings in [[awk]].
+  Canvas timestamps are in an ISO-like format (e.g., [[2024-03-12 15:56]]), so
+  lexicographic order coincides with chronological order.
+
+\item[Carriage return cleanup]
+  The timestamp field may contain a trailing [[\r]] (carriage return).
+  We remove it with [[tr -d '\r']] before feeding the data to [[awk]]; otherwise
+  comparisons and later parsing can behave inconsistently.
+
+\item[Only grade currently enrolled users]
+  Canvas may return submissions for users who are no longer enrolled in the
+  current course. We therefore precompute the set of enrolled emails and only
+  apply grades for those users.
+\end{description}
+
+\subsection{What the data looks like}
+
 The results will look like this:
 \begin{verbatim}
-$ canvaslms submissions -c tilkry2[4-5] -l \
+$ canvaslms submissions list -c tilkry2[4-5] -l \
   -A ^INL1 -a "^INL1Quiz Cryptographic Concepts" \
     | cut -f 3-4,6 \
     | sort -u \
@@ -115,38 +196,183 @@ once.
 It's important to note here that we additionally use [[-A ^INL1]] to make sure 
 we match only assignments from INL1, in case there are other assignments with 
 similar names.
-For instance, we might match a reading assignment that matches.
+Without [[-A ^INL1]], a regex like [[^INL1Quiz]] could accidentally match other
+quiz-like assignments that happen to share a prefix.
 
 <<functions>>=
+# Transfer grades for one assignment pattern.
 transfer_results() {
-  # ...
+  local CURRENT_COURSE="$1"; shift
+  local PREVIOUS_COURSES="$1"; shift
+  local ASSIGNMENT_GROUP_REGEX="$1"; shift
+  local SOURCE_ASSIGNMENT_REGEX="$1"; shift
+  local TARGET_ASSIGNMENT_REGEX="$1"; shift
+
+  local latest_results
+  latest_results="$(latest_grades "$PREVIOUS_COURSES" \
+    "$ASSIGNMENT_GROUP_REGEX" "$SOURCE_ASSIGNMENT_REGEX")"
+
+  if [[ -z "$latest_results" ]]; then
+    echo "No previous results found for $ASSIGNMENT_GROUP_REGEX / $SOURCE_ASSIGNMENT_REGEX" >&2
+    return 0
+  fi
+
+  local current_users
+  current_users="$(enrolled_users "$CURRENT_COURSE")"
+
+  apply_grades "$CURRENT_COURSE" "$ASSIGNMENT_GROUP_REGEX" \
+    "$TARGET_ASSIGNMENT_REGEX" "$current_users" "$latest_results"
+}
+@
+
+\subsection{Finding the latest grades}
+
+To transfer results we need a single grade per student.
+However, Canvas can show multiple entries across years (and potentially multiple
+attempts).
+We therefore compute a mapping from email to grade by selecting the newest
+timestamp.
+
+We explicitly ignore missing results ([[N/A]]/empty) and failing grades ([[F]]).
+The intent is to only carry forward achieved results; a lack of result in a
+previous year should not turn into an [[F]] in the current year.
+
+We use the list output ([[canvaslms submissions list -l]]) because it contains the
+submission timestamp, which we need for the selection rule.
+
+<<functions>>=
+latest_grades() {
+  local PREVIOUS_COURSES="$1"; shift
+  local ASSIGNMENT_GROUP_REGEX="$1"; shift
+  local SOURCE_ASSIGNMENT_REGEX="$1"; shift
+
+  canvaslms submissions list -c "$PREVIOUS_COURSES" -l \
+    -A "$ASSIGNMENT_GROUP_REGEX" -a "$SOURCE_ASSIGNMENT_REGEX" \
+    | cut -f 3-4,6 \
+    | tr -d '\r' \
+     | awk -F'\t' '
+      $2 != "" && $2 != "N/A" && $2 != "F" {
+        # Compare timestamps lexicographically.
+        if (!($1 in ts) || $3 > ts[$1]) {
+          ts[$1] = $3
+          grd[$1] = $2
+        }
+      }
+      END {
+        for (u in ts) {
+          printf "%s\t%s\n", u, grd[u]
+        }
+      }
+    '
+}
+@
+
+\subsection{Restricting to current enrollments}
+
+The submissions listing from the previous years can include students that are not
+in the current course instance.
+If we try to grade them anyway, Canvas may reject it (or we might accidentally
+write to the wrong set of users).
+So we first compute the set of current student login IDs and use it as a
+filter.
+We get these login IDs from the second column of [[canvaslms users -s]] output.
+
+<<functions>>=
+enrolled_users() {
+  local CURRENT_COURSE="$1"; shift
+
+  # Use the users command to list current students by login ID.
+  canvaslms users -c "$CURRENT_COURSE" -s \
+    | cut -f 2 \
+    | tr -d '\r'
+}
+@
+
+\subsection{Applying the grades}
+
+Once we have the latest grade per student and a list of enrolled users, we can
+apply grades in the current course.
+We keep the grading call in one place and support a dry-run mode to make it
+easy to debug without writing anything.
+
+<<functions>>=
+apply_grades() {
+  local CURRENT_COURSE="$1"; shift
+  local ASSIGNMENT_GROUP_REGEX="$1"; shift
+  local TARGET_ASSIGNMENT_REGEX="$1"; shift
+  local current_users="$1"; shift
+  local latest_results="$1"; shift
+
+  local user grade
+  while IFS=$'\t' read -r user grade; do
+    [[ -z "$user" ]] && continue
+    grep -Fxq "$user" <<<"$current_users" || continue
+
+    if [[ "${VERBOSE:-0}" == 1 ]]; then
+      echo "grading: course=$CURRENT_COURSE group=$ASSIGNMENT_GROUP_REGEX assignment=$TARGET_ASSIGNMENT_REGEX user=$user grade=$grade" >&2
+    fi
+
+    if [[ "${DRY_RUN:-0}" == 1 ]]; then
+      continue
+    fi
+
+    if [[ "${VERBOSE:-0}" == 1 ]]; then
+      canvaslms submissions grade -c "$CURRENT_COURSE" \
+        -A "$ASSIGNMENT_GROUP_REGEX" -a "$TARGET_ASSIGNMENT_REGEX" \
+        -g "$grade" -u "$user" -m "Result from previous year."
+    else
+      canvaslms submissions grade -c "$CURRENT_COURSE" \
+        -A "$ASSIGNMENT_GROUP_REGEX" -a "$TARGET_ASSIGNMENT_REGEX" \
+        -g "$grade" -u "$user" -m "Result from previous year." >/dev/null
+    fi
+  done <<<"$latest_results"
 }
 @
 
 
-\section{LAB1}
-
-Now we can do the same for LAB1.
-We see here that we added prefixes like `Mandatory:' to some of the 
-assignments.
-<<constants>>=
-LAB1_REGEXES=(
-  "Cryptanalysis of Ciphertexts",
-  "AES presentation",
-  "Implement AES (Kattis Problem)",
-  "Design Considerations",
-  "Introduction to ProVerif",
-  "Seminar.*usability",
-  "Seminar.*Impact considerations",
-  "Cryptopals",
-  "Secure multi-party computation",
-  "Side channels"
-)
-@
-
-
-
 \section{The main program}
 
-Now we simply write [[main]] that calls the functions above to transfer all the 
-results.
+The [[main]] function is part of the [[<<main program>>]] chunk in
+[[<<trnsfr-results.sh>>]].
+It calls [[transfer_results]] to copy results from [[tilkry2[4-5]]] to the
+current course.
+
+The script assumes the newest submission timestamp in 2024/2025 is the one we
+want to carry forward, regardless of grade format (P/F, numeric, etc.).
+
+<<main program>>=
+main() {
+  local CURRENT_COURSE="tilkry26"
+  DRY_RUN=0
+  VERBOSE=0
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) DRY_RUN=1; shift ;;
+      -v|--verbose) VERBOSE=1; shift ;;
+      *) CURRENT_COURSE="$1"; shift ;;
+    esac
+  done
+
+  export DRY_RUN VERBOSE
+  local PREVIOUS_COURSES="tilkry2[4-5]"
+
+  # INL1: in 24/25 the quiz was one big assignment; in 26 it is split into parts.
+  # Any result on the big quiz should be copied to all quiz parts.
+  transfer_results "$CURRENT_COURSE" "$PREVIOUS_COURSES" "^INL1" \
+    "^INL1Quiz Cryptographic Concepts" "^INL1Quiz"
+
+  # Written/oral parts existed as separate assignments already.
+  transfer_results "$CURRENT_COURSE" "$PREVIOUS_COURSES" "^INL1" \
+    "^INL1Written" "^INL1Written"
+  transfer_results "$CURRENT_COURSE" "$PREVIOUS_COURSES" "^INL1" \
+    "^INL1Oral" "^INL1Oral"
+
+  # LAB1: transfer latest grade for each matching assignment.
+  local r
+  for r in "${LAB1_REGEXES[@]}"; do
+    transfer_results "$CURRENT_COURSE" "$PREVIOUS_COURSES" "^LAB1" \
+      "$r" "$r"
+  done
+}
+@
