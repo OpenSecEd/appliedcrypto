@@ -1,6 +1,6 @@
 COURSE ?= tilkry26
 
-LINK ?= mkdir -p $(dir $@) && ln -f $< $@ || cp $< $@
+LINK ?= mkdir -p $(dir $@) && ln -f $< $@ || cp $< $@ || echo "Failed to publish"
 
 STAMPDIR := .pushed.d
 
