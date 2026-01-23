@@ -3,9 +3,9 @@ MODULE_RE ?= Week 3
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
-PAGES += lecture-zkp-protocols.md
-PAGES += lecture-mpc-protocols.md
-PAGES += lecture-non-cryptographic-attacks.md
+PAGES += lecture-zkp-protocols.html
+#PAGES += lecture-mpc-protocols.html
+#PAGES += lecture-non-cryptographic-attacks.html
 
 ASSIGNMENTS += assignments/prep-usability-seminar.md
 ASSIGNMENTS += assignments/optional-secure-mpc.md
@@ -19,12 +19,12 @@ include ../module.mk
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
 pull-pages:
-	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "ZKP protocols" > lecture-zkp-protocols.md \
-		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "ZKP and MPC protocols" > lecture-zkp-protocols.md
-	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "MPC protocols" > lecture-mpc-protocols.md \
-		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "ZKP and MPC protocols" > lecture-mpc-protocols.md
-	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" -p "Non-cryptographic attacks" > lecture-non-cryptographic-attacks.md \
-		|| canvaslms pages view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Non-cryptographic attacks" > lecture-non-cryptographic-attacks.md
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "ZKP protocols" > lecture-zkp-protocols.html \
+		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "ZKP and MPC protocols" > lecture-zkp-protocols.html
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "MPC protocols" > lecture-mpc-protocols.html \
+		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "ZKP and MPC protocols" > lecture-mpc-protocols.html
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Non-cryptographic attacks" > lecture-non-cryptographic-attacks.md \
+		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Non-cryptographic attacks" > lecture-non-cryptographic-attacks.html
 
 .PHONY: pull-assignments
 pull-assignments:
