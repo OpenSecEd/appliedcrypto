@@ -13,9 +13,6 @@
 [submodule "beamer-didactic"]
 	path = beamer-didactic
 	url = https://github.com/dbosk/beamer-didactic.git
-[submodule "applied-hash/modules/auth"]
-	path = modules/week-2/lecture-applied-hash/.modules/auth
-	url = https://github.com/OpenSecEd/auth.git
 [submodule "protocols"]
 	path = protocols
 	url = https://github.com/OpenSecEd/protocols.git
