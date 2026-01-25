@@ -48,6 +48,8 @@
   \end{example}
 \end{frame}
 
+
+
 \begin{frame}
   \begin{solution}[Requirements]
     \begin{itemize}
@@ -57,7 +59,7 @@
   \end{solution}
 \end{frame}
 
-\mode<all>{\includepdf[pages=49-54]{./dog-pubkey-tilkry24.pdf}}
+%\mode<all>{\includepdf[pages=49-54]{./dog-pubkey-tilkry24.pdf}}
 
 \begin{frame}
   \begin{definition}[\Acl{DLP}, \acs{DLP}]
@@ -174,16 +176,45 @@
 \end{frame}
 
 \begin{frame}
-  \begin{remark}
+  \begin{definition}[Diffie-Hellman key-exchange]
+    \begin{itemize}
+      \color{green!50!red}
+      \item Alice has \(x\) and \(g, g^y\).
+
+      \color{blue}
+      \item Bob has \(g, g^x\) and \(y\).
+
+      \color{black}
+      \item They both compute \(g^{xy} = {\color{green!50!red} (g^y)^x} 
+          = {\color{blue} (g^x)^y}\).
+
+      \color{red}
+      \item Eve has \(g, g^x, g^y\).
+      \item By \ac{DHP} she cannot compute \(g^{xy}\).
+    \end{itemize}
+  \end{definition}
+
+  \begin{onlyenv}<1>
+  \begin{exercise}
+    \begin{itemize}
+      \item This is not secure as it is.
+      \item Why?
+    \end{itemize}
+  \end{exercise}
+  \end{onlyenv}
+
+  \begin{onlyenv}<2>
+  \begin{remark}[Man in the middle]
     \begin{itemize}
       \item This is not secure as it is.
       \item \(g^x, g^y\) are \emph{not authenticated}!
       \item Alice can't tell the difference between Bob and Eve!
     \end{itemize}
   \end{remark}
+  \end{onlyenv}
 \end{frame}
 
-\subsection{Encryption and decryption}
+\section{Encryption and decryption}
 
 \begin{frame}
   \begin{idea}
@@ -253,6 +284,77 @@
   \end{definition}
 \end{frame}
 
+
+\begin{frame}
+  \footnotesize
+  \ltnote{%
+    Variation pattern: contrast.
+    We keep the game template invariant and vary only oracle access (CPA/CCA/CCA2)
+    so students discern what extra power the adversary gets.
+  }
+  \begin{definition}[IND-CPA game]
+    We define \ac{IND-CPA} security via the following game.
+    \begin{description}
+      \item[Setup] The challenger runs \(\Gen\), gives \(\pk\) to the adversary.
+      \item[Queries] The adversary may query an encryption oracle 
+        \(\Enc[_{\pk}][\cdot]\).
+      \item[Challenge] The adversary submits equal-length \(m_0, m_1\).
+        The challenger samples \(b \rgets \{0,1\}\) and returns
+        \(c^\star \gets \Enc[_{\pk}][m_b]\).
+      \item[Guess] The adversary outputs \(b'\).
+        It wins if \(b' = b\).
+    \end{description}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{definition}[IND-CCA game (non-adaptive)]
+    We define \ac{IND-CCA} security via the following game.
+    \begin{description}
+      \item[Setup] The challenger runs \(\Gen\), gives \(\pk\) to the adversary.
+      \item[Queries] The adversary may query a decryption oracle 
+        \(\Dec[_{\sk}][\cdot]\)
+        before it chooses \(m_0, m_1\).
+      \item[Challenge] The adversary submits equal-length \(m_0, m_1\).
+        The challenger samples \(b \rgets \{0,1\}\) and returns
+        \(c^\star \gets \Enc[_{\pk}][m_b]\).
+      \item[Guess] The adversary outputs \(b'\).
+        It wins if \(b' = b\).
+    \end{description}
+  \end{definition}
+
+  \ltnote{%
+    Critical aspect: access to \(\Dec\) can trivially break many PKE schemes.
+    IND-CCA differs from IND-CPA only by adding the decryption oracle
+    (here, only before the challenge).
+  }
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{definition}[IND-CCA2 game (adaptive)]
+    We define \ac{IND-CCA2} security via the following game.
+    \begin{description}
+      \item[Setup] The challenger runs \(\Gen\), gives \(\pk\) to the adversary.
+      \item[Queries] The adversary may query a decryption oracle 
+        \(\Dec[_{\sk}][\cdot]\)
+        before and after receiving \(c^\star\).
+      \item[Challenge] The adversary submits equal-length \(m_0, m_1\).
+        The challenger samples \(b \rgets \{0,1\}\) and returns
+        \(c^\star \gets \Enc[_{\pk}][m_b]\).
+      \item[Restriction] The adversary may not query \(\Dec[_{\sk}][c^\star]\).
+      \item[Guess] The adversary outputs \(b'\).
+        It wins if \(b' = b\).
+    \end{description}
+  \end{definition}
+
+  \ltnote{%
+    The single additional rule (\enquote{do not decrypt the challenge ciphertext})
+    prevents a trivial win while still capturing powerful adaptive attacks.
+  }
+\end{frame}
+
 \begin{frame}
   \begin{definition}[ElGamal Encryption Scheme\footfullcite{ElGamal}]
     \footnotesize
@@ -270,15 +372,44 @@
     \end{itemize}
   \end{definition}
 
+  \begin{onlyenv}<1>
+  \begin{exercise}
+    \begin{itemize}
+      \item Why is ElGamal semantically secure under the \ac{DDH} assumption?
+    \end{itemize}
+  \end{exercise}
+  \end{onlyenv}
+
+  \begin{onlyenv}<2>
   \begin{remark}[Semantic Security of ElGamal]
     \begin{itemize}
-      \item The ElGamal encryption scheme offers semantic security under the 
-        assumption that the \ac{DDH} problem is hard.
+      \item Because of that random \(y\)!
+      \item And that \(y\) is \emph{different for each encryption}.
     \end{itemize}
   \end{remark}
+  \end{onlyenv}
 \end{frame}
 
-\subsection{Digital signatures}
+\begin{frame}
+  \begin{exercise}
+    \begin{itemize}
+      \item Is AES semantically secure?
+    \end{itemize}
+  \end{exercise}
+
+  \begin{onlyenv}<2>
+  \begin{remark}[Semantic Security of AES]
+    \begin{itemize}
+      \item Yes, with a proper block mode! Anything but ECB.
+      \item The IV provides semantic security.
+      \item \emph{New random} IV for \emph{every} encryption.
+    \end{itemize}
+  \end{remark}
+  \end{onlyenv}
+\end{frame}
+
+
+\section{Digital signatures}
 
 \begin{frame}
   \begin{idea}
@@ -352,17 +483,16 @@
 %  \begin{block}{ElGamal encryption}
 %    \begin{itemize}
 %      \item \(\sk = x\), \(\pk = (g, g^x)\).
-%      \item \((u,v) = \Enc[_\pk][y, m] = (g^y, m (g^x)^y)\)
-%      \item \(\Dec[_\sk][u, v] = u^{-x} v = m\)
+%      \item \((u,v) = \Enc[_{\pk}][y, m] = (g^y, m (g^x)^y)\)
+%      \item \(\Dec[_{\sk}][u, v] = u^{-x} v = m\)
 %    \end{itemize}
 %  \end{block}
 %
 %  \begin{block}{ElGamal signatures}
 %    \begin{itemize}
 %      \item \(\sk = x\), \(\pk = (g, g^x)\).
-%      \item \((r, s) = \Sign[_\sk][y, m] = (g^y, (h(m) - xg^y)y^{-1})\)
-%      \item \(\Vrfy[_\pk][r, s, m] = g^{h(m)} \equiv (g^x)^r 
-%          r^s\)
+%      \item \((r, s) = \Sign[_{\sk}][y, m] = (g^y, (h(m) - xg^y)y^{-1})\)
+%      \item \(\Vrfy[_{\pk}][r, s, m] = g^{h(m)} \equiv (g^x)^r r^s\)
 %    \end{itemize}
 %  \end{block}
 %\end{frame}
@@ -377,7 +507,7 @@
   \end{remark}
 \end{frame}
 
-\subsection{Homomorphic properties}
+\section{Homomorphic properties}
 
 \begin{frame}
   \begin{definition}[Homomorphism]
@@ -511,13 +641,237 @@
 \end{frame}
 
 
-\section{Public-key infrasturctures, PKIs}
+\section{Key management}
+
+\subsection{Symmetric key distribution}
+
+\begin{frame}
+  \begin{itemize}
+    \item Deliver a key \(k\) from \(A\) to \(B\).
+      By themselves or third party.
+
+    \item If \(A\) and \(B\) share a key \(k\), generate a key \(k^\prime\) and 
+      transmit it using \(k\):
+      \(A\to B\colon E_k(k^\prime)\).
+
+    \item Secure connection to third party \(C\), \(C\) delivers key to \(A\) 
+      and \(B\).
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{description}
+    \item[Session Key] Temporary key used between \(A\) and \(B\).
+
+    \item[Permanent Key] Key used to distribute session keys.
+
+    \item[Key Distribution Centre] The central entity with which permanent keys 
+      are shared and by whom session keys are generated.
+
+  \end{description}
+\end{frame}
+
+
+%\begin{frame}
+%  \footnotesize
+%  \begin{example}[Kerberos (symmetric key distribution)]
+%    \centering
+%    \begin{tikzpicture}[x=1cm,y=1cm,>=stealth,thick]
+%      \node (C) at (0,0) {Client};
+%      \node (K) at (5,0) {KDC (AS+TGS)};
+%      \node (S) at (10,0) {Server};
+%
+%      \draw (C) ++(0,-0.2) -- ++(0,-4.4);
+%      \draw (K) ++(0,-0.2) -- ++(0,-4.4);
+%      \draw (S) ++(0,-0.2) -- ++(0,-4.4);
+%
+%      \draw[->] (0,-0.8) -- node[above,align=center]{1.~AS-REQ} (5,-0.8);
+%      \draw[<-] (0,-1.3) -- node[below,align=center]{2.~AS-REP: TGT + $K_{C,TGS}$} (5,-1.3);
+%
+%      \draw[->] (0,-2.1) -- node[above,align=center]{3.~TGS-REQ (TGT, $S$)} (5,-2.1);
+%      \draw[<-] (0,-2.6) -- node[below,align=center]{4.~TGS-REP: ticket$_S$ + $K_{C,S}$} (5,-2.6);
+%
+%      \draw[->] (0,-3.4) -- node[above,align=center]{5.~AP-REQ: ticket$_S$ + authenticator} (10,-3.4);
+%      \draw[<-] (0,-3.9) -- node[below,align=center]{6.~AP-REP (optional)} (10,-3.9);
+%    \end{tikzpicture}
+%
+%    \vspace{0.5em}
+%
+%    Kerberos relies on a trusted KDC and symmetric long-term keys; PKI replaces this
+%    central online key-distribution step with certificates.
+%  \end{example}
+%\end{frame}
+%
+\begin{frame}
+  \footnotesize
+  \begin{example}[Kerberos IV (single KDC): Alice gets a ticket for Bob]
+    Long-term keys: Alice shares \(\kA\) with the KDC; Bob shares \(\kB\) with the KDC.
+
+    \vspace{0.3em}
+
+    To bind secrecy and integrity, we use encrypt-then-\ac{MAC} (\ac{EtM}):
+    \[
+      c := \Enc[_{K}][m]
+      \qquad\text{and}\qquad
+      \tau := \Mac[_{K}][c].
+    \]
+
+    \vspace{0.3em}
+
+    \(A\to\text{KDC}:\ A,\ B,\ n_A\). The KDC samples a fresh session key \(\kAB\) and
+    creates a ticket for Bob:
+    \[
+      \text{ticket}_B := \Enc[_{\kB}][\,A,\ B,\ \kAB,\ \text{lifetime},\ \text{flags}]
+      \qquad\text{and}\qquad
+      \tau_B := \Mac[_{\kB}][\text{ticket}_B].
+    \]
+    The KDC replies to Alice under \(\kA\):
+    \[
+      c_A := \Enc[_{\kA}][\,\kAB,\ \text{lifetime},\ \text{ticket}_B,\ \tau_B,\ n_A]
+      \qquad\text{and}\qquad
+      \tau_A := \Mac[_{\kA}][c_A].
+    \]
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{example}[Kerberos IV (single KDC): Alice authenticates to Bob]
+    Alice sends Bob the ticket plus an authenticator proving freshness:
+    \[
+      \text{auth} := \Enc[_{\kAB}][\,A,\ t_A,\ \text{seq}]
+      \qquad\text{and}\qquad
+      \sigma := \Mac[_{\kAB}][\text{auth}].
+    \]
+    \(A\to B:\ \text{ticket}_B,\ \tau_B,\ \text{auth},\ \sigma\).
+
+    \vspace{0.4em}
+
+    Bob verifies the protocol by checking that the crypto pieces bind together:
+    \begin{itemize}
+      \item Verify \(\tau_B\) with \(\kB\), then decrypt \(\text{ticket}_B\) with \(\kB\)
+        to recover \(\kAB\), the claimed client \(A\), the intended server \(B\), and
+        the ticket lifetime.
+      \item Check the ticket is meant for Bob and still valid (lifetime/flags).
+      \item Verify \(\sigma\) with \(\kAB\), decrypt \(\text{auth}\), and check:
+        \(A\) matches the ticket and \(t_A\) is within a small clock-skew window
+        (and not previously seen).
+    \end{itemize}
+
+    Optional mutual authentication: \(B\to A:\ \Enc[_{\kAB}][t_A+1]\) (plus a \ac{MAC}).
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{example}[Kerberos IV (single KDC): simplified dialogue]
+    \centering
+    \begin{tikzpicture}[x=1cm,y=1cm,>=stealth,thick]
+      \node (A) at (0,0) {Alice};
+      \node (K) at (5,0) {KDC};
+      \node (B) at (10,0) {Bob};
+
+      \draw (A) ++(0,-0.2) -- ++(0,-3.2);
+      \draw (K) ++(0,-0.2) -- ++(0,-3.2);
+      \draw (B) ++(0,-0.2) -- ++(0,-3.2);
+
+      \draw[->] (0,-0.8) -- node[above,align=center]{1.~$A, B, n_A$} (5,-0.8);
+      \draw[<-] (0,-1.5) -- node[below,align=center]{2.~$c_A, \tau_A$\\$c_A=\Enc[_{\kA}][\kAB, \text{ticket}_B, n_A]$\\$\text{ticket}_B=\Enc[_{\kB}][A,B,\kAB,\text{lifetime}]$\\$\tau_A=\Mac[_{\kA}][c_A], \tau_B=\Mac[_{\kB}][\text{ticket}_B]$} (5,-1.5);
+      \draw[->] (0,-2.4) -- node[above,align=center]{3.~$\text{ticket}_B, \tau_B, \text{auth}, \sigma$\\$\text{auth}=\Enc[_{\kAB}][A,t_A,\text{seq}], \sigma=\Mac[_{\kAB}][\text{auth}]$} (10,-2.4);
+    \end{tikzpicture}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{example}[Kerberos keys (derived, not reused)]
+    In the slides we wrote \(\Enc[_{K}][\cdot]\) and \(\Mac[_{K}][\cdot]\) using the
+    same key \(K\) to highlight how fields are bound together.
+
+    \vspace{0.4em}
+
+    In real Kerberos, the encryption key and the integrity/checksum key are
+    typically derived from a shared base key using a \textsf{KDF} (and a
+    \emph{key-usage} label to separate contexts):
+    \[
+      K^{\text{enc}} := \KDF[_{K}][\text{enc} \concat \text{usage}]
+      \qquad\text{and}\qquad
+      K^{\text{mac}} := \KDF[_{K}][\text{mac} \concat \text{usage}].
+    \]
+    Then the protocol uses \(\Enc[_{K^{\text{enc}}}][\cdot]\) and
+    \(\Mac[_{K^{\text{mac}}}][\cdot]\), but the binding idea stays the same.
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{example}[Kerberos V (generalization)]
+    Same bindings as Kerberos IV, but the KDC is split into an authentication
+    server (AS) and a ticket-granting server (TGS):
+    \begin{itemize}
+      \item First obtain a ticket-granting ticket (TGT) and a key \(K_{A,\text{TGS}}\)
+        protected under the client--AS long-term key.
+      \item Then use the TGT to obtain a service ticket \(\text{ticket}_B\) and the
+        session key \(\kAB\) protected for Bob.
+      \item The client-to-server step stays the same: send \(\text{ticket}_B\) plus an
+        authenticator containing a timestamp, protected under \(\kAB\).
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\subsection{Public-key infrastructures}
 
 \mode<all>{\includepdf[pages=96-99]{./dog-pubkey-tilkry24.pdf}}
+
+\begin{frame}
+  \begin{example}[Certificate validation is more than signatures]
+    When Bob receives Alice's certificate, he must do \emph{all} of:
+    \begin{itemize}
+      \item Verify the signature chain up to a trusted root (\ac{PKI}).
+      \item Check the certificate validity interval (not-before / not-after).
+      \item Check the certificate is \emph{not revoked}.
+    \end{itemize}
+    Signature verification alone only says \enquote{this CA once issued this cert},
+    not \enquote{it is still acceptable to use today}.
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{example}[Revocation lists (CRLs)]
+    A certificate revocation list (\textsf{CRL}) is a CA-signed list of certificate
+    identifiers (typically serial numbers) that must be rejected.
+
+    \vspace{0.4em}
+
+    Validation with a \textsf{CRL}:
+    \begin{itemize}
+      \item Fetch the issuer's current \textsf{CRL} (via the CRL distribution point).
+      \item Verify the \textsf{CRL} signature using the issuer's public key.
+      \item Check the \textsf{CRL} is fresh enough (thisUpdate/nextUpdate).
+      \item Reject the certificate if its serial number appears in the \textsf{CRL}.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \footnotesize
+  \begin{example}[Online revocation checks (OCSP)]
+    Instead of downloading full \textsf{CRLs}, a client can query an online status
+    service (\textsf{OCSP}):
+    \begin{itemize}
+      \item Client asks: \enquote{Is cert serial \#X revoked?}
+      \item Responder returns a signed status: \enquote{good / revoked / unknown}.
+      \item Client checks responder signature and freshness.
+    \end{itemize}
+    This makes revocation a required step \emph{before} accepting a certificate for
+    authentication or key establishment.
+  \end{example}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[allowframebreaks]
   \printbibliography
 \end{frame}
-

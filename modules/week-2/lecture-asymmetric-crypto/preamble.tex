@@ -21,8 +21,16 @@
 \usepackage{bibsp}
 \NewVariable{\sk}{sk}
 \NewVariable{\pk}{pk}
+% Kerberos-style symmetric keys used in examples
+\NewVariable{\kA}{K_A}
+\NewVariable{\kB}{K_B}
+\NewVariable{\kAB}{K_{A,B}}
+\NewAlgorithm{\Gen}{Gen}
 \NewAlgorithm{\Enc}{Enc}
 \NewAlgorithm{\Dec}{Dec}
+\NewAlgorithm{\Mac}{Mac}
+\NewAlgorithm{\Hash}{H}
+\NewAlgorithm{\KDF}{KDF}
 \NewAlgorithm{\Sign}{Sign}
 \NewAlgorithm{\Vrfy}{Vrfy}
 
