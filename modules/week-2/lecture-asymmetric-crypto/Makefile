@@ -9,7 +9,7 @@ DEPENDS+=	bibsp.sty beamer-didactic.sty
 pub-key-slides.pdf: pub-key-slides.tex ${SRC} ${FIGURES}
 pub-key-slides.pdf: ${DEPENDS}
 
-beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
+beamer-didactic.sty: didactic.sty
 	${LN} $< $@
 
 ../beamer-didactic/beamer-didactic.sty:
@@ -44,8 +44,10 @@ distclean:
 	${RM} crypto.bib bibsp.sty
 
 
-INCLUDE_MAKEFILES=../makefiles
+INCLUDE_MAKEFILES=../../../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
 include ${INCLUDE_MAKEFILES}/doc.mk
-INCLUDE_BIBSP=../bibsp
+INCLUDE_BIBSP=../../../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
+INCLUDE_DIDACTIC=../../../beamer-didactic
+include ${INCLUDE_DIDACTIC}/didactic.mk
