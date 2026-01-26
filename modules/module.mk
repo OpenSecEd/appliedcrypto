@@ -1,6 +1,6 @@
 COURSE ?= tilkry26
 
-LINK ?= mkdir -p $(dir $@) && ln -f $< $@ || cp $< $@
+LINK ?= mkdir -p $(dir $@) && ln -f $< $@ || cp $< $@ || echo "Failed to publish"
 
 STAMPDIR := .pushed.d
 
@@ -41,7 +41,7 @@ push-pages: .pushed-pages
 
 $(PUSH_STAMPDIR_PAGES)/%: %
 	@mkdir -p $(dir $@)
-	canvaslms pages edit -c "${COURSE}" -f "$<"
+	canvaslms pages edit -c "${COURSE}" -f "$<" --create
 	touch $@
 endif
 

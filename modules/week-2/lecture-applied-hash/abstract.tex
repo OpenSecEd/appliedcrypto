@@ -1,0 +1,26 @@
+\emph{Summary:}
+This module introduces applied uses of cryptographic hash functions and the
+security properties they rely on. We start with fingerprinting and
+content-addressing in real systems (e.g., BitTorrent and Git), then study
+hash-based commitment schemes and the trade-off between hiding and binding.
+We close with a tutorial where students design and critique small protocols
+(e.g., secure guessing games, message chaining, and selective disclosure with
+Merkle tree hashing).
+
+\emph{Intended learning outcomes:}
+\begin{itemize}
+  \item Explain preimage resistance, second-preimage resistance, and collision
+    resistance, and identify which property is needed in a given application.
+  \item Describe how hashing supports fingerprinting and content addressing, and
+    reason about what can go wrong if collisions or ambiguity are possible.
+  \item Construct and analyze a simple hash-based commitment
+    (hash of an unambiguous encoding of message and randomness), including the
+    roles of randomness and a well-defined encoding.
+  \item Design and evaluate protocol sketches that use chaining and tree hashing
+    to bind statements to context and enable selective revelation.
+\end{itemize}
+
+\emph{Prerequisites:}
+Comfort with basic discrete mathematics (bit strings, probability at the level of
+guessing/brute force), and familiarity with basic programming and security
+thinking (adversaries, attacks, and informal reduction-style arguments).
