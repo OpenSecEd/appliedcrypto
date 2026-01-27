@@ -4,16 +4,10 @@ all: zkp-smc-slides.pdf
 SRC+=		preamble.tex contents.tex
 SRC+=		abstract.tex bibliography.bib
 
-DEPENDS+=	bibsp.sty beamer-didactic.sty
+DEPENDS+=	bibsp.sty didactic.sty
 
 zkp-smc-slides.pdf: zkp-smc-slides.tex ${SRC} ${FIGURES}
 zkp-smc-slides.pdf: ${DEPENDS}
-
-beamer-didactic.sty: ../beamer-didactic/beamer-didactic.sty
-	${LN} $< $@
-
-../beamer-didactic/beamer-didactic.sty:
-	${MAKE} -C $(dir $@) $(notdir $@)
 
 bibliography.bib: bibliography.bib(crypto.bib mpc.bib)
 bibliography.bib(crypto.bib): crypto.bib
@@ -45,8 +39,10 @@ distclean:
 	${RM} crypto.bib mpc.bib bibsp.sty
 
 
-INCLUDE_MAKEFILES=../makefiles
+INCLUDE_MAKEFILES=../../../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
 include ${INCLUDE_MAKEFILES}/doc.mk
-INCLUDE_BIBSP=../bibsp
+INCLUDE_BIBSP=../../../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
+INCLUDE_DIDACTIC=../../../beamer-didactic
+include ${INCLUDE_DIDACTIC}/didactic.mk
