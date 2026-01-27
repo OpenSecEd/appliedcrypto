@@ -10,8 +10,9 @@
 % - Talk about 30s to 2min per frame. So there should be between about
 %   15 and 30 frames, all told.
 
+\mode<all>{\includepdf[pages=1]{./tilkry22_lec06_zkp.pdf}}
 
-\section{More counter-intuitive things}
+\section{Some counter-intuitive things}
 
 \subsection{Secure multi-party computation}
 
@@ -196,6 +197,13 @@
 
   \pause{}
 
+  \begin{onlyenv}<1>
+    \begin{exercise}
+      Is this secure?
+    \end{exercise}
+  \end{onlyenv}
+
+  \begin{onlyenv}<2>
   \begin{alertblock}{Gaaahh!}
     \begin{itemize}
       \item Now Eve can show this message (chosen by Eve) with Alice's 
@@ -204,6 +212,7 @@
           Eve}?
     \end{itemize}
   \end{alertblock}
+  \end{onlyenv}
 \end{frame}
 
 \begin{frame}
@@ -281,6 +290,40 @@
   \end{block}
 \end{frame}
 
+\begin{frame}
+  \begin{example}
+    \begin{itemize}
+      \item Now we can prove we know the private key corresponding to a public 
+        ElGamal key.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \begin{example}[Applications of zero-knowledge proofs of knowledge]
+    \begin{itemize}
+      \item Authentication without revealing secret information.
+
+        \pause{}
+
+      \item Proving membership in a group without revealing which member you 
+        are.
+
+        \pause{}
+
+      \item Blockchain applications, e.g.\ Zcash.
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+
+\section{More on zero-knowledge}
+
+\mode<all>{%
+\includepdf[pages={20-26}]{./tilkry22_lec06_zkp.pdf}
+\includepdf[pages={31,33-35,39-40}]{./tilkry22_lec06_zkp.pdf}
+\includepdf[pages={41-43}]{./tilkry22_lec06_zkp.pdf}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%
 
