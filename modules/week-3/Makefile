@@ -14,7 +14,15 @@ ASSIGNMENTS += assignments/stealing-keys-radio.md
 ASSIGNMENTS += assignments/optional-side-channels.md
 ASSIGNMENTS += assignments/seminar-usability.md
 
+SLIDES += ${COURSE_DIR}/zk-slides.pdf
+
 include ../module.mk
+
+${COURSE_DIR}/zk-slides.pdf: lecture-zk/zkp-smc-slides.pdf
+	${LINK}
+
+lecture-zk/zkp-smc-slides.pdf::
+	${MAKE} -C lecture-zk zkp-smc-slides.pdf
 
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
