@@ -4,7 +4,7 @@ PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
 PAGES += lecture-hash-functions.html
-PAGES += lecture-applied-hash-functions.md
+PAGES += lecture-applied-hash-functions.html
 PAGES += lecture-asymmetric-crypto.html
 
 SLIDES += ${COURSE_DIR}/one-way-slides.pdf
