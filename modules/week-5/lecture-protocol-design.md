@@ -5,7 +5,7 @@ published: true
 front_page: false
 editing_roles: teachers
 modules:
-- 'Week 5 (calendar week 7)  '
+- Week 5
 ---
 ### Content: Secure Communication Protocol Design
 
