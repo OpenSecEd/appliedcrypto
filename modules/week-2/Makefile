@@ -2,7 +2,6 @@ MODULE ?= Week 2 (calendar week 4)
 MODULE_RE ?= Week 2
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
-COURSE_DIR ?= $(HOME)/public_html/tilkry
 
 PAGES += lecture-hash-functions.html
 PAGES += lecture-applied-hash-functions.md

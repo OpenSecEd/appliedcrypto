@@ -16,8 +16,6 @@ ASSIGNMENTS += assignments/implement-aes-kattis.md
 ASSIGNMENTS += assignments/aes-presentation.md
 ASSIGNMENTS += assignments/optional-cryptopals.md
 
-COURSE_DIR ?= $(HOME)/public_html/tilkry
-
 SLIDES += ${COURSE_DIR}/intro-slides.pdf
 SLIDES += ${COURSE_DIR}/ciphers-slides.pdf
 

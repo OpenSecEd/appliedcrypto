@@ -1,4 +1,5 @@
 COURSE ?= tilkry26
+COURSE_DIR ?= $(HOME)/public_html/tilkry
 
 LINK ?= mkdir -p $(dir $@) && ln -f $< $@ || cp $< $@ || echo "Failed to publish"
 
