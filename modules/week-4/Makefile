@@ -4,7 +4,7 @@ PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
 PAGES += lecture-randomness.md
-PAGES += lecture-voting.md
+PAGES += lecture-rwc1.md
 
 ASSIGNMENTS += assignments/prep-impact-considerations.md
 ASSIGNMENTS += assignments/hac-ch4-public-key-parameters.md

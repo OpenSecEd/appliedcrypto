@@ -5,7 +5,7 @@ published: true
 front_page: false
 editing_roles: teachers
 modules:
-- 'Week 4 (calendar week 6) '
+- Week 4
 ---
 ### Content 
 
