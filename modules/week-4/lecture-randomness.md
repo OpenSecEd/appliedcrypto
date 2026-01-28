@@ -18,7 +18,7 @@ generators. Standards for (pseudo) random number generation.
 
 ### Resources
 
-Sides
+Slides
 [pdf ](https://canvas.kth.se/courses/59543/files/9512718/download?verifier=62TUQray4igQ5pdLgsxSOCU4xHOWo9vQ2plI3zVH&wrap=1){.inline_disabled
 target="_blank"
 api-endpoint="https://canvas.kth.se/api/v1/courses/59543/files/9512718"
@@ -29,7 +29,7 @@ api-returntype="File"} updated/corrected Feb 6. (There are a few
 animations on the ppt file which may not come out well in the converted
 pdf version.)
 
-### Videos from last year 
+### Videos from previous years
 
 [First half](https://play.kth.se/media/t/0_dlewhae6){.inline_disabled
 target="_blank"} \[40m\], closed captioning available,
