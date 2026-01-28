@@ -4,8 +4,8 @@ PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
 PAGES += lecture-zkp-protocols.html
-#PAGES += lecture-mpc-protocols.html
-#PAGES += lecture-non-cryptographic-attacks.html
+PAGES += lecture-mpc-protocols.html
+PAGES += lecture-non-cryptographic-attacks.html
 
 ASSIGNMENTS += assignments/prep-usability-seminar.md
 ASSIGNMENTS += assignments/optional-secure-mpc.md
