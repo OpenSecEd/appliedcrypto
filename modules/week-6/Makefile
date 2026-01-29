@@ -3,7 +3,7 @@ MODULE_RE ?= Week 6
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
-PAGES += lecture-real-world-crypto-cases.md
+PAGES += lecture-rwc2.md
 PAGES += lecture-formal-methods.md
 
 ASSIGNMENTS += assignments/sev3-ch20-advanced-crypto-engineering.md

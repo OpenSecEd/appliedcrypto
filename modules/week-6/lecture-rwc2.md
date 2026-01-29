@@ -1,12 +1,11 @@
 ---
-title: 'FLIPPED Lecture 16/2: Real-world crypto cases, communications (Daniel) on
-  ZOOM+CAMPUS'
-url: flipped-lecture-16-slash-2-real-world-crypto-cases-communications-daniel-on-zoom+campus
+title: 'Lecture 16/2: Real-world crypto, part II (Daniel) on ZOOM+CAMPUS'
+url: lecture-16-slash-2-real-world-crypto-part-ii-daniel-on-zoom+campus
 published: true
 front_page: false
 editing_roles: teachers
 modules:
-- 'Week 6 (calendar week 8)  '
+- Week 6
 ---
 The lecture will be interactive. We will work in groups to design two
 systems. First, we'll (re)design a secure electronic postbox (think
