@@ -11,6 +11,7 @@ SLIDES += ${COURSE_DIR}/one-way-slides.pdf
 SLIDES += ${COURSE_DIR}/applied-hash-slides.pdf
 
 QUIZZES += INL1Quiz-hash.json
+QUIZZES += INL1Quiz-asymmetric.json
 
 ASSIGNMENTS += assignments/hac-ch9-hash-functions.md
 ASSIGNMENTS += assignments/hac-ch8-public-key-encryption.md

@@ -1,0 +1,558 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Asymmetric Cryptography",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Asymmetric Cryptography lecture. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 1,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Key Exchange & Diffie-Hellman",
+        "item_body": "<p>Check all statements that are true about the Diffie-Hellman key exchange protocol and its underlying problems.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The Discrete Logarithm Problem (DLP) is: given <code>g</code> and <code>g^x</code>, find <code>x</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The Diffie-Hellman Problem (DHP) is: given <code>g</code>, <code>g^x</code>, and <code>g^y</code>, find <code>g^{xy}</code>.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The Decisional Diffie-Hellman Problem (DDH) is: given <code>g</code>, <code>g^x</code>, <code>g^y</code>, and <code>g^z</code>, decide whether <code>z = xy</code>.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>If we can solve DLP, then we can also solve DHP and DDH.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>It has been proven that DHP cannot be solved without first solving DLP.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>In Diffie-Hellman key exchange, Alice sends <code>g^x</code> to Bob, Bob sends <code>g^y</code> to Alice, and they both compute the shared secret <code>g^{xy}</code>.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>An eavesdropper Eve who intercepts <code>g^x</code> and <code>g^y</code> can easily compute <code>g^{xy}</code> by multiplying them together.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 2,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Diffie-Hellman Security",
+        "item_body": "<p>Check all statements that are true about the security of unauthenticated Diffie-Hellman key exchange.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Basic (unauthenticated) Diffie-Hellman is vulnerable to man-in-the-middle attacks.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>In a man-in-the-middle attack on DH, Eve intercepts Alice's <code>g^x</code>, sends her own <code>g^{x'}</code> to Bob, intercepts Bob's <code>g^y</code>, and sends her own <code>g^{y'}</code> to Alice.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>After a successful man-in-the-middle attack, Eve shares one key with Alice and a different key with Bob, allowing her to decrypt and re-encrypt all messages.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The man-in-the-middle attack works because Alice cannot tell whether <code>g^y</code> came from Bob or from Eve.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>To prevent man-in-the-middle attacks, the values <code>g^x</code> and <code>g^y</code> must be authenticated (e.g., using digital signatures).</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The DHP assumption alone is sufficient to guarantee secure key exchange in practice.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 3,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "ElGamal Encryption",
+        "item_body": "<p>Check all statements that are true about the ElGamal encryption scheme.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>In ElGamal, the public key consists of <code>(g, g^x)</code> and the private key is <code>x</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>To encrypt a message <code>m</code>, the sender chooses a random <code>y</code> and computes the ciphertext <code>(g^y, m * (g^x)^y)</code>.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>ElGamal encryption is deterministic: encrypting the same message twice with the same public key always produces the same ciphertext.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The random value <code>y</code> used during encryption must be different for each encryption to ensure semantic security.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>ElGamal's semantic security relies on the DDH assumption.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The receiver can decrypt because they know <code>x</code> and can compute <code>(g^y)^{-x}</code> to recover <code>m</code>.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4,
+            5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 4,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Security Notions",
+        "item_body": "<p>Check all statements that are true about security notions for public-key encryption.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Semantic security means an adversary cannot derive any meaningful information about the plaintext from the ciphertext.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>In a chosen plaintext attack (CPA), the adversary can choose plaintexts and obtain their encryptions.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>CPA is particularly relevant for public-key encryption because anyone can encrypt using the public key.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>In the IND-CPA game, the adversary submits two messages and must guess which one was encrypted in the challenge ciphertext.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>IND-CCA2 (adaptive chosen ciphertext attack) allows the adversary to query a decryption oracle even after receiving the challenge ciphertext (but not on the challenge itself).</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>IND-CPA security is stronger than IND-CCA2 security.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Digital Signatures",
+        "item_body": "<p>Check all statements that are true about digital signatures.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Digital signatures use the private key for signing and the public key for verification.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Digital signatures provide non-repudiation: the signer cannot deny having signed a message.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Anyone with the signer's public key can verify a signature, making signatures publicly verifiable.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The ElGamal signature scheme uses a collision-resistant hash function to prevent forgery attacks.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Without the hash function in ElGamal signatures, an attacker could create valid signatures for new messages by combining existing signatures (due to the homomorphic property).</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Digital signatures and MACs provide identical security properties since both verify message authenticity.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Homomorphic Properties",
+        "item_body": "<p>Check all statements that are true about homomorphic properties in cryptography.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>A homomorphism is a map that preserves structure between two algebraic structures.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>ElGamal encryption has a multiplicative homomorphism: multiplying two ciphertexts gives a valid encryption of the product of the plaintexts.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>If you multiply two ElGamal ciphertexts <code>(g^y, m*g^{xy})</code> and <code>(g^{y'}, m'*g^{xy'})</code>, you get a ciphertext that decrypts to <code>m*m'</code>.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Homomorphic properties are always desirable in encryption schemes.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Homomorphic properties are particularly dangerous for signature schemes because they allow forging signatures on new messages.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Padding schemes like OAEP can be used to counter homomorphic attacks on public-key encryption.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Fully homomorphic encryption allows arbitrary computations on encrypted data without decryption.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 7,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "PKI & Certificate Validation",
+        "item_body": "<p>Check all statements that are true about Public Key Infrastructure (PKI) and certificate validation.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>When validating a certificate, you must verify the signature chain up to a trusted root CA.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Verifying only the signature on a certificate is sufficient to trust it.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Certificate validation must include checking the validity interval (not-before / not-after dates).</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>A Certificate Revocation List (CRL) is a CA-signed list of certificate serial numbers that should be rejected.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>OCSP (Online Certificate Status Protocol) allows real-time checking of whether a specific certificate has been revoked.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Once a certificate's signature is verified, there is no need to check for revocation.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Certificate revocation checking is important because a CA may need to invalidate a certificate before its expiration (e.g., if the private key is compromised).</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            3,
+            4,
+            5,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 8,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Symmetric Key Distribution",
+        "item_body": "<p>Check all statements that are true about symmetric key distribution and Kerberos.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>A Key Distribution Centre (KDC) is a central entity that helps distribute session keys to parties who share permanent keys with the KDC.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>A session key is a temporary key used for a specific communication session.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>A permanent key is used to securely distribute session keys.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>In Kerberos, Alice and Bob can establish a shared session key even if they have never communicated before, as long as they both share keys with the KDC.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Kerberos uses public-key cryptography to distribute session keys.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>In Kerberos, a ticket encrypted under Bob's key allows Alice to prove to Bob that the KDC authorized her session key.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Kerberos tickets include timestamps and lifetimes to prevent replay attacks.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 9,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Asymmetric vs Symmetric Cryptography",
+        "item_body": "<p>Check all statements that are true about the comparison between asymmetric and symmetric cryptography.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Public-key cryptography solves the key distribution problem by allowing parties to establish shared secrets without prior secure communication.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Asymmetric encryption is generally slower than symmetric encryption.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>In practice, public-key cryptography is often used to exchange symmetric keys, which are then used for bulk encryption.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>AES (a symmetric cipher) can achieve semantic security when used with a proper mode of operation that includes a random IV.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Symmetric ciphers require that the IV (initialization vector) be kept secret.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Both ElGamal encryption and AES (with CBC/CTR mode) achieve semantic security through the use of randomness in each encryption.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}
