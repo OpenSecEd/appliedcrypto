@@ -13,7 +13,30 @@ systems. First, we'll (re)design a secure electronic postbox (think
 (re)design a secure and private [BankID](https://www.bankid.com/en/)
 remake that fits our needs for our Kivra redesign.
 
-# Watching and reading to do
+We build on your first postbox designs from Week 4.
+Bring up your group's tab in the shared design document and iterate from what
+you wrote then:
+
+<https://docs.google.com/document/d/1eRv-ekY04tdTCvwss4dK3juKlUez4CnoZihcC4J9mKc/edit>
+
+## During the lecture: redesign with protocol scaffolding
+
+For the postbox service, use the protocol tools from the protocol lecture
+series (Week 5) to make your design explicit and robust.
+In particular, write down (and update) for your chosen sub-protocols:
+
+- Parties and trust assumptions
+- Attacker model and what is in/out of scope
+- Security properties (what is protected from whom)
+- Message flow (who sends what to whom, in what order)
+- Cryptographic material (keys, certificates, identifiers)
+- Key lifecycle and recovery (lost device/keys, compromise, key rotation)
+- Metadata exposure (what the service learns vs what outsiders learn)
+
+Deliverable: an updated design in your group's tab plus a short note on what
+you changed compared to Week 4 and why.
+
+## Watching and reading to do
 
 It's good if you watch these videos and read the papers before the
 lecture, but it's not crucial, you can watch and read them afterwards.
@@ -65,4 +88,3 @@ groups:]{style="color: var(--ic-brand-font-color-dark); font-family: inherit; fo
 -   Website Fingerprinting with Website Oracles (interactive
     [video](https://eu.feedbackfruits.com/groups/activity-group/bc865246-a460-4761-9122-2f9b1c9eee3c),
     [paper](https://eu.feedbackfruits.com/groups/activity-group/cb1d8fcb-1660-417f-969f-2787a8f80521))
-
