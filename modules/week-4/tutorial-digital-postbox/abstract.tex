@@ -1,22 +1,33 @@
-% What's the problem?
-% Why is it a problem? Research gap left by other approaches?
-% Why is it important? Why care?
-% What's the approach? How to solve the problem?
-% What's the findings? How was it evaluated, what are the results, limitations, 
-% what remains to be done?
-
-% XXX Summary
 \emph{Summary:}
-\dots
+This tutorial uses digital postbox services (e.g., Kivra/eBoks) as a
+case study for designing a security-critical system.
+You sketch a design for registration, sending, and reading mail; you then
+analyze which security properties you need, what metadata is exposed to whom,
+and what requirements this implies on digital identity.
+The aim is a first (possibly incomplete) design that we revisit after the
+protocol lecture series.
 
-% XXX Motivation and intended learning outcomes
 \emph{Intended learning outcomes:}
-\dots
+After this tutorial, you should be able to:
 
-% XXX Prerequisites
+\begin{itemize}
+  \item analyze a real-world service and identify its security goals and
+    assumptions;
+  \item apply basic cryptographic primitives (encryption, signatures, hash
+    functions, and message authentication codes) to sketch a solution to a
+    design problem;
+  \item reason about the difference between protecting content and protecting
+    metadata, and compare digital mail to physical mail;
+  \item describe key lifecycle and recovery questions (revocation, device
+    loss, delegation) that become critical in end-to-end protected systems;
+  \item formulate requirements on digital identity (binding, assurance,
+    authentication, recovery) for a public-facing service.
+\end{itemize}
+
 \emph{Prerequisites:}
-\dots
+Basic familiarity with the course notions of confidentiality and authenticity,
+and with encryption and digital signatures at a high level.
 
-% XXX Reading material
 \emph{Reading:}
-\dots
+The official security requirements for Swedish digital postbox operators (DIGG):
+\href{https://www.digg.se/digitala-tjanster/digital-post/digital-post-for-dig-som-leverantor/allmanna-villkor/allmanna-villkor-fr.o.m.-16-januari-2023/bilaga-1-krav-pa-sakerhet-for-brevladeoperatorer}{DIGG: security requirements for postbox operators}.
