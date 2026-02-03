@@ -3,8 +3,10 @@
 \usepackage[british]{babel}
 \usepackage{booktabs}
 
-\usepackage[natbib,style=alphabetic,maxbibnames=99]{biblatex}
-\addbibresource{digital-postbox-tutorial.bib}
+% Biblatex is included to provide citation commands (e.g. \autocite) used by
+% the course LaTeX setup. This tutorial currently has no bibliography.
+\usepackage[style=alphabetic,maxbibnames=99]{biblatex}
+\addbibresource{../../../bibsp/crypto.bib}
 
 \usepackage[all]{foreign}
 \renewcommand{\foreignfullfont}{}
@@ -13,8 +15,7 @@
 %\usepackage{newclude}
 \usepackage{import}
 
-\usepackage[strict]{csquotes}
-\usepackage[single]{acro}
+\usepackage{acro}
 
 \usepackage{subcaption}
 
@@ -23,8 +24,10 @@
 
 \let\email\texttt
 
-\usepackage[outputdir=ltxobj]{minted}
+\usepackage{minted}
 \setminted{autogobble}
+
+\usepackage[strict]{csquotes}
 
 \usepackage{amsmath}
 \usepackage{amssymb}
