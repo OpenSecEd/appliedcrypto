@@ -8,6 +8,28 @@ We write the address on an envelope and send it.
 We want a digital transformation.
 You should design a digital postbox and delivery service.
 
+This is a first attempt.
+Do not worry if your design is underspecified or if you end up with unanswered 
+questions.
+After the protocol lecture series (Week 5), we will return to your designs in 
+Week 6 and use the protocol tools to make the missing parts explicit.
+
+Document your group's design in your group's tab in
+          \url{https://tinyurl.com/tilkry26-postbox}
+%\url{https://docs.google.com/document/d/1eRv-ekY04tdTCvwss4dK3juKlUez4CnoZihcC4J9mKc/edit}
+\ltnote{%
+  Pedagogical intent (try-first-tell-later + variation theory):
+  Here students make a full, unconstrained design attempt.
+  We deliberately avoid giving a protocol checklist, so that (i) students must 
+  decide what is critical vs non-critical on their own, and (ii) the protocol 
+  lecture series can later create contrast between what they wrote down and 
+  what a protocol description needs to make explicit.
+  In Week 6 we return to the same object of learning (designing a secure 
+  postbox service), but with new tools; the redesign then fuses several aspects 
+  (security properties, attacker model, message flow, key lifecycle, recovery) 
+  that typically remained implicit in Week 4.
+}
+
 \mode<presentation>{%
 \begin{frame}
   \begin{idea}[Digital mail]
@@ -33,23 +55,70 @@ You should design a digital postbox and delivery service.
   What functionality do we need? (High level)
 \end{exercise}
 
-\begin{onlyenv}<2>
-  \begin{solution}
-    We'd need at least the following:
-    \begin{itemize}
-      \item Registration
-      \item Sending mail
-      \item Reading mail
-    \end{itemize}
-  \end{solution}
-\end{onlyenv}
+\mode<presentation>{%
+  \begin{onlyenv}<2>
+    \begin{solution}
+      We'd need at least the following:
+      \begin{itemize}
+        \item Registration
+        \item Sending mail
+        \item Reading mail
+      \end{itemize}
+    \end{solution}
+  \end{onlyenv}
+}
 \end{frame}
+
+\mode<article>{%
+\begin{solution}[Sketch]
+  At a high level, a digital postbox service needs at least:
+  \begin{itemize}
+    \item registration (create an account tied to a real identity),
+    \item sending (submit a letter to a recipient address),
+    \item reading (retrieve and open received letters).
+  \end{itemize}
+  Typical additional functionality that quickly becomes necessary in practice:
+  \begin{itemize}
+    \item key management (publish/rotate/revoke keys),
+    \item recovery (lost device/credentials),
+    \item delegation (e.g., power of attorney),
+    \item auditing and dispute handling.
+  \end{itemize}
+\end{solution}
+}
+
+\mode<article>{%
+\begin{center}
+  \rule{0.8\linewidth}{0.4pt}
+\end{center}
+}
 
 \begin{frame}
 \begin{exercise}[Requirements]
   What are the requirements on the service?
 \end{exercise}
 \end{frame}
+
+\mode<article>{%
+\begin{solution}[Sketch]
+  A reasonable first list of requirements is:
+  \begin{itemize}
+    \item confidentiality of letter contents against intermediaries,
+    \item authenticity/integrity (recipient can verify who sent what),
+    \item access control (only the owner/delegate can read),
+    \item availability (mail must be reachable when needed),
+    \item clear trust assumptions and a recovery story.
+  \end{itemize}
+  Note that even if contents are protected end-to-end, metadata (who talks to
+  whom, when, and roughly how much) is typically still observable.
+\end{solution}
+}
+
+\mode<article>{%
+\begin{center}
+  \rule{0.8\linewidth}{0.4pt}
+\end{center}
+}
 
 We have the following requirements on the service:
 \begin{frame}
@@ -132,11 +201,18 @@ provide and why?
     \end{exercise}
 
     \begin{block}{Organization}
+      \footnotesize
       \begin{itemize}
+        \setlength{\itemsep}{0pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
         \item Groups of around three--four people.
-        \item Pick one of the three functionalities.
-        \item \alert<2>{Design a solution: detail the crypto protocol.}
-        \item Document at \url{https://tinyurl.com/tilkry25-postbox}
+        \item First sketch the full service together.
+        \item Then pick one of the three functionalities.
+        \item \alert<2>{Try to go into detail: detail the crypto protocol.}
+        \item Document in your group's tab:
+          \url{https://tinyurl.com/tilkry26-postbox}
+          %\url{https://docs.google.com/document/d/1eRv-ekY04tdTCvwss4dK3juKlUez4CnoZihcC4J9mKc/edit}
         \item Work for 20 minutes.
         \item Group presentations and discussions.
       \end{itemize}
@@ -162,6 +238,27 @@ provide and why?
   \end{frame}
 }
 
+\mode<article>{%
+\begin{solution}[Sketch]
+  One common starting point is:
+  \begin{itemize}
+    \item a directory mapping recipient addresses to public keys (including
+      status: current/\allowbreak revoked),
+    \item hybrid encryption for letters (random symmetric key + public-key
+      encryption of that key to the recipient),
+    \item sender authentication via digital signatures on the letter.
+  \end{itemize}
+  The hard parts tend to be lifecycle questions (key rotation, revocation,
+  recovery) and defining what the service is trusted to learn and to do.
+\end{solution}
+}
+
+\mode<article>{%
+\begin{center}
+  \rule{0.8\linewidth}{0.4pt}
+\end{center}
+}
+
 Notes from the session:
 \begin{itemize}
   \item Same as Signal protocol.
@@ -176,6 +273,27 @@ Notes from the session:
     How does this compare to the physical mail service?
   \end{exercise}
 \end{frame}
+
+\mode<article>{%
+\begin{solution}[Sketch]
+  Separate content from metadata.
+  End-to-end protection can hide letter contents from the operator, but the
+  operator may still learn (depending on design):
+  \begin{itemize}
+    \item sender and recipient identifiers (or at least routing identifiers),
+    \item timestamps, frequency, and rough size,
+    \item device/IP-level metadata (unless mitigated).
+  \end{itemize}
+  Compare to physical mail: the postal service sees envelope address fields and
+  handling times, but not the letter contents.
+\end{solution}
+}
+
+\mode<article>{%
+\begin{center}
+  \rule{0.8\linewidth}{0.4pt}
+\end{center}
+}
 
 \mode<presentation>{%
   \begin{frame}
@@ -198,10 +316,15 @@ Notes from the session:
     \pause
 
     \begin{block}{Organization}
+      \footnotesize
       \begin{itemize}
+        \setlength{\itemsep}{0pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
         \item Groups of around three--four people.
         \item Work for 20 minutes, document: 
-          \url{https://tinyurl.com/tilkry25-anon-postbox}.
+          \url{https://tinyurl.com/tilkry26-postbox}
+          %\url{https://docs.google.com/document/d/1eRv-ekY04tdTCvwss4dK3juKlUez4CnoZihcC4J9mKc/edit}
         \item Group presentations and discussions.
       \end{itemize}
     \end{block}
@@ -226,6 +349,27 @@ Notes from the session:
   \end{frame}
 }
 
+\mode<article>{%
+\begin{solution}[Sketch]
+  Start by stating precisely what should be hidden and from whom.
+  \begin{itemize}
+    \item Weak sender anonymity: hide the sender from the service (but not
+      necessarily from the recipient).
+    \item Sender anonymity: hide the sender from both service and recipient.
+    \item Sender--receiver anonymity: additionally hide the recipient from the
+      service.
+  \end{itemize}
+  Typical building blocks (kept deliberately high level): unlinkable payment or
+  access tokens, relays/mix networks, and careful metadata minimization.
+\end{solution}
+}
+
+\mode<article>{%
+\begin{center}
+  \rule{0.8\linewidth}{0.4pt}
+\end{center}
+}
+
 
 \section{Digital identity}
 
@@ -235,7 +379,25 @@ Notes from the session:
       \item What requirements do we have on digital identity for our postbox 
         system?
         How can we achieve those requirements?
-      \item Document: \url{https://tinyurl.com/tilkry25-identity}.
+      \item Document in your group's tab:
+          \url{https://tinyurl.com/tilkry26-postbox}
+        %\url{https://docs.google.com/document/d/1eRv-ekY04tdTCvwss4dK3juKlUez4CnoZihcC4J9mKc/edit}
     \end{itemize}
   \end{exercise}
 \end{frame}
+
+\mode<article>{%
+\begin{solution}[Sketch]
+  Identity requirements for a postbox service often include:
+  \begin{itemize}
+    \item strong binding from account to a real person (and sometimes address),
+    \item authentication with appropriate assurance (phishing and
+      account-takeover resistance),
+    \item revocation and recovery (lost credentials/devices),
+    \item attribute minimization (use only what is needed for the task),
+    \item delegation (guardianship/power of attorney).
+  \end{itemize}
+  When reusing an external eID, be explicit about what you inherit (assurance
+  level, enrollment checks, and recovery policy).
+\end{solution}
+}

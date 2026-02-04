@@ -9,6 +9,10 @@ modules:
 ---
 ### Content: Secure Communication Protocol Design
 
+This lecture series gives you tools for specifying and analyzing protocols.
+You will use these tools in Week 6 to revisit and improve your Week-4 digital
+postbox designs.
+
 This topic is presented as a three-and-a-half lecture set.
 
 In part 1, we will discuss what we mean by \"secure communication\" set
@@ -98,4 +102,3 @@ Slides for lecture by
 Mats: [pdf](https://canvas.kth.se/courses/59543/files/9512663/download?verifier=JokujbZw2iiusaY2OZ63oz4csKV5htCR8yNN4zvl&wrap=1){api-endpoint="https://canvas.kth.se/api/v1/courses/59543/files/9512663"
 api-returntype="File"} [ppt](https://canvas.kth.se/courses/59543/files/9512665/download?verifier=dKxQccA1eXpDafi74gRmc4nRnYj1yxbEuSwdWyPX&wrap=1){api-endpoint="https://canvas.kth.se/api/v1/courses/59543/files/9512665"
 api-returntype="File"}. 
-

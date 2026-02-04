@@ -1,6 +1,7 @@
 {
   "quiz_type": "new",
   "settings": {
+    "modules": [],
     "title": "INL1Quiz Asymmetric Cryptography",
     "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Asymmetric Cryptography lecture. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
     "time_limit": null,
@@ -86,6 +87,10 @@
             {
               "position": 7,
               "item_body": "<p>An eavesdropper Eve who intercepts <code>g^x</code> and <code>g^y</code> can easily compute <code>g^{xy}</code> by multiplying them together.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>An eavesdropper Eve can easily listen in on and inject messages into a connection secured by the above Diffie-Hellman key exchange.</p>"
             }
           ]
         },
@@ -95,7 +100,8 @@
             2,
             3,
             4,
-            6
+            6,
+            8
           ]
         }
       }
@@ -137,10 +143,6 @@
             {
               "position": 5,
               "item_body": "<p>To prevent man-in-the-middle attacks, the values <code>g^x</code> and <code>g^y</code> must be authenticated (e.g., using digital signatures).</p>"
-            },
-            {
-              "position": 6,
-              "item_body": "<p>The DHP assumption alone is sufficient to guarantee secure key exchange in practice.</p>"
             }
           ]
         },
