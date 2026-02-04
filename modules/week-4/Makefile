@@ -6,6 +6,8 @@ PULL_MODULE_RE ?= $(MODULE_RE)
 PAGES += lecture-randomness.md
 PAGES += lecture-rwc1.md
 
+SLIDES += ${COURSE_DIR}/digital-postbox-slides.pdf
+
 ASSIGNMENTS += assignments/prep-impact-considerations.md
 ASSIGNMENTS += assignments/hac-ch4-public-key-parameters.md
 ASSIGNMENTS += assignments/hac-ch5-pseudorandom-bits.md
@@ -14,6 +16,9 @@ ASSIGNMENTS += assignments/design-considerations.md
 ASSIGNMENTS += assignments/inl1quiz-cryptographic-concepts.md
 
 include ../module.mk
+
+${COURSE_DIR}/digital-postbox-slides.pdf: tutorial-digital-postbox/slides.pdf
+	${LINK}
 
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
