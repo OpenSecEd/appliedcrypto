@@ -166,6 +166,14 @@
             {
               "position": 9,
               "item_body": "<p>Without the commitment, a cheating prover could choose <code>s</code> after seeing <code>c</code> and then compute <code>t = g^s * y^{-c}</code> to pass verification without knowing <code>x</code>.</p>"
+            },
+            {
+              "position": 10,
+              "item_body": "<p>The commitment <code>t = g^r</code> is binding because the verifier can check that <code>r</code> was not changed by recomputing <code>g^r</code> from the response.</p>"
+            },
+            {
+              "position": 11,
+              "item_body": "<p>The commitment must be encrypted before sending to the verifier to preserve the hiding property.</p>"
             }
           ]
         },
@@ -286,6 +294,14 @@
             {
               "position": 7,
               "item_body": "<p>The security of Fiat-Shamir relies on modeling the hash function as a random oracle.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>The Fiat-Shamir transform requires the verifier to participate in generating the challenge, but the interaction is compressed into a single round.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>After applying Fiat-Shamir, the proof can be verified by anyone who knows the public key, the message, and the proof <code>(t, s)</code>.</p>"
             }
           ]
         },
@@ -296,7 +312,8 @@
             3,
             4,
             6,
-            7
+            7,
+            9
           ]
         }
       }
@@ -478,8 +495,8 @@
       "position": 8,
       "points_possible": 1.0,
       "entry": {
-        "title": "ZKP Security Properties",
-        "item_body": "<p>Check all statements that are true about the security properties of zero-knowledge proofs.</p>",
+        "title": "Knowledge Extraction and Soundness",
+        "item_body": "<p>Check all statements that are true about knowledge extraction and soundness in zero-knowledge proofs of knowledge.</p>",
         "interaction_type_slug": "multi-answer",
         "scoring_algorithm": "AllOrNothing",
         "properties": {
@@ -494,31 +511,31 @@
           "choices": [
             {
               "position": 1,
-              "item_body": "<p>Completeness means that if the prover knows the secret and both parties follow the protocol, the verifier will always accept.</p>"
+              "item_body": "<p>Knowledge extraction means that if a prover can consistently convince the verifier, then the prover must actually \"know\" the secret (a witness can be computed from the prover's strategy).</p>"
             },
             {
               "position": 2,
-              "item_body": "<p>Soundness means that a cheating prover who does not know the secret can convince the verifier with at most negligible probability.</p>"
+              "item_body": "<p>In Schnorr's protocol, the extractor works by rewinding the prover: getting two responses <code>s</code> and <code>s'</code> to different challenges <code>c</code> and <code>c'</code> for the same commitment <code>t</code>, then computing <code>x = (s - s') / (c - c')</code>.</p>"
             },
             {
               "position": 3,
-              "item_body": "<p>The zero-knowledge property means the verifier learns nothing beyond whether the prover knows the secret.</p>"
+              "item_body": "<p>Knowledge soundness is stronger than plain soundness: plain soundness says a false statement cannot be proven, while knowledge soundness says the prover must actually possess the witness.</p>"
             },
             {
               "position": 4,
-              "item_body": "<p>Soundness guarantees that the prover cannot learn anything from the verifier's messages.</p>"
+              "item_body": "<p>The extractor runs in the real protocol and can extract the secret from any single protocol execution.</p>"
             },
             {
               "position": 5,
-              "item_body": "<p>The verifier can use a valid proof transcript to convince a third party that the prover knows the secret.</p>"
+              "item_body": "<p>The extractor is a theoretical construct used in the security proof---it requires the ability to rewind and replay the prover, which is not possible in a real execution.</p>"
             },
             {
               "position": 6,
-              "item_body": "<p>Zero-knowledge is demonstrated by showing that transcripts can be efficiently simulated without knowing the secret.</p>"
+              "item_body": "<p>Special soundness means that from two accepting transcripts with the same commitment but different challenges, the witness can be computed.</p>"
             },
             {
               "position": 7,
-              "item_body": "<p>If an eavesdropper records a valid ZKP execution, they can replay it to impersonate the prover.</p>"
+              "item_body": "<p>Knowledge extraction contradicts zero-knowledge: if the secret can be extracted, then it is not zero-knowledge.</p>"
             }
           ]
         },
@@ -527,6 +544,7 @@
             1,
             2,
             3,
+            5,
             6
           ]
         }

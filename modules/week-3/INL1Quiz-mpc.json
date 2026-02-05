@@ -350,18 +350,15 @@
       "position": 6,
       "points_possible": 1.0,
       "entry": {
-        "title": "ZKPK and MPC Properties",
-        "item_body": "<p>Select all statements that are true.</p>",
+        "title": "MPC Security Properties",
+        "item_body": "<p>Check all statements that are true about the security properties of MPC protocols.</p>",
         "interaction_type_slug": "multi-answer",
         "scoring_algorithm": "AllOrNothing",
         "properties": {
           "shuffle_rules": {
             "choices": {
-              "to_lock": [
-                4,
-                3
-              ],
-              "shuffled": true
+              "to_lock": [],
+              "shuffled": false
             }
           }
         },
@@ -369,55 +366,46 @@
           "choices": [
             {
               "position": 1,
-              "item_body": "<p>In a zero‐knowledge proof of knowledge protocol, the soundness property guarantees that a cheating prover cannot convince a verifier of a false statement with more than negligible probability.</p>"
+              "item_body": "<p>The privacy property guarantees that aside from the agreed-upon output, no additional information about any party's input is revealed to others.</p>"
             },
             {
               "position": 2,
-              "item_body": "<p>The completeness property of a ZKPK protocol ensures that if the prover knows the secret and follows the protocol, the verifier will always be convinced that the statement is true.</p>"
+              "item_body": "<p>The privacy property guarantees that no information about any party's input is revealed to others, including through the output.</p>"
             },
             {
               "position": 3,
-              "item_body": "<p>The zero‐knowledge property in a ZKPK protocol permits the verifier to learn some partial information about the secret witness as long as the overall statement is verified.</p>"
+              "item_body": "<p>The fairness property ensures that either every party receives the computed output or none of them do---no party can learn the output while preventing others from learning it.</p>"
             },
             {
               "position": 4,
-              "item_body": "<p>In secure multiparty computation, the privacy property guarantees that aside from the agreed-upon output, no additional information about any party's input is revealed to others.</p>"
+              "item_body": "<p>Verifiability allows participants to confirm that the output was correctly computed according to the agreed-upon function, without exposing any party's private input.</p>"
             },
             {
               "position": 5,
-              "item_body": "<p>In secure multiparty computation, the privacy property guarantees that no information about any party's input is revealed to others.</p>"
+              "item_body": "<p>Input independence means that corrupted parties must choose their inputs independently of the honest parties' inputs.</p>"
             },
             {
               "position": 6,
-              "item_body": "<p>The fairness property in MPC protocols ensures that either every party receives the computed output simultaneously or none of them do.</p>"
+              "item_body": "<p>In the honest-but-curious (semi-honest) model, adversaries follow the protocol but try to learn extra information from the messages they observe.</p>"
             },
             {
               "position": 7,
-              "item_body": "<p>In MPC, verifiability allows participants to confirm that the output was correctly computed according to the protocol, without exposing any party's private input.</p>"
+              "item_body": "<p>In the malicious model, adversaries can deviate from the protocol in arbitrary ways, including sending incorrect messages or aborting early.</p>"
             },
             {
               "position": 8,
-              "item_body": "<p>Hashing password is considered zero knowledge, since the hash function cannot be inverted the password hash doesn't reveal anything about the password.</p>"
-            },
-            {
-              "position": 9,
-              "item_body": "<p>Asymmetric cryptography can be combined with ZKPKs, enabling a prover to demonstrate knowledge of the private key corresponding to a public key without revealing the private key itself.</p>"
-            },
-            {
-              "position": 10,
-              "item_body": "<p>Unlike symmetric cryptography, which focuses on encrypting data to ensure confidentiality, ZKPKs are designed to show possession of a secret without exposing any part of it.</p>"
+              "item_body": "<p>An MPC protocol secure against honest-but-curious adversaries is automatically secure against malicious adversaries.</p>"
             }
           ]
         },
         "scoring_data": {
           "value": [
             1,
-            2,
+            3,
             4,
+            5,
             6,
-            7,
-            9,
-            10
+            7
           ]
         }
       }
