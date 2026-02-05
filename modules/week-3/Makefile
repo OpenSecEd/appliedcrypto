@@ -14,6 +14,9 @@ ASSIGNMENTS += assignments/stealing-keys-radio.md
 ASSIGNMENTS += assignments/optional-side-channels.md
 ASSIGNMENTS += assignments/seminar-usability.md
 
+QUIZZES += INL1Quiz-zkp.json
+QUIZZES += INL1Quiz-mpc.json
+
 SLIDES += ${COURSE_DIR}/zk-slides.pdf
 
 include ../module.mk

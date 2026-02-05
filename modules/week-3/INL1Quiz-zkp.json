@@ -1,0 +1,536 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Zero-Knowledge Proofs",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Zero-Knowledge Proofs lecture. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 1,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "ZKPK Properties",
+        "item_body": "<div>Match properties of zero knowledge proofs (of knowledge) with their informal definitions.</div>",
+        "interaction_type_slug": "matching",
+        "scoring_algorithm": "DeepEquals",
+        "properties": {
+          "shuffle_rules": {
+            "questions": {
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "answers": [
+            "When both parties are honest the verifier accepts.",
+            "The verifier accepts a false claim with low probability.",
+            "The prover knows a specific representation of a witness.",
+            "A transcript of an interaction with a verifier can be sampled efficiently."
+          ],
+          "questions": [
+            {
+              "item_body": "Completeness"
+            },
+            {
+              "item_body": "Soundness"
+            },
+            {
+              "item_body": "Knowledge extraction"
+            },
+            {
+              "item_body": "Zero knowledge"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": {
+            "12da9aa4-ffb1-444f-815c-96597c430550": "When both parties are honest the verifier accepts.",
+            "37640a59-fee3-421e-abc3-2f50a7dd8fdb": "The prover knows a specific representation of a witness.",
+            "5f0191b4-a2fa-4a48-bf26-a67ec0d308eb": "A transcript of an interaction with a verifier can be sampled efficiently.",
+            "b2143b6e-eea2-4e2a-b2a5-4175b6550598": "The verifier accepts a false claim with low probability."
+          },
+          "edit_data": {
+            "matches": [
+              {
+                "answer_body": "When both parties are honest the verifier accepts.",
+                "question_id": "12da9aa4-ffb1-444f-815c-96597c430550",
+                "question_body": "Completeness"
+              },
+              {
+                "answer_body": "The verifier accepts a false claim with low probability.",
+                "question_id": "b2143b6e-eea2-4e2a-b2a5-4175b6550598",
+                "question_body": "Soundness"
+              },
+              {
+                "answer_body": "The prover knows a specific representation of a witness.",
+                "question_id": "37640a59-fee3-421e-abc3-2f50a7dd8fdb",
+                "question_body": "Knowledge extraction"
+              },
+              {
+                "answer_body": "A transcript of an interaction with a verifier can be sampled efficiently.",
+                "question_id": "5f0191b4-a2fa-4a48-bf26-a67ec0d308eb",
+                "question_body": "Zero knowledge"
+              }
+            ],
+            "distractors": []
+          }
+        }
+      }
+    },
+    {
+      "position": 2,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Commitments in Zero-Knowledge Proofs",
+        "item_body": "<p>Check all statements that are true about commitments in zero-knowledge proofs.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>In Schnorr's protocol, the prover commits to randomness <code>r</code> by sending <code>t = g^r</code> before receiving the challenge.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The commitment <code>t = g^r</code> is hiding because the discrete logarithm is hard to compute---given <code>t</code>, one cannot determine <code>r</code>.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The commitment <code>t = g^r</code> is binding because once sent, the prover cannot find a different <code>r'</code> that gives the same <code>t</code> (would require computing discrete logs).</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>In Schnorr's protocol, we could replace <code>t = g^r</code> with a hash-based commitment <code>t = H(r)</code> and the protocol would still work.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>In Schnorr's protocol, we cannot use <code>t = H(r)</code> because the verification equation <code>g^s = t * y^c</code> requires <code>t</code> to have algebraic structure (be a group element).</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Hash-based commitments <code>c = H(r || m)</code> also provide hiding (before revealing <code>r</code>) and binding (cannot find different <code>m'</code> with same hash).</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Both DLP-based and hash-based commitments serve the same purpose of binding: preventing the prover from changing their committed value after seeing the challenge.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>The commitment phase is not necessary---the prover could simply respond to the challenge directly.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Without the commitment, a cheating prover could choose <code>s</code> after seeing <code>c</code> and then compute <code>t = g^s * y^{-c}</code> to pass verification without knowing <code>x</code>.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "position": 3,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Zero-Knowledge Proofs & Schnorr's Protocol",
+        "item_body": "<p>Check all statements that are true about zero-knowledge proofs and Schnorr's protocol.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>In Schnorr's protocol, the prover wants to prove knowledge of <code>x</code> where <code>y = g^x</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The prover commits by sending <code>t = g^r</code> for a random <code>r</code>, then receives challenge <code>c</code>, and responds with <code>s = r + cx</code>.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The verifier accepts if <code>g^s = t * y^c</code>.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The verifier can extract the secret <code>x</code> from the transcript <code>(t, c, s)</code>.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>An eavesdropper observing the protocol can compute <code>x</code> by solving the discrete logarithm problem.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The protocol can be simulated without knowing <code>x</code>: choose random <code>c</code> and <code>s</code>, then compute <code>t = g^s * y^{-c}</code>.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>The simulated transcripts are indistinguishable from real transcripts, which proves the zero-knowledge property.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 4,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Fiat-Shamir Transform & Non-Interactive ZKP",
+        "item_body": "<p>Check all statements that are true about the Fiat-Shamir transform and its relationship to digital signatures.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The Fiat-Shamir transform converts an interactive ZKP into a non-interactive proof by replacing the verifier's random challenge with a hash of the commitment.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>In Fiat-Shamir, the prover computes <code>c = H(t || m)</code> where <code>t</code> is the commitment and <code>m</code> is a message, then provides <code>(t, s)</code> as the proof.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>A Schnorr signature is essentially a Fiat-Shamir-transformed Schnorr ZKP, where the \"message being signed\" is included in the hash.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Non-interactive ZKPs (NIZK) can be transferred to third parties, unlike interactive ZKPs.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>The Fiat-Shamir transform preserves the zero-knowledge property in all cases.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Schnorr signatures prove knowledge of the private key <code>x</code> for public key <code>y = g^x</code> while also binding that proof to a specific message <code>m</code>.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>The security of Fiat-Shamir relies on modeling the hash function as a random oracle.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "ZKP vs Digital Signatures for Authentication",
+        "item_body": "<p>Alice has private key <code>x</code> and public key <code>y = g^x</code>. Eve knows <code>y</code> belongs to Alice. Check all statements that are true about using ZKP vs signatures for Alice to prove her identity to Eve.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>If Alice signs Eve's challenge message <code>m</code>, Eve obtains a valid signature that she can show to others.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Eve could maliciously choose the challenge to be \"I transfer all my money to Eve\" and get Alice's signature on it.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>With a ZKP, Eve learns only that Alice knows <code>x</code>, but Eve cannot prove this to anyone else.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Digital signatures are more secure than ZKPs for authentication because signatures are unforgeable.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>After a ZKP, Eve has nothing she can use to impersonate Alice or convince Bob that she interacted with Alice.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>ZKP is appropriate when the verifier should not gain any transferable proof of the interaction.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "ZKP Applications",
+        "item_body": "<p>Check all statements that are true about applications of zero-knowledge proofs.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>ZKPs can be used for authentication without giving the verifier anything to impersonate the prover later.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>ZKPs can prove membership in a group without revealing which specific member you are.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>ZKPs are used in privacy-preserving cryptocurrencies like Zcash to prove transaction validity without revealing amounts or parties.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Password hashing provides zero-knowledge authentication because the server never learns the password.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>ZKPs can prove possession of a private key corresponding to a public key without revealing the private key.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>ZKPs provide encryption, ensuring that eavesdroppers cannot read messages.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Unlike digital signatures, ZKPs do not provide non-repudiation---which is often the desired property.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 7,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Zero-Knowledge Property",
+        "item_body": "<p>Check all statements that are true about what the zero-knowledge property guarantees.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The verifier learns exactly one bit of information: whether the prover's claim is true.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The verifier cannot use the protocol transcript to convince a third party of the prover's claim.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The prover reveals no information beyond the validity of the statement being proven.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>An eavesdropper who records the protocol execution learns nothing about the secret.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>The zero-knowledge property implies that the protocol provides encryption.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The security relies on the fact that transcripts can be simulated without the secret, so real transcripts reveal no more than simulated ones.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Zero-knowledge proofs can be forwarded to third parties as proof of the statement.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 8,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "ZKP Security Properties",
+        "item_body": "<p>Check all statements that are true about the security properties of zero-knowledge proofs.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Completeness means that if the prover knows the secret and both parties follow the protocol, the verifier will always accept.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Soundness means that a cheating prover who does not know the secret can convince the verifier with at most negligible probability.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The zero-knowledge property means the verifier learns nothing beyond whether the prover knows the secret.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Soundness guarantees that the prover cannot learn anything from the verifier's messages.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>The verifier can use a valid proof transcript to convince a third party that the prover knows the secret.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Zero-knowledge is demonstrated by showing that transcripts can be efficiently simulated without knowing the secret.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>If an eavesdropper records a valid ZKP execution, they can replay it to impersonate the prover.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}

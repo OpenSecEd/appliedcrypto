@@ -1,0 +1,426 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Secure Multi-Party Computation",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Secure Multi-Party Computation lecture. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 1,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Secure Multi-Party Computation",
+        "item_body": "<p>Check all statements that are true about secure multi-party computation (MPC).</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>In MPC, <code>n</code> participants <code>P_1, ..., P_n</code> each have a secret input <code>x_i</code> and want to compute <code>y = f(x_1, ..., x_n)</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>At the end of the protocol, each participant learns the output <code>y</code>.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The security definition requires that executing the MPC protocol is equivalent to giving all inputs to a trusted third party (TTP) who computes <code>f</code> and returns only <code>y</code>.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>MPC protocols can only compute simple functions like addition or comparison.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Each participant <code>P_i</code> learns no more about <code>P_j</code>'s input (<code>i ≠ j</code>) than what is revealed by the output <code>y</code>.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>MPC protocols exist for arbitrary computable functions, though efficiency varies.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>All participants must trust each other for MPC to provide security.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 2,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Garbled Circuits",
+        "item_body": "<p>Check all statements that are true about garbled circuits as an MPC technique.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Garbled circuits allow two parties to compute any function <code>f(x, y)</code> where one party provides <code>x</code> and the other provides <code>y</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>One party (the garbler) creates a \"garbled\" version of the circuit computing <code>f</code>, with random labels replacing the actual 0/1 values on wires.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The evaluator can compute the output by processing the garbled circuit with the garbled inputs, without learning intermediate wire values.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Oblivious transfer is used so the evaluator can obtain garbled labels for their input bits without the garbler learning those input bits.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>The garbler learns the evaluator's input during the protocol.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Garbled circuits can only be used once---reusing the same garbled circuit would leak information about the inputs.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>The technique works because the random labels hide whether a wire carries 0 or 1, except for the final output.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Both parties must trust each other for garbled circuits to be secure.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 3,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "MPC Privacy Property",
+        "item_body": "<p>Check all statements that are true about what participants learn in MPC.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Participants learn the output of the computation.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Participants learn what can be inferred about others' inputs from the output (and their own input).</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Participants learn nothing at all about other inputs.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The privacy guarantee is: no participant learns more than they would if a trusted third party computed the function.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>If the output is \"Alice is richer than Bob\", then Bob learns this fact but not Alice's exact wealth.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>MPC ensures that the output reveals nothing about the inputs.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Even a coalition of dishonest participants cannot learn more than their combined inputs and the output would reveal.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4,
+            5,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 4,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Yao's Millionaires' Problem",
+        "item_body": "<p>Yao's Millionaires' Problem: two millionaires want to find out who is richer without revealing their actual wealth. Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>This is the classic motivating example for secure multi-party computation.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The function being computed is <code>f(x, y) = (x > y)</code>, where <code>x</code> and <code>y</code> are the wealth values.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>After the protocol, both parties learn only who is richer, not each other's exact wealth.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The problem can only be solved if both parties trust a third party to keep their wealth secret.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>MPC protocols allow solving this problem without any trusted third party.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The richer party learns nothing about the other's wealth beyond what \"I am richer\" reveals.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>From the output, the poorer party can deduce an upper bound on the richer party's wealth.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "MPC Output Reveals Information",
+        "item_body": "<p>Alice and Bob use perfect MPC to compute the average of their secret inputs: <code>avg = (x_A + x_B) / 2</code>. Check all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>After the protocol, both Alice and Bob learn the average <code>avg</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Alice can compute Bob's input as <code>x_B = 2 * avg - x_A</code>.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Bob can compute Alice's input as <code>x_A = 2 * avg - x_B</code>.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>MPC has failed because both parties learn each other's inputs.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>MPC worked correctly---it revealed exactly what a trusted third party would reveal (the output), and nothing more.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>This example shows that the choice of function <code>f</code> matters: some functions inherently reveal the inputs.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>To hide inputs, they should use a function where the output doesn't uniquely determine the inputs (e.g., average of many participants).</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>MPC guarantees that inputs remain completely hidden regardless of what function is computed.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "ZKPK and MPC Properties",
+        "item_body": "<p>Select all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [
+                4,
+                3
+              ],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>In a zero‐knowledge proof of knowledge protocol, the soundness property guarantees that a cheating prover cannot convince a verifier of a false statement with more than negligible probability.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The completeness property of a ZKPK protocol ensures that if the prover knows the secret and follows the protocol, the verifier will always be convinced that the statement is true.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The zero‐knowledge property in a ZKPK protocol permits the verifier to learn some partial information about the secret witness as long as the overall statement is verified.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>In secure multiparty computation, the privacy property guarantees that aside from the agreed-upon output, no additional information about any party's input is revealed to others.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>In secure multiparty computation, the privacy property guarantees that no information about any party's input is revealed to others.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>The fairness property in MPC protocols ensures that either every party receives the computed output simultaneously or none of them do.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>In MPC, verifiability allows participants to confirm that the output was correctly computed according to the protocol, without exposing any party's private input.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Hashing password is considered zero knowledge, since the hash function cannot be inverted the password hash doesn't reveal anything about the password.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Asymmetric cryptography can be combined with ZKPKs, enabling a prover to demonstrate knowledge of the private key corresponding to a public key without revealing the private key itself.</p>"
+            },
+            {
+              "position": 10,
+              "item_body": "<p>Unlike symmetric cryptography, which focuses on encrypting data to ensure confidentiality, ZKPKs are designed to show possession of a secret without exposing any part of it.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4,
+            6,
+            7,
+            9,
+            10
+          ]
+        }
+      }
+    }
+  ]
+}
