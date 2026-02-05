@@ -16,6 +16,7 @@ ASSIGNMENTS += assignments/seminar-usability.md
 
 QUIZZES += INL1Quiz-zkp.json
 QUIZZES += INL1Quiz-mpc.json
+QUIZZES += INL1Quiz-sidechannels.json
 
 SLIDES += ${COURSE_DIR}/zk-slides.pdf
 

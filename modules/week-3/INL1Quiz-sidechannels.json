@@ -1,0 +1,443 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Non-Cryptographic Attacks",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Non-Cryptographic Attacks lecture. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 1,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Side-channel attacks",
+        "item_body": "<p>Select all statements that are true about side-channel attacks.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Side-channel attacks exploit information leakage through physical implementation characteristics such as timing, power consumption, or electromagnetic emissions.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Side-channel attacks are due to physical implementation flaws, not theoretical weaknesses in the cryptographic algorithm.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Side-channel attacks exploit unintended channels in the implementation that were not considered in the algorithm's security analysis.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Side-channel attacks can work even when the cryptographic algorithm is mathematically secure and properly implemented.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Social engineering is a type of side-channel attack since it exploits human weaknesses rather than algorithmic ones.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Brute force attacks are considered side-channel attacks because they exploit weaknesses in key generation.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Cryptanalytic attacks that exploit mathematical structure are a form of side-channel attack.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Side-channel attacks require breaking the underlying mathematical problem (e.g., factoring large numbers for RSA).</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 2,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Active vs passive side-channels",
+        "item_body": "<p>Select all statements that correctly classify side-channel attacks as active or passive.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Passive attack: Recording electromagnetic emissions from a device to reconstruct information displayed on a screen.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Passive attack: Monitoring power consumption patterns during encryption operations to infer key information.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Passive attack: Measuring timing variations in cryptographic operations without interacting with the target.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Active attack: Forcing a device to encrypt chosen plaintexts while measuring its power consumption.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Active attack: Injecting faults during computation by techniques such as Rowhammer.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Social engineering is a type of passive side-channel attack since it only involves observation.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>All side-channel attacks require physical access to the target device.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Active side-channel attacks must break the encryption algorithm to be successful.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 3,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Efficient implementation and side-channels",
+        "item_body": "<p>Select all statements that are true about efficient implementation of cryptographic operations and their relationship to side-channel attacks.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Binary exponentiation (square-and-multiply) performs different operations depending on whether exponent bits are 0 or 1, which can leak information through timing.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Timing attacks on RSA can exploit the fact that multiplication and squaring operations may take different amounts of time.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Constant-time implementations perform the same sequence of operations regardless of secret data values to prevent timing leakage.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>k-ary and window methods for exponentiation process multiple bits at once, which can introduce timing variations that leak information about the exponent.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>There is often a trade-off between performance optimization and side-channel resistance: faster algorithms may introduce more timing variation.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>All exponentiation algorithms execute in constant time regardless of the exponent value.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Using larger window sizes (larger k values) in k-ary exponentiation always improves both performance and security.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Montgomery multiplication completely eliminates all timing side-channels in modular exponentiation.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>The choice of exponentiation algorithm has no security implications as long as the mathematical operations are correct.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 4,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "AES cache timing attacks",
+        "item_body": "<p>Select all statements that are true about cache timing attacks on AES.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>AES implementations that use table lookups (S-box lookups) create data-dependent memory access patterns.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Cache hits are faster than cache misses, creating measurable timing variations that can leak information.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The memory access patterns during S-box lookups can correlate with secret key material.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>An attacker can measure timing differences across many encryption operations to statistically infer key bits.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Cache timing attacks work even when the AES algorithm itself is mathematically secure.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Cache timing attacks exploit mathematical weaknesses in the AES S-box design.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Cache timing attacks only work if the attacker has physical access to the hardware running AES.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Using longer key sizes (256-bit instead of 128-bit) completely prevents cache timing attacks on AES.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Modern processors are immune to cache timing attacks due to hardware countermeasures.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Modern attack techniques",
+        "item_body": "<p>Select all statements that correctly describe Spectre, Rowhammer, and TOCTTOU attacks.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Spectre exploits speculative execution in modern CPUs to access unauthorized memory.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Spectre uses cache side-channels to leak information from speculatively executed instructions.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Rowhammer is a fault injection attack that uses repeated memory row access to induce bit flips.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Rowhammer can cause bit flips in adjacent memory rows due to electrical interference.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>TOCTTOU (Time-Of-Check Time-Of-Use) is a race condition vulnerability where the state changes between a security check and the use of a resource.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Spectre attacks break the mathematical security of encryption algorithms.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Rowhammer attacks only affect old DDR2 memory and have been completely eliminated in modern DDR4 and DDR5 memory.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>TOCTTOU is a type of side-channel attack that measures timing variations.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Software patches and microcode updates can completely eliminate all Spectre, Rowhammer, and TOCTTOU vulnerabilities.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Countermeasures",
+        "item_body": "<p>Select all statements that are true about countermeasures against side-channel attacks.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": true
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Constant-time implementations avoid data-dependent timing variations by ensuring all execution paths take the same time.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Masking and blinding techniques randomize intermediate values during computation to reduce information leakage.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Cache-oblivious algorithms are designed to minimize timing variations caused by cache behavior.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>AES-NI hardware instructions provide resistance to cache timing attacks by performing operations without table lookups.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Physical shielding such as Faraday cages can reduce electromagnetic emissions that could be exploited.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Algorithmic countermeasures such as exponent blinding in RSA can defend against timing attacks on private key operations.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Using longer cryptographic keys (e.g., 256-bit instead of 128-bit) eliminates all side-channel vulnerabilities.</p>"
+            },
+            {
+              "position": 8,
+              "item_body": "<p>Asymmetric cryptography (RSA, ECC) is inherently immune to all side-channel attacks.</p>"
+            },
+            {
+              "position": 9,
+              "item_body": "<p>Software updates alone can eliminate all hardware-based side-channel vulnerabilities.</p>"
+            },
+            {
+              "position": 10,
+              "item_body": "<p>Side-channel attacks only affect legacy cryptographic systems; modern implementations are immune.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}
