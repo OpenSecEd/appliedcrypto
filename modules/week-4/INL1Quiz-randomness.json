@@ -425,26 +425,22 @@
           "choices": [
             {
               "position": 1,
-              "item_body": "<p>A cryptographically secure PRNG is designed so that even if part of its internal state or output is revealed, its past and future values should remain unpredictable.</p>"
-            },
-            {
-              "position": 2,
               "item_body": "<p>Even a strong CSPRNG can become insecure if seeded with insufficient entropy or predictable values.</p>"
             },
             {
-              "position": 3,
+              "position": 2,
               "item_body": "<p>Simple deterministic methods like elementary LCGs may pass basic statistical tests but are not considered cryptographically secure.</p>"
             },
             {
-              "position": 4,
+              "position": 3,
               "item_body": "<p>Proper seeding using high-entropy inputs is critical; without it, even a well-designed PRNG can be compromised.</p>"
             },
             {
-              "position": 5,
+              "position": 4,
               "item_body": "<p>If one has access to a HWRNG, one should only use that. It's much more secure than a PRNG.</p>"
             },
             {
-              "position": 6,
+              "position": 5,
               "item_body": "<p>If one has access to a HWRNG, one should use that to seed a PRNG. Using the PRNG helps from depleting the entropy pool in the HWRNG.</p>"
             }
           ]
@@ -454,8 +450,54 @@
             1,
             2,
             3,
-            4,
-            6
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 9,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Partial CSPRNG compromise",
+        "item_body": "<p>Assume a CSPRNG is partially compromised such that 96 bits of the 128-bit internal state is leaked. Which of these is/are true:</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The CSPRNG remains secure, due to the forward security inherent to all CSPRNGs.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>The CSPRNG is immediately compromised.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The CSPRNG can be compromised by a brute force attack with O(2<sup>32</sup>) operations.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>The CSPRNG can be compromised by a brute force attack with O(2<sup>96</sup>) operations.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>None of the above.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            3
           ]
         }
       }
