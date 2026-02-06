@@ -1,0 +1,464 @@
+{
+  "quiz_type": "new",
+  "settings": {
+    "title": "INL1Quiz Randomness",
+    "instructions": "<h3 id=\"overview\">Overview</h3>\n<p>This is the INL1Quiz for the Randomness lecture. You must get 100% to\npass the course. You can retake it. I recommend that you attempt it\nbefore the corresponding lecture and then retake it again\nafterwards.</p>\n<h3 id=\"grading\">Grading</h3>\n<p>If you fail, you will have to go study a bit more and complement your\nanswers. There is a <strong>one hour cool-down between\nattempts</strong>. You <strong>must have 100% correct answers</strong>\nto pass. Questions will not give partial credit, <strong>you get either\nfull score or none</strong>.</p>\n<p>I suggest that you write down a short motivation for each answer,\nsuch that you can review them for the next attempt.</p>\n<p><strong>There is no deadline.</strong> (Well, the deadline is when\nyou want to get the grade. When all INL1 assignments have a passing\ngrade in Canvas, they'll be automatically transferred to LADOK. This is\ndone once a week, then there might be a few days delay since one of us\nwill have to see the email notification and go certify the\nresults---i.e.&nbsp;click OK---manually in LADOK.)</p>\n",
+    "time_limit": null,
+    "points_possible": 1.0,
+    "due_at": null,
+    "unlock_at": null,
+    "lock_at": null,
+    "quiz_settings": {
+      "calculator_type": "none",
+      "filter_ip_address": false,
+      "filters": {},
+      "one_at_a_time_type": "none",
+      "allow_backtracking": true,
+      "shuffle_answers": false,
+      "shuffle_questions": false,
+      "require_student_access_code": false,
+      "student_access_code": null,
+      "has_time_limit": false,
+      "session_time_limit_in_seconds": 0,
+      "multiple_attempts": {
+        "score_to_keep": "highest",
+        "cooling_period": true,
+        "build_on_last_attempt": true,
+        "cooling_period_seconds": 3600,
+        "multiple_attempts_enabled": true
+      },
+      "result_view_settings": {
+        "display_items": true,
+        "display_item_feedback": false,
+        "display_item_response": true,
+        "display_points_awarded": true,
+        "result_view_restricted": true,
+        "display_points_possible": true,
+        "display_item_response_qualifier": "after_last_attempt",
+        "display_item_response_correctness": true,
+        "display_item_response_correctness_qualifier": "after_last_attempt"
+      }
+    }
+  },
+  "items": [
+    {
+      "position": 1,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Entropy and randomness",
+        "item_body": "<p>Check all statements that are true about entropy and randomness.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Entropy measures the unpredictability (uncertainty) in a random variable.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>A uniform distribution over N outcomes has maximum entropy of log<sub>2</sub>(N) bits.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>A biased coin (99% heads) has higher entropy than a fair coin.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>If a random variable always produces the same value, its entropy is zero.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>A source with high entropy is more predictable than one with low entropy.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 2,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "TRNG vs PRNG",
+        "item_body": "<p>Check all statements that are true about True Random Number Generators (TRNGs) and Pseudo-Random Number Generators (PRNGs).</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>A TRNG derives randomness from physical processes (thermal noise, radioactive decay).</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>A PRNG is a deterministic algorithm that produces a sequence from an initial seed.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Given the same seed, a PRNG will always produce the same output sequence.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>TRNGs are always faster than PRNGs, which is why they are preferred in high-throughput applications.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>A PRNG can pass statistical randomness tests even though it is fully determined by its seed.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>A TRNG does not need post-processing because physical sources always produce perfectly uniform distributions.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 3,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Cryptographically secure PRNGs",
+        "item_body": "<p>Check all statements that are true about cryptographically secure pseudo-random number generators (CSPRNGs).</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>A CSPRNG must produce output computationally indistinguishable from true random bits.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Any PRNG that passes the NIST statistical test suite is automatically cryptographically secure.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>A CSPRNG must satisfy the next-bit test: given <code>k</code> bits, no polynomial-time algorithm can predict bit <code>k+1</code> with probability significantly greater than 1/2.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>If a CSPRNG's internal state is compromised, past outputs should still remain unpredictable (backtracking resistance).</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Cryptographic security of a PRNG means it will never repeat its output sequence.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            3,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 4,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Seeding and entropy sources",
+        "item_body": "<p>Check all statements that are true about seeding pseudo-random number generators.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>The security of a CSPRNG depends critically on the seed having sufficient entropy.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Using the current time as the sole seed for a CSPRNG is generally secure, because time always changes.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Operating systems typically gather entropy from multiple sources (keyboard timing, disk I/O, hardware noise) to seed their RNG.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>If an attacker determines the seed, they can reproduce the entire CSPRNG output.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>Reseeding periodically with fresh entropy mitigates the impact of a state compromise.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>A CSPRNG with a 256-bit seed always provides 256 bits of security, regardless of how the seed was generated.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 5,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Weak PRNGs",
+        "item_body": "<p>Check all statements that are true about linear congruential generators (LCGs) and other non-cryptographic PRNGs.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>An LCG computes <code>x<sub>n+1</sub> = (a &middot; x<sub>n</sub> + c) mod m</code> for fixed constants <code>a</code>, <code>c</code>, <code>m</code>.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>LCGs are fast and simple, suitable for non-cryptographic applications like simulations.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>LCGs are cryptographically secure because their long period length makes output unpredictable.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Given a few consecutive LCG outputs, an attacker can determine the parameters and predict all future values.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>The Mersenne Twister is suitable for cryptographic key generation because it has a very long period.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "position": 6,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Hardware RNGs",
+        "item_body": "<p>Check all statements that are true about hardware and physical random number generators.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>HWRNGs based on quantum phenomena (e.g. shot noise) can in principle provide true randomness.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>A HWRNG's raw output should typically pass through conditioning (whitening) to remove bias.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>The main advantage of a HWRNG over a PRNG is throughput: hardware generators produce bits much faster.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Heuristic random generators gather entropy from unpredictable system events (interrupt timing, network jitter) rather than a dedicated hardware source.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>An important reason to use a HWRNG to seed a PRNG rather than using the HWRNG directly is that the PRNG can supply bits at higher rate without depleting the entropy pool.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            4,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "position": 7,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "Randomness in cryptographic protocols",
+        "item_body": "<p>Check all statements that are true about the role of randomness in cryptographic protocols.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>Randomness is essential for key generation: if an attacker can narrow down the possible keys, brute-force becomes feasible.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Many encryption schemes (CBC mode, RSA-OAEP) require fresh random values per operation; reusing them can compromise security.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>In Diffie\u2013Hellman, each party chooses a random secret exponent. If the RNG is compromised, an eavesdropper can compute the shared secret.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>A nonce used in a protocol does not need to be random as long as it is unique; therefore a simple counter is always a safe choice.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>If a digital signature scheme derives per-signature randomness deterministically from the message and key (RFC 6979), it avoids the failure mode of a broken RNG.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>Sony's PS3 ECDSA key was compromised because the implementation reused the same random nonce <code>k</code> for every signature, allowing the private key to be computed.</p>"
+            },
+            {
+              "position": 7,
+              "item_body": "<p>Using a constant initialization vector (IV) in AES-CTR mode is safe as long as the key is changed for each message.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "position": 8,
+      "points_possible": 1.0,
+      "entry": {
+        "title": "RNGs",
+        "item_body": "<p>Select all statements that are true.</p>",
+        "interaction_type_slug": "multi-answer",
+        "scoring_algorithm": "AllOrNothing",
+        "properties": {
+          "shuffle_rules": {
+            "choices": {
+              "to_lock": [],
+              "shuffled": false
+            }
+          }
+        },
+        "interaction_data": {
+          "choices": [
+            {
+              "position": 1,
+              "item_body": "<p>A cryptographically secure PRNG is designed so that even if part of its internal state or output is revealed, its past and future values should remain unpredictable.</p>"
+            },
+            {
+              "position": 2,
+              "item_body": "<p>Even a strong CSPRNG can become insecure if seeded with insufficient entropy or predictable values.</p>"
+            },
+            {
+              "position": 3,
+              "item_body": "<p>Simple deterministic methods like elementary LCGs may pass basic statistical tests but are not considered cryptographically secure.</p>"
+            },
+            {
+              "position": 4,
+              "item_body": "<p>Proper seeding using high-entropy inputs is critical; without it, even a well-designed PRNG can be compromised.</p>"
+            },
+            {
+              "position": 5,
+              "item_body": "<p>If one has access to a HWRNG, one should only use that. It's much more secure than a PRNG.</p>"
+            },
+            {
+              "position": 6,
+              "item_body": "<p>If one has access to a HWRNG, one should use that to seed a PRNG. Using the PRNG helps from depleting the entropy pool in the HWRNG.</p>"
+            }
+          ]
+        },
+        "scoring_data": {
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}

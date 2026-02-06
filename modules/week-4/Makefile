@@ -6,6 +6,8 @@ PULL_MODULE_RE ?= $(MODULE_RE)
 PAGES += lecture-randomness.md
 PAGES += lecture-rwc1.md
 
+QUIZZES += INL1Quiz-randomness.json
+
 SLIDES += ${COURSE_DIR}/digital-postbox-slides.pdf
 
 ASSIGNMENTS += assignments/prep-impact-considerations.md
