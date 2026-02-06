@@ -1,6 +1,6 @@
 ---
 title: 'Lecture 4/2: real-world crypto, part I (Daniel) on ZOOM+CAMPUS'
-url: lecture-4-slash-2-real-world-crypto-part-i-daniel-on-zoom+campus
+regex: 'Lecture.*Real-world crypto, part I'
 published: true
 front_page: false
 editing_roles: teachers
@@ -13,18 +13,19 @@ We will talk about some real-world protocols that apply cryptography.
 
 ### Tutorial: Digital Postbox
 
-We use Swedish digital postbox services (Kivra, eBoks, Digimail) as a case
-study for designing a security-critical system.
+We use Swedish digital postbox services (e.g. Min myndighetspost, Kivra, eBoks, 
+Digimail) as a case study for designing a secure system using cryptography.
 
-In groups, you will:
+You will work in groups to design a secure digital postbox system. You will
 
-- Design registration, sending, and reading functionality
-- Analyze security requirements (confidentiality, authenticity, access control)
-- Examine what data vs metadata is exposed to whom
-- Consider anonymity extensions and digital identity requirements
+- analyze security requirements (confidentiality, authenticity, access 
+  control),
+- examine what data vs metadata is exposed to whom,
+- design a secure protocol for message delivery and access, and
+- discuss potential vulnerabilities and mitigations.
 
-This is a first design attempt. We return to this exercise in Week 6 with
-protocol analysis tools.
+This is a first design attempt. We return to this exercise in Week 6 after the 
+lecture-series on protocol design.
 
 [digital-postbox-slides.pdf](https://people.kth.se/~dbosk/tilkry/digital-postbox-slides.pdf)
 
