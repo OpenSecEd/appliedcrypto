@@ -45,78 +45,6 @@
       "position": 1,
       "points_possible": 1.0,
       "entry": {
-        "title": "ZKPK Properties",
-        "item_body": "<div>Match properties of zero knowledge proofs (of knowledge) with their informal definitions.</div>",
-        "interaction_type_slug": "matching",
-        "scoring_algorithm": "DeepEquals",
-        "properties": {
-          "shuffle_rules": {
-            "questions": {
-              "shuffled": false
-            }
-          }
-        },
-        "interaction_data": {
-          "answers": [
-            "When both parties are honest the verifier accepts.",
-            "The verifier accepts a false claim with low probability.",
-            "The prover knows a specific representation of a witness.",
-            "A transcript of an interaction with a verifier can be sampled efficiently."
-          ],
-          "questions": [
-            {
-              "item_body": "Completeness"
-            },
-            {
-              "item_body": "Soundness"
-            },
-            {
-              "item_body": "Knowledge extraction"
-            },
-            {
-              "item_body": "Zero knowledge"
-            }
-          ]
-        },
-        "scoring_data": {
-          "value": {
-            "12da9aa4-ffb1-444f-815c-96597c430550": "When both parties are honest the verifier accepts.",
-            "37640a59-fee3-421e-abc3-2f50a7dd8fdb": "The prover knows a specific representation of a witness.",
-            "5f0191b4-a2fa-4a48-bf26-a67ec0d308eb": "A transcript of an interaction with a verifier can be sampled efficiently.",
-            "b2143b6e-eea2-4e2a-b2a5-4175b6550598": "The verifier accepts a false claim with low probability."
-          },
-          "edit_data": {
-            "matches": [
-              {
-                "answer_body": "When both parties are honest the verifier accepts.",
-                "question_id": "12da9aa4-ffb1-444f-815c-96597c430550",
-                "question_body": "Completeness"
-              },
-              {
-                "answer_body": "The verifier accepts a false claim with low probability.",
-                "question_id": "b2143b6e-eea2-4e2a-b2a5-4175b6550598",
-                "question_body": "Soundness"
-              },
-              {
-                "answer_body": "The prover knows a specific representation of a witness.",
-                "question_id": "37640a59-fee3-421e-abc3-2f50a7dd8fdb",
-                "question_body": "Knowledge extraction"
-              },
-              {
-                "answer_body": "A transcript of an interaction with a verifier can be sampled efficiently.",
-                "question_id": "5f0191b4-a2fa-4a48-bf26-a67ec0d308eb",
-                "question_body": "Zero knowledge"
-              }
-            ],
-            "distractors": []
-          }
-        }
-      }
-    },
-    {
-      "position": 2,
-      "points_possible": 1.0,
-      "entry": {
         "title": "Commitments in Zero-Knowledge Proofs",
         "item_body": "<p>Check all statements that are true about commitments in zero-knowledge proofs.</p>",
         "interaction_type_slug": "multi-answer",
@@ -191,7 +119,7 @@
       }
     },
     {
-      "position": 3,
+      "position": 2,
       "points_possible": 1.0,
       "entry": {
         "title": "Zero-Knowledge Proofs & Schnorr's Protocol",
@@ -250,7 +178,7 @@
       }
     },
     {
-      "position": 4,
+      "position": 3,
       "points_possible": 1.0,
       "entry": {
         "title": "Fiat-Shamir Transform & Non-Interactive ZKP",
@@ -319,7 +247,7 @@
       }
     },
     {
-      "position": 5,
+      "position": 4,
       "points_possible": 1.0,
       "entry": {
         "title": "ZKP vs Digital Signatures for Authentication",
@@ -374,7 +302,7 @@
       }
     },
     {
-      "position": 6,
+      "position": 5,
       "points_possible": 1.0,
       "entry": {
         "title": "ZKP Applications",
@@ -433,7 +361,7 @@
       }
     },
     {
-      "position": 7,
+      "position": 6,
       "points_possible": 1.0,
       "entry": {
         "title": "Zero-Knowledge Property",
@@ -492,7 +420,7 @@
       }
     },
     {
-      "position": 8,
+      "position": 7,
       "points_possible": 1.0,
       "entry": {
         "title": "Knowledge Extraction and Soundness",
