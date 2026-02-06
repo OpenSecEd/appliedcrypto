@@ -31,12 +31,9 @@ lecture-zk/zkp-smc-slides.pdf::
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
 pull-pages:
-	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "ZKP protocols" > lecture-zkp-protocols.html \
-		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "ZKP and MPC protocols" > lecture-zkp-protocols.html
-	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "MPC protocols" > lecture-mpc-protocols.html \
-		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "ZKP and MPC protocols" > lecture-mpc-protocols.html
-	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Non-cryptographic attacks" > lecture-non-cryptographic-attacks.html \
-		|| canvaslms pages view --html -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -p "Non-cryptographic attacks" > lecture-non-cryptographic-attacks.html
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture.*ZKP protocols" > lecture-zkp-protocols.html
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture.*Non-cryptographic attacks" > lecture-non-cryptographic-attacks.html
+	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" -p "Lecture.*MPC protocols" > lecture-mpc-protocols.html
 
 .PHONY: pull-assignments
 pull-assignments:
