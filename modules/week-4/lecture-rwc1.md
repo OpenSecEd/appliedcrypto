@@ -1,5 +1,5 @@
 ---
-title: 'Lecture 4/2: real-world crypto, part I (Daniel) on ZOOM+CAMPUS'
+title: 'Lecture 4/2: Real-world crypto, part I (Daniel) on ZOOM+CAMPUS'
 regex: 'Lecture.*Real-world crypto, part I'
 published: true
 front_page: false
