@@ -3,7 +3,7 @@ MODULE_RE ?= Week 4
 PULL_COURSE ?= tilkry25
 PULL_MODULE_RE ?= $(MODULE_RE)
 
-PAGES += lecture-randomness.md
+PAGES += lecture-randomness.html
 PAGES += lecture-rwc1.md
 
 QUIZZES += INL1Quiz-randomness.json
