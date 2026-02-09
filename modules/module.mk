@@ -42,7 +42,7 @@ push-pages: .pushed-pages
 
 $(PUSH_STAMPDIR_PAGES)/%: %
 	@mkdir -p $(dir $@)
-	canvaslms pages edit -c "${COURSE}" -f "$<" --create
+	canvaslms pages edit -c "${COURSE}" -f "$<"
 	touch $@
 endif
 

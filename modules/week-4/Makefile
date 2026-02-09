@@ -25,9 +25,9 @@ ${COURSE_DIR}/digital-postbox-slides.pdf: tutorial-digital-postbox/slides.pdf
 # Note: Canvas treats module/page selectors as regexes.
 .PHONY: pull-pages
 pull-pages:
-	canvaslms pages view --html -c "${COURSE}" -M "${MODULE_RE}" \
+	canvaslms --no-cache pages view --html -c "${COURSE}" -M "${MODULE_RE}" \
 		-p "Lecture.*Randomness" > lecture-randomness.html
-	canvaslms pages view -c "${COURSE}" -M "${MODULE_RE}" \
+	canvaslms --no-cache pages view -c "${COURSE}" -M "${MODULE_RE}" \
 		-p "Lecture.*Real-world crypto, part I" > lecture-rwc1.md
 
 .PHONY: pull-assignments
