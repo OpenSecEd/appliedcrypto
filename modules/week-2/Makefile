@@ -9,6 +9,7 @@ PAGES += lecture-asymmetric-crypto.html
 
 SLIDES += ${COURSE_DIR}/one-way-slides.pdf
 SLIDES += ${COURSE_DIR}/applied-hash-slides.pdf
+SLIDES += ${COURSE_DIR}/pubkey-slides.pdf
 
 QUIZZES += INL1Quiz-hash.json
 QUIZZES += INL1Quiz-asymmetric.json
@@ -23,6 +24,9 @@ ${COURSE_DIR}/one-way-slides.pdf: lecture-hash-functions/one-way-slides.pdf
 	${LINK}
 
 ${COURSE_DIR}/applied-hash-slides.pdf: lecture-applied-hash/slides.pdf
+	${LINK}
+
+${COURSE_DIR}/pubkey-slides.pdf: lecture-asymmetric-crypto/pub-key-slides.pdf
 	${LINK}
 
 # Note: Canvas treats module/page selectors as regexes.
