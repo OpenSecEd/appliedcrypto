@@ -1,3 +1,4 @@
+SUBDIR+=	modules
 SUBDIR+= 	intro
 #SUBDIR+= 	shared-key
 SUBDIR+= 	one-way
@@ -5,7 +6,7 @@ SUBDIR+= 	pub-key
 SUBDIR+= 	zkp-smc
 SUBDIR+= 	sidechannels
 
-SUBDIR+= 	spuriouslab
+SUBDIR+= 	labs
 
 SUBDIR+= 	bitcoin
 #SUBDIR+=	cryptoproofs
