@@ -19,3 +19,6 @@
 [submodule "didactic"]
 	path = didactic
 	url = https://github.com/dbosk/didactic.git
+[submodule "labs/forcing"]
+	path = labs/forcing
+	url = git@github.com:OpenSecEd/forcing.git
