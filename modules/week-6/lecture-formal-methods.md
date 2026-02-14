@@ -1,5 +1,5 @@
 ---
-title: 'Lecture 17/2: Formal methods for cryptography (Karl) on CAMPUS'
+title: 'Lecture 17/2: Formal methods for cryptography (Karl) on CAMPUS+ZOOM'
 url: lecture-17-slash-2-formal-methods-for-cryptography-karl-on-campus
 published: true
 front_page: false
