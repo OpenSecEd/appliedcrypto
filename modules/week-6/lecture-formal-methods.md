@@ -1,6 +1,6 @@
 ---
 title: 'Lecture 17/2: Formal methods for cryptography (Karl) on CAMPUS+ZOOM'
-url: lecture-17-slash-2-formal-methods-for-cryptography-karl-on-campus
+regex: 'Lecture.*Formal methods for cryptography'
 published: true
 front_page: false
 editing_roles: teachers

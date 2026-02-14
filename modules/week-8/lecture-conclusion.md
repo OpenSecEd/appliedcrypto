@@ -1,11 +1,11 @@
 ---
-title: 'Lecture 2/3: Conclusion (Daniel) on ZOOM+CAMPUS'
-url: lecture-2-slash-3-conclusion-daniel-on-zoom+campus
+title: 'Lecture 2/3 at 8:15: Conclusion (Daniel) on ZOOM+CAMPUS'
+regex: "Lecture.*Conclusion"
 published: true
 front_page: false
 editing_roles: teachers
 modules:
-- 'Week 8 (calendar week 10) '
+- 'Week 8'
 ---
 ## Conclusion
 

@@ -1,6 +1,6 @@
 ---
 title: 'Lecture 16/2: Real-world crypto, part II (Daniel) on ZOOM+CAMPUS'
-url: lecture-16-slash-2-real-world-crypto-part-ii-daniel-on-zoom+campus
+regex: 'Lecture.*Real-world crypto, part II'
 published: true
 front_page: false
 editing_roles: teachers

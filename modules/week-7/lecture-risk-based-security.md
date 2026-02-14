@@ -1,11 +1,11 @@
 ---
-title: 'Lecture 25/2: Risk-based security (Karl) on CAMPUS'
-url: lecture-25-slash-2-risk-based-security-karl-on-campus
+title: 'Lecture 25/2: Risk-based security (Karl) on CAMPUS+ZOOM'
+regex: 'Lecture.*Risk-based security'
 published: true
 front_page: false
 editing_roles: teachers
 modules:
-- 'Week 7 (calendar week 9) '
+- Week 7
 ---
 This lecture digs deeper into how to think when building secure
 solutions/products: overall security analysis, security arguments and
