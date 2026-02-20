@@ -27,10 +27,10 @@ clean:
 	${RM} notes.pdf slides.pdf
 
 
-INCLUDE_MAKEFILES=../makefiles
+INCLUDE_MAKEFILES=../../../makefiles
 include ${INCLUDE_MAKEFILES}/tex.mk
 include ${INCLUDE_MAKEFILES}/noweb.mk
-INCLUDE_DIDACTIC=../didactic
+INCLUDE_DIDACTIC=../../../didactic
 include ${INCLUDE_DIDACTIC}/didactic.mk
-INCLUDE_BIBSP=../bibsp
+INCLUDE_BIBSP=../../../bibsp
 include ${INCLUDE_BIBSP}/bibsp.mk
