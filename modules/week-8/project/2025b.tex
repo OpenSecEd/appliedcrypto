@@ -113,12 +113,6 @@ The server~\(S\) coordinates who has access to which compartment and when.
 
 \subsection{Symmetric key approach}
 
-\NewVariable{\KBS}{k_{BS}}
-\NewVariable{\KToken}{k_{\text{token}}}
-\NewAlgorithm{\MAC}{HMAC}
-\NewAlgorithm{\Enc}{Enc}
-\NewAlgorithm{\Dec}{Dec}
-
 The simplest design uses a shared symmetric key~\(\KBS\) between each
 box~\(B\) and the server~\(S\).
 The server stores all box keys in a secure database.
@@ -333,11 +327,6 @@ cryptographically.
 
 \subsection{Signed delivery records}
 
-\NewAlgorithm{\Sign}{Sign}
-\NewAlgorithm{\Ver}{Verify}
-\NewVariable{\SKD}{sk_D}
-\NewVariable{\PKD}{pk_D}
-
 When the delivery person~\(D\) deposits a parcel, they should create a
 signed record that cannot later be denied.
 We give each delivery person a key pair \((\SKD, \PKD)\) for digital
@@ -482,9 +471,6 @@ want boxes to be completely standalone?
 \end{exercise}
 
 \subsection{Asymmetrically signed tokens}
-
-\NewVariable{\SKS}{sk_S}
-\NewVariable{\PKS}{pk_S}
 
 Instead of HMAC, the server signs tokens using its private key~\(\SKS\).
 Each box is provisioned with the server's public key~\(\PKS\) during
@@ -695,9 +681,6 @@ significant privacy concern.
 \end{exercise}
 
 \subsection{Blind signatures for access tokens}
-
-\NewAlgorithm{\Blind}{Blind}
-\NewAlgorithm{\Unblind}{Unblind}
 
 One approach uses blind signatures.
 The customer blinds their access request before sending it to the server:
@@ -1055,9 +1038,6 @@ Key challenges include:
   Design an architecture where multiple delivery providers can use shared boxes 
   while maintaining data separation.
 \end{exercise}
-
-\NewVariable{\SKProv}{sk_{\text{prov}}}
-\NewVariable{\PKProv}{pk_{\text{prov}}}
 
 We introduce a \emph{box operator} as a trusted intermediary:
 \begin{enumerate}

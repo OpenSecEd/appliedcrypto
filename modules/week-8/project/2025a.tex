@@ -107,8 +107,6 @@ With that shared key, the camera~\(C\) can encrypt (confidentiality) and MAC
 
 \subsection{Managing the keys}
 
-\NewVariable{\KCR}{k_{CR}}
-
 We have a shared symmetric key~\(\KCR\) between the camera~\(C\) and the 
 reviewers~\(R\).
 (This means that we need one such key for each camera.)
@@ -133,11 +131,6 @@ authenticate themselves to the server which then decrypts the key~\(\KCR\) to
 decrypt the video material by camera~\(C\).
 
 \subsection{Encrypting video for \(R\)}
-
-\NewAlgorithm{\Enc}{Enc}
-\NewAlgorithm{\Dec}{Dec}
-\NewAlgorithm{\KDF}{KDF}
-\NewVariable{\KENC}{k_{CR}^{\Enc}}
 
 \begin{exercise}
   What algorithm should we use to encrypt the video material?
@@ -219,8 +212,6 @@ Running the decryption on \(c' = c_1, c_3, \ldots, c_n,\) will fail.
   We must initialize the camera for this to work.
   What do we need to do?
 \end{exercise}
-
-\NewVariable{\IV}{IV}
 
 We can initialize the camera with the key~\(\KCR\) and the IV~\(\IV\).
 (The IV was implicit in the function~\Enc\ above.)
@@ -329,9 +320,6 @@ Similarly to above, we let
   c_i' &= \Enc[\KENC, \IV \concat i] \text{ is the encryption of the counter}.
 \end{align*}
 
-\NewAlgorithm{\MAC}{HMAC}
-\NewVariable{\KMAC}{k_{CR}^{\MAC}}
-
 We also need to ensure integrity.
 We will use HMAC-SHA256 for this.
 We use another key-derivation function to derive the HMAC key from \(\KCR\):
@@ -435,12 +423,6 @@ MACs allow reviewers to verify authenticity but also to \enquote{forge} valid
 MACs, which weakens our guarantee of authenticity and integrity---anyone who 
 can verify authenticity can also fake it.
 
-% Define camera asymmetric key pair
-\NewVariable{\sk}{sk}
-\NewVariable{\vk}{vk}
-\NewVariable{\SKC}{\sk_C}
-\NewVariable{\VKC}{\vk_C}
-
 To address this, we switch to digital signatures, \ie asymmetric
 authentication.
 Now, the camera \emph{alone} possesses a private signing key (\SKC), and anyone 
@@ -461,10 +443,6 @@ We keep using a symmetric encryption key \(\KENC\) between camera and reviewers
 \begin{exercise}
   How should we sign the video material?
 \end{exercise}
-
-% Define signature scheme
-\NewAlgorithm{\Sign}{Sign}
-\NewAlgorithm{\Ver}{Ver}
 
 Suppose, as before, that the video is divided into chunks \((m_1,\ldots, 
 m_n)\).
@@ -584,12 +562,6 @@ Symmetric encryption presents some limitations:
     transfer.
 \end{itemize}
 
-\NewVariable{\pk}{pk}
-\NewVariable{\PKR}{\pk_R}
-\NewVariable{\SKR}{\sk_R}
-\NewAlgorithm{\AsymEnc}{AsymEnc}
-\NewAlgorithm{\AsymDec}{AsymDec}
-
 To address these concerns, we consider \emph{asymmetric} encryption.
 Now, each reviewer (or the reviewers' secure server) possesses an asymmetric 
 key pair (public key \(\PKR\), private key \(\SKR\)) for encryption.
@@ -673,9 +645,6 @@ impractical; most public-key schemes are only suitable for encrypting short
 messages (\eg symmetric keys).
 So instead, we let \(\AsymEnc\) (and \(\AsymDec\)) use \emph{hybrid 
 encryption}:
-
-\NewVariable{\Kn}{k_{CR}^{(n)}}
-\NewVariable{\Cn}{c_{\text{env}}^{(n)}}
 
 \begin{enumerate}
   \item For session \(n\), the camera generates a fresh, random symmetric key 
@@ -955,9 +924,6 @@ action performed, and a reference to the affected data.
 
 \subsection{Tamper-evident logging with hash chains}
 
-\NewVariable{\LogEntry}{L}
-\NewVariable{\LogHash}{h}
-
 To make the audit log tamper-evident, we use a hash chain.
 Each log entry~\(\LogEntry_i\) includes a hash of the previous entry:
 \begin{align*}
@@ -1164,9 +1130,6 @@ Two approaches address this:
 
 We adopt the dual-signature approach as it uses standard cryptographic 
 primitives.
-
-\NewVariable{\SKRev}{sk_{\text{rev}}}
-\NewVariable{\VKRev}{vk_{\text{rev}}}
 
 Each reviewer has a personal signing key pair \((\SKRev, \VKRev)\) certified by 
 the police authority.
