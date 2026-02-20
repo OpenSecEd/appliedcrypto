@@ -6,7 +6,8 @@ PULL_MODULE_RE ?= $(MODULE_RE)
 PAGES += guest-lecture.md
 PAGES += lecture-conclusion.md
 
-ASSIGNMENTS += assignments/inl1oral.md
+ASSIGNMENTS += INL1Oral.md
+ASSIGNMENTS += INL1Written.md
 
 include ../module.mk
 
@@ -21,5 +22,7 @@ pull-pages:
 .PHONY: pull-assignments
 pull-assignments:
 	@mkdir -p assignments
-	canvaslms assignments view -c "${COURSE}" -M "${MODULE_RE}" -a "INL1Oral" > assignments/inl1oral.md \
-		|| canvaslms assignments view -c "${PULL_COURSE}" -M "${PULL_MODULE_RE}" -a "INL1Oral" > assignments/inl1oral.md
+	canvaslms assignments view -c "${COURSE}" -a "INL1Oral" > INL1Oral.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -a "INL1Oral" > INL1Oral.md
+	canvaslms assignments view -c "${COURSE}" -a "INL1Written" > INL1Written.md \
+		|| canvaslms assignments view -c "${PULL_COURSE}" -a "INL1Written" > INL1Written.md
