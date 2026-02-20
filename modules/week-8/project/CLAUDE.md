@@ -67,3 +67,14 @@ project/
 - Git submodules: `makefiles/`, `didactic/`, `bibsp/`
 - Python 3 (for pythontex if used)
 - minted package (requires `-shell-escape`)
+
+
+<claude-mem-context>
+# Recent Activity
+
+### Feb 20, 2026
+
+| ID | Time | T | Title | Read |
+|----|------|---|-------|------|
+| #554 | 11:10 AM | 🔵 | Examined existing police body camera cryptography chapter structure | ~334 |
+</claude-mem-context>
