@@ -8,8 +8,7 @@ points_possible: 1.0
 published: true
 rubric: null
 modules:
-- 'Week 8 (calendar week 10) '
-- 'Week 9 (calendar week 11)  '
+- Week 9
 ---
 INL1 has 3 parts:
 

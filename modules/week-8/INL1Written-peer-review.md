@@ -4,7 +4,7 @@ regex: INL1Written Peer Review
 due_at: null
 unlock_at: null
 lock_at: null
-points_possible: 25.0
+points_possible: 100.0
 published: true
 rubric: null
 modules:
