@@ -346,6 +346,441 @@ attacker from forcing a counter reset.
 \end{enumerate}
 
 
+\section{Binding messages to a direction}
+\label{EnergyDirectionBinding}
+
+\ltnote{%
+  We now focus on another critical aspect of protocol messages: their
+  direction.
+  The object of learning is that a message is not only a payload with
+  freshness, but also belongs to a role and a direction.
+  We keep the actors, shared-secret setting, and replay-protection mechanism
+  invariant while varying whether direction is represented explicitly.
+  This creates contrast between a protocol where direction is only implicit
+  in the surrounding prose and one where direction is cryptographically bound
+  to each message.
+  Following try-first pedagogy, we first ask the students to reason about
+  whether two counters---one in each direction---are enough on their own.
+  The generalization will come later: direction can be introduced in several
+  ways, such as in the nonce, in authenticated metadata, or by deriving
+  separate keys.
+}
+
+In \cref{EnergyReplayProtection}, we introduced sequence numbers to stop
+replays.
+Suppose now that the controller and the device each maintain one counter for
+the messages they send.
+Then both directions may use the values \(0, 1, 2, \ldots\).
+If direction is not represented explicitly, the protocol leaves it unclear
+whether the same sequence number under the same key is meant for the same or
+for different purposes.
+
+\begin{exercise}
+  If both the controller and the device send a message with sequence
+  number~\(0\), using the same keys, what tells the receiver which direction
+  the message belongs to?
+  Is the sequence number alone enough?
+\end{exercise}
+
+The sequence number alone is not enough.
+Freshness tells us whether a message is new, but not whether it is a command,
+an acknowledgment, or a report, nor whether it was meant for the
+\(H \rightarrow D_i\) direction or the \(D_i \rightarrow H\) direction.
+Direction is part of the contract of the protocol and should therefore be
+bound cryptographically, not only inferred from context.
+
+\subsection{Direction as part of the nonce}
+
+One simple way to do this is to include the direction in the nonce.
+Let \(\mathit{dir} \in \{H \rightarrow D_i, D_i \rightarrow H\}\) denote the
+direction and let \(s\) be the sequence number used in that direction.
+We define the nonce as
+\[
+  n = \mathit{dir} \concat s.
+\]
+Then encryption and authentication become
+\begin{align*}
+  c &= \Enc[\KEHD, n, m], \\
+  t &= \MAC[\KMHD, n \concat c].
+\end{align*}
+
+Now the two directions no longer reuse the same nonce under the same key,
+even if both sides use the same counter value.
+The receiver also verifies the nonce together with the ciphertext, so a
+message valid in one direction is not automatically valid in the other.
+
+\begin{exercise}
+  Why do we authenticate the nonce~\(n\) together with the ciphertext,
+  instead of only authenticating~\(c\)?
+\end{exercise}
+
+If the nonce were not authenticated, an attacker could tamper with the
+direction field or the sequence number in transit.
+The ciphertext might then still be delivered to the wrong cryptographic
+context.
+By authenticating the nonce, we bind both freshness and direction to the
+message.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item The protocol now states explicitly which direction a message belongs
+    to.
+  \item Reusing the same counter value in opposite directions is safe, since
+    the nonce values are still different.
+  \item The protocol depends on a precise encoding of the direction field:
+    both sides must agree on exactly how \(H \rightarrow D_i\) and
+    \(D_i \rightarrow H\) are represented.
+  \item Direction is now bound in the message format.
+    In the next step, we will see that it can also be bound in the keys.
+\end{enumerate}
+
+
+\section{Separating keys by direction}
+\label{EnergyDirectionalKeys}
+
+\ltnote{%
+  The previous section established the critical aspect that direction must be
+  represented explicitly.
+  We now keep that aspect invariant while varying how we realize it.
+  This is a generalization pattern: the same security property can be
+  achieved in more than one way.
+  Here we move the directional information from the nonce into the key
+  derivation, which gives students contrast between two design realizations
+  of the same principle.
+}
+
+In \cref{EnergyDirectionBinding}, we encoded direction directly in the
+nonce.
+That works, but it is not the only possibility.
+Another common way to bind direction is to derive different keys for the two
+directions.
+
+\begin{exercise}
+  Can we express the direction of communication in the key material instead
+  of in the nonce?
+  What would that buy us?
+\end{exercise}
+
+Yes.
+Starting from the long-term shared key~\(\KHD\), we derive separate keys for
+encryption and MACing in each direction:
+\begin{align*}
+  \KEHD^{\rightarrow} &= \KDF[\text{\enquote{enc to device}}, \KHD], \\
+  \KEHD^{\leftarrow} &= \KDF[\text{\enquote{enc to controller}}, \KHD], \\
+  \KMHD^{\rightarrow} &= \KDF[\text{\enquote{mac to device}}, \KHD], \\
+  \KMHD^{\leftarrow} &= \KDF[\text{\enquote{mac to controller}}, \KHD].
+\end{align*}
+Here \(\rightarrow\) means traffic from \(H\) to \(D_i\), and
+\(\leftarrow\) means traffic from \(D_i\) to \(H\).
+
+Now each direction uses its own sequence number and its own keys:
+\begin{align*}
+  c &= \Enc[\KEHD^{\rightarrow}, s^{\rightarrow}, m], \\
+  t &= \MAC[\KMHD^{\rightarrow}, s^{\rightarrow} \concat c]
+\end{align*}
+for commands from \(H\) to \(D_i\), and
+\begin{align*}
+  c &= \Enc[\KEHD^{\leftarrow}, s^{\leftarrow}, m], \\
+  t &= \MAC[\KMHD^{\leftarrow}, s^{\leftarrow} \concat c]
+\end{align*}
+for acknowledgments and reports from \(D_i\) to \(H\).
+
+Because the keys are different, the same counter value can safely appear in
+both directions without causing nonce reuse under one and the same key.
+We have made direction part of the cryptographic context by domain-separating
+the derived keys.
+
+\begin{exercise}
+  Compare the two ways of representing direction:
+  as part of the nonce or as part of the key derivation.
+  What are the advantages and disadvantages of each?
+\end{exercise}
+
+Putting direction in the nonce keeps the key schedule simpler but makes the
+message format more explicit.
+Putting direction in the key derivation gives strong domain separation and
+lets each direction use a plain counter as nonce, but it increases the number
+of keys that must be derived, stored, and implemented correctly.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item The two directions are cryptographically separated even if they use
+    the same counter values.
+  \item Implementations become less likely to confuse commands with
+    acknowledgments or reports, since they use different keys.
+  \item The protocol now uses more key material and requires more careful key
+    management inside the controller and each device.
+  \item We still have not said what concrete encryption mode
+    \(\Enc\) should be, nor what it requires from IVs, nonces, and
+    randomness.
+\end{enumerate}
+
+
+\section{Choosing an encryption mode}
+\label{EnergyEncryptionMode}
+
+\ltnote{%
+  We now keep the protocol structure invariant and vary only the concrete
+  realization of \(\Enc\).
+  The critical aspect is that different secure block-cipher modes require
+  different things from the extra input: some need unpredictable IVs, others
+  only unique nonces.
+  Following try-first pedagogy, we first let students compare plausible mode
+  choices before telling them which requirements matter in this setting.
+  This also prepares a later generalization about randomness sources without
+  yet changing the trust or pairing assumptions.
+}
+
+So far we have written \(\Enc\) as if it were a single black box.
+In practice, we must choose a concrete encryption mode.
+That choice matters because different modes leak different information and
+place different demands on IVs, nonces, and randomness.
+
+\begin{exercise}
+  Suppose two commands begin with the same header, such as
+  \enquote{command: suspend ...}.
+  If we encrypt them block by block in the most direct way, what information
+  might an eavesdropper still learn?
+\end{exercise}
+
+If we use \ac{ECB}, equal plaintext blocks become equal ciphertext blocks.
+Then repeated structure in commands, acknowledgments, or reports is visible to
+an eavesdropper even though the content is encrypted.
+For a command-and-control protocol, this may reveal message types or repeated
+operations.
+So \ac{ECB} is not a suitable choice here.
+
+\subsection{Different modes, different requirements}
+
+\begin{exercise}
+  If we replace \(\Enc\) by a better block-cipher mode, what extra value must
+  usually accompany the plaintext?
+  Must that value be random, unique, or both?
+\end{exercise}
+
+Different modes have different requirements:
+\begin{description}
+  \item[\ac{CBC}] Requires a fresh, unpredictable IV for each encryption.
+    Reusing or predicting the IV can reveal information about related
+    plaintexts.
+  \item[\ac{CTR}] Requires a nonce that is unique for each encryption under a
+    given key.
+    The nonce need not be unpredictable, but it must never repeat.
+  \item[\ac{AEAD}] Modes such as GCM combine encryption and integrity
+    protection, but they still rely on a nonce discipline.
+    In particular, nonce reuse under one key is dangerous.
+\end{description}
+
+This difference is important in our smart-home setting.
+Many devices are cheap, resource-constrained, and may not have a strong random
+number generator available every time they send a message.
+That makes modes requiring fresh unpredictable IVs harder to justify.
+By contrast, our protocol already maintains sequence numbers in each
+direction, so we can reuse those counters as nonces for modes that only need
+uniqueness.
+
+\subsection{Where should the randomness come from?}
+
+\begin{exercise}
+  Is it reasonable to expect a simple smart plug or thermostat to generate a
+  high-quality random IV every time it sends a message?
+  If not, how can we avoid relying on that capability?
+\end{exercise}
+
+It is risky to rely on strong runtime randomness in low-end devices.
+Some devices have weak entropy sources, especially just after boot.
+If the security of the mode depends on a fresh unpredictable IV each time,
+then implementation mistakes or poor randomness can break confidentiality.
+
+Our current design therefore points toward a mode that tolerates deterministic
+nonce generation, provided the nonce is unique under each key.
+With per-direction keys from \cref{EnergyDirectionalKeys} and per-direction
+counters, the protocol already provides such a uniqueness source.
+This is another reason why counter-based modes fit this setting well.
+
+Long-term key generation is a different issue.
+The shared secret~\(\KHD\) should not be generated by an ad hoc weak random
+process inside a cheap device during normal operation.
+Instead, long-term keys should come either from a proper provisioning process
+during manufacturing or from a later pairing procedure that is designed to
+establish keys securely.
+
+\subsection{Switching to authenticated encryption}
+
+\begin{exercise}
+  If we already use encryption and a MAC, why might we still prefer an
+  authenticated-encryption mode instead of combining two separate
+  primitives ourselves?
+\end{exercise}
+
+Using separate encryption and MAC primitives can be secure, but only if they
+are combined correctly.
+There are many ways to get this wrong: authenticating the wrong fields,
+forgetting to authenticate the nonce, or using a less suitable order of
+operations.
+An \ac{AEAD} mode packages confidentiality and integrity into one
+well-analyzed primitive and therefore reduces the number of design choices
+that an implementer must get right.
+
+Two common \ac{AEAD} modes are AES-GCM and ChaCha20-Poly1305.
+With authenticated encryption, the protected message has the form
+\begin{align*}
+  c &= \text{AEAD-Enc}[K, n, m, a],
+\end{align*}
+where \(n\) is the nonce and \(a\) is associated data that is
+authenticated but not encrypted.
+
+\begin{exercise}
+  What information in our protocol should be authenticated even if we do not
+  want to encrypt it?
+\end{exercise}
+
+The associated data should include the context that the receiver must trust in
+order to interpret the message correctly, such as the sequence number, sender
+and receiver identities, direction, and protocol version.
+In our setting, this fits naturally with the earlier sections on replay
+protection and direction binding.
+
+This does not remove the need for nonce discipline.
+\ac{AEAD} still requires that the nonce be managed correctly.
+For modes such as AES-GCM, nonce reuse under one key is particularly
+dangerous.
+Our per-direction counters are therefore still useful: they provide a natural
+nonce source once direction and key separation have already been introduced.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item \ac{ECB} is unsuitable because it leaks repeated block patterns.
+  \item Some secure modes require unpredictable IVs, while others require only
+    nonce uniqueness.
+  \item In this setting, per-direction counters are an attractive nonce source
+    because they avoid dependence on strong runtime randomness.
+  \item \ac{AEAD} reduces composition mistakes, but it still depends on
+    correct nonce management.
+\end{enumerate}
+
+
+\section{Should we just use TLS?}
+\label{EnergyTLS}
+
+\ltnote{%
+  We now compare our purpose-built protected message protocol with a standard
+  secure-channel protocol.
+  The critical aspect is that transport assumptions matter: TLS gives strong
+  security properties, but it assumes a reliable stream transport, whereas
+  DTLS is designed for datagrams.
+  Following try-first pedagogy, we first ask whether a secure channel can be
+  reused for sparse traffic, and then make the contrast between TLS and DTLS
+  explicit.
+}
+
+At this point, a natural question is whether we should stop designing our own
+message protection and simply use Transport Layer Security, TLS~1.3
+(RFC~8446), or Datagram Transport Layer Security, DTLS~1.3 (RFC~9147).
+
+\begin{exercise}
+  If a smart device sends only one short message per hour, would using TLS
+  mean performing a full handshake for every message?
+  If not, what practical difficulty remains?
+\end{exercise}
+
+TLS does not require a handshake for every message.
+If the connection remains open, the endpoints can establish a TLS session once
+and then send protected application data whenever needed.
+However, TLS assumes a reliable, in-order byte stream, typically TCP.
+That means the protected channel exists only while the underlying connection
+exists.
+
+For sparse smart-home traffic, this creates practical problems.
+If the device keeps the TCP/TLS connection open for long idle periods, network
+equipment may time it out, forcing keepalives or reconnects\footnote{%
+  I don't expect students to have that detailed knowledge of how TCP works.
+}.
+If the device instead reconnects whenever it has data, it pays the cost of
+setting up TCP and then running a new TLS handshake, perhaps with session
+resumption but still with non-trivial state and latency.
+Session resumption helps, because it avoids the cost of a full fresh
+authentication and key exchange every time, but it does not remove the need to
+re-establish transport state after the old connection has disappeared.
+
+\begin{exercise}
+  If our traffic is naturally packet-oriented rather than stream-oriented,
+  which is the better fit: TLS or DTLS?
+  Why?
+\end{exercise}
+
+DTLS~1.3 (RFC~9147) is the closer match for message-oriented 
+traffic.\footnote{%
+  I don't expect the students to know of DTLS.
+  However, I expect that they should be able to think about this problem for 
+  the low-energy devices.
+  But rather than using DTLS, I'd expect them to expect that TLS over TCP can 
+  keep a channel open indefinitely without keep-alive packets---giving the same 
+  result as using DTLS.
+}
+It adapts the TLS~1.3 design to datagram transports and therefore does not
+require a long-lived TCP-style stream.
+That makes DTLS conceptually attractive for command-and-report traffic where
+messages are naturally separate packets.
+However, DTLS still has a handshake, state, retransmission logic, and
+anti-replay mechanisms.
+In particular, the receiver must still track packet numbers and reject old or
+duplicate packets, so replay protection has not disappeared---it has merely
+been packaged inside the secure-channel design.
+So it is not free; it is simply better aligned with datagram communication than TLS over
+TCP.
+
+\begin{exercise}
+  If standard protocols such as TLS and DTLS already exist, when would a
+  purpose-built protocol still be justified?
+\end{exercise}
+
+A custom protocol may still be justified when the devices are extremely
+constrained, the traffic pattern is simple and narrowly scoped, and the system
+has requirements that do not fit comfortably into a stream-oriented or general
+datagram secure channel.
+But the price is that we must design, implement, and analyze replay
+protection, direction binding, nonce management, algorithm choices, and error
+handling ourselves.
+In other words, the custom design is attractive only if the gain in simplicity
+or efficiency is large enough to compensate for the extra design risk.
+
+In our setting, the comparison becomes a design trade-off:
+\begin{description}
+  \item[TLS~1.3 (RFC~8446)] Attractive for richer devices and for links that
+    already have a stable TCP connection.
+    It is especially natural for the meter's communication with the provider,
+    where an Internet-style client/server model already exists.
+  \item[DTLS~1.3 (RFC~9147)] More natural for sparse packet-based traffic
+    inside the home, because it does not impose a byte-stream abstraction.
+    It still carries handshake, retransmission, anti-replay, and
+    state-management complexity.
+  \item[Purpose-built protocol] Can be lighter and more tailored to the
+    devices, but is justified only if the constraints are strong enough to
+    outweigh the safety of reusing a standard protocol.
+\end{description}
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item A standard secure-channel protocol can reduce design risk by reusing a
+    well-analyzed construction.
+  \item TLS is awkward for sleepy devices if traffic is sparse and idle
+    connections are expensive to maintain.
+  \item DTLS is a better fit than TLS for datagram-style traffic, but it still
+    does not remove the need for handshake state, retransmissions,
+    authentication, anti-replay tracking, and key establishment.
+  \item A purpose-built protocol is easiest to justify only when the device
+    constraints are severe and the communication pattern is very simple.
+  \item The remaining problem is still how a new device obtains the shared
+    key~\(\KHD\) in the first place.
+    That is the purpose of the next section on pairing.
+\end{enumerate}
+
+
 \section{Device authentication and pairing}\label{EnergyPairing}
 
 \ltnote{%
@@ -481,7 +916,7 @@ But there are additional threats specific to wireless channels.
   encryption and authentication already address?
 \end{exercise}
 
-\subsection{Jamming}
+\subsection{Jamming (out of scope)}
 
 An attacker can transmit noise on the radio frequency to prevent all
 communication.
@@ -857,91 +1292,6 @@ When a device is reported compromised:
     devices.
     There should be a mechanism to continue operating (with a clear
     security status) or to decommission them gracefully.
-\end{description}
-
-
-\section{Switching to authenticated encryption}\label{EnergyAEAD}
-
-\ltnote{%
-  We now replace the separate encrypt-then-MAC approach with AEAD to
-  simplify the protocol and eliminate potential composition errors.
-  This creates contrast with the earlier design using separate primitives.
-  Students should discern that AEAD provides the same properties
-  (confidentiality, integrity, authenticity) in a single, well-analyzed
-  primitive, reducing the risk of subtle implementation mistakes.
-  The variation pattern: we keep the security properties invariant while
-  varying the cryptographic mechanism.
-}
-
-In our earlier design, we used separate encryption (CTR mode) and MAC
-(HMAC) with two derived keys.
-This \enquote{encrypt-then-MAC} composition is secure when done correctly,
-but there are well-known pitfalls in combining separate primitives
-(\eg MAC-then-encrypt, or forgetting to MAC the IV).
-
-\begin{exercise}
-  What is AEAD (Authenticated Encryption with Associated Data), and why
-  might it be preferable to separate encrypt-then-MAC?
-\end{exercise}
-
-AEAD combines encryption and authentication into a single operation.
-The most widely used AEAD construction is AES-GCM (Galois/Counter Mode),
-which we also encountered in \cref{FirstSolution}.
-Another modern option is ChaCha20-Poly1305, which is popular on
-resource-constrained devices due to its software efficiency.
-
-With AEAD, our protocol simplifies to:
-\begin{align*}
-  c &= \text{AEAD-Enc}[\KHD, \text{nonce}, m, \text{aad}],
-\end{align*}
-where the associated data (aad) can include the sequence number and device
-identifier without encrypting them (they are authenticated but sent in
-the clear).
-
-\begin{exercise}
-  What should go into the associated data?
-\end{exercise}
-
-The associated data should include:
-\begin{itemize}
-  \item The sequence number (for replay protection).
-  \item The sender and receiver identifiers (to prevent messages intended
-    for one device from being accepted by another).
-  \item A protocol version number (to prevent cross-version attacks).
-\end{itemize}
-
-\subsection{Nonce management}
-
-\begin{exercise}
-  AEAD requires a unique nonce for each message under the same key.
-  How should we manage nonces?
-\end{exercise}
-
-For AES-GCM, nonce reuse is catastrophic: it leaks the XOR of two
-plaintexts and allows forgery of authentication tags.
-
-We can use the sequence number as the nonce, since it is already guaranteed
-to be unique and monotonically increasing.
-This eliminates the need for a separate random nonce and avoids the birthday
-bound problem for randomly generated nonces.
-
-If using ChaCha20-Poly1305, the nonce is 96 bits and the same
-sequence-number approach works well.
-
-\subsection{Consequences of the design}
-
-\begin{description}
-  \item[Simplicity] A single primitive (AEAD) replaces two (encryption +
-    MAC), reducing implementation complexity.
-  \item[Fewer keys] We derive a single key per device pair instead of two
-    (encryption + MAC).
-  \item[Proven security] AEAD constructions are well-analyzed; the
-    composition is guaranteed to be secure (unlike ad-hoc combinations).
-  \item[Nonce sensitivity] AES-GCM requires strict nonce uniqueness.
-    Sequence numbers provide this naturally.
-  \item[Algorithm choice] AES-GCM benefits from hardware acceleration
-    (AES-NI) on devices that have it.
-    ChaCha20-Poly1305 is better for devices without hardware AES support.
 \end{description}
 
 
