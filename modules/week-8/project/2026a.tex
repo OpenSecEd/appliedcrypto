@@ -21,6 +21,10 @@ The dishwasher can delay its start until power consumption is lower or the
 price is cheaper.
 
 \ltnote{%
+  We want the students to learn
+  \LOapply
+  \LOanalyse
+
   The idea is to use more open form of pQBL~\parencite{pQBL}.
   This means that we start with a question.
   This lets the reader think about the problem, try to explore it based on
@@ -172,19 +176,83 @@ See \cref{fig:EnergyFirstProtocol} for the protocol.
     {Command from \(H\) to \(D_i\)}
       \declinst{ctrl}{Controller \(H\)}{\(\KHD\)}
       \declinst{dev}{Device \(D_i\)}{\(\KHD\)}
-      \mscaction{%
-        \(c = \Enc[\KEHD, m]\),
-        \(t = \MAC[\KMHD, c]\)
-      }{ctrl}
-      \nextlevel[4]
+      \mscaction{\begin{align*}
+          c &= \Enc[\KEHD, m],\\
+          t &= \MAC[\KMHD, c]
+      \end{align*}}{ctrl}
+      \nextlevel[5]
       \mess{\(c, t\)}{ctrl}{dev}
       \nextlevel
-      \mscaction{Verify \(t\), decrypt \(c\)}{dev}
-      \mscaction{Execute command}{dev}
+      \mscaction{\begin{align*}
+          t &\stackrel ?= \MAC[\KMHD, c] \\
+          m &= \Dec[\KEHD, c]
+      \end{align*}}{dev}
+      \nextlevel[5]
+      \mscaction{If \(t\) invalid, abort; otherwise: \begin{align*}
+          m_{\text{ack}} &= \text{\enquote{ack: }} \concat m \\
+          c_{\text{ack}} &= \Enc[\KEHD, m_{\text{ack}}] \\
+          t_{\text{ack}} &= \MAC[\KMHD, c_{\text{ack}}]
+      \end{align*}}{dev}
+      \nextlevel[7]
+      \mess{\(c_{\text{ack}}, t_{\text{ack}}\)}{dev}{ctrl}
       \nextlevel
+      \mscaction{Execute command in \(m\).}{dev}
+      \nextlevel
+      \mscaction{\begin{align*}
+          t_{\text{ack}} &\stackrel ?= \MAC[\KMHD, c_{\text{ack}}] \\
+          m_{\text{ack}} &= \Dec[\KEHD, c_{\text{ack}}]
+      \end{align*}}{ctrl}
+      \nextlevel
+      \mscaction{\begin{align*}
+          m_{\text{report}} &= \text{\enquote{report: result of exec}} \\
+          c_{\text{report}} &= \Enc[\KEHD, m_{\text{report}}] \\
+          t_{\text{report}} &= \MAC[\KMHD, c_{\text{report}}]
+      \end{align*}}{dev}
+      \nextlevel[7]
+      \mess{\(c_{\text{report}}, t_{\text{report}}\)}{dev}{ctrl}
   \end{msc}
   \end{sidecaption}
 \end{figure}
+
+\subsection{An example run}
+
+\begin{exercise}
+  Walk through an example run of the protocol.
+  For instance, the controller sends a \enquote{suspend charging until 14:00}
+  command to the car charger~\(D_{\text{charger}}\).
+\end{exercise}
+
+Let's have a look at that run:
+\begin{enumerate}
+  \item The controller~\(H\) prepares the command \(m = \text{\enquote{suspend 
+    until 14:00}}\).
+  \item It derives the encryption key~\(\KEHD\) and MAC key~\(\KMHD\) from
+    the shared key~\(\KHD\).
+  \item It encrypts the command: \(c = \Enc[\KEHD, m]\).
+  \item It computes the MAC: \(t = \MAC[\KMHD, c]\)---remember that the 
+    \(\MAC\) will use the hash value of \(c\), not \(c\) itself.
+  \item It sends the message \((c, t)\) to the device~\(D_{\text{charger}}\).
+  \item The device receives \((c, t)\) and verifies the MAC:
+    \(t \stackrel ?= \MAC[\KMHD, c]\).
+  \item If the MAC is valid, it decrypts the command: \(m = \Dec[\KEHD, c]\).
+  \item It executes the command, suspending charging until 14:00.
+\end{enumerate}
+
+If we leave it here, an attacker could drop the message and the controller 
+would think that the changer will suspend charging whereas it will not.
+We need to acknowledge and confirm the command to ensure that the controller 
+knows whether the command was received and executed successfully.
+If the controller doesn't receive an acknowledgment, it can retry or alert the 
+user.
+\begin{enumerate}[resume]
+  \item The device constructs an acknowledgment message \(m_{\text{ack}} =
+    \text{\enquote{ack: suspend until 14:00}}\).
+  \item It encrypts and MACs the acknowledgment: \(c_{\text{ack}} = \Enc[\KEHD, m_{\text{ack}}]\),
+    \(t' = \MAC[\KMHD, c_{\text{ack}}]\).
+  \item It sends \((c_{\text{ack}}, t')\) back to the controller.
+  \item The controller verifies the acknowledgment and confirms that the
+    command was executed.
+\end{enumerate}
 
 \subsection{Consequences of the design}\label{EnergyConsequencesFirst}
 
@@ -200,14 +268,14 @@ The design has several consequences:
     resource-constrained devices like light bulbs and appliances.
   \item Key management is manual: the user must pair each device individually
     with the controller.
-    Adding or replacing a device requires physical interaction.
   \item No replay protection: an attacker who records a valid
     \enquote{suspend} command can replay it later to disrupt the household.
-  \item Privacy is not addressed: the meter~\(M\) and the provider~\(E\)
-    learn detailed consumption patterns.
+  \item Unspecified what \(\Enc\) does for large messages, ECB?
   \item If any device is compromised, the attacker learns the key~\(\KHD\)
     and can impersonate the controller to that device.
     But other devices are not affected (different keys).
+  \item We must choose messages \(m\) carefully to avoid ciphertexts (and thus 
+    messages) to be reused for different purposes.
 \end{enumerate}
 
 
