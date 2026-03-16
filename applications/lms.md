@@ -62,3 +62,12 @@ https://eu.feedbackfruits.com/groups/activity-group/07021bc5-60af-406f-9941-dfdf
 
 [website-oracles-paper]: https://eu.feedbackfruits.com/groups/activity-group/cb1d8fcb-1660-417f-969f-2787a8f80521
 
+
+## Zcash
+
+- An Empirical Analysis of Anonymity in Zcash (interactive [video][zcash-anon], 
+  [paper][zcash-anon-paper])
+
+[zcash-anon]: https://eu.feedbackfruits.com/groups/activity-group/39d8f08e-1cdf-463d-a013-0919af20ed39
+[zcash-anon-paper]: https://eu.feedbackfruits.com/groups/activity-group/1f4943d4-998f-4ceb-b25f-f22089e94bfd
+
