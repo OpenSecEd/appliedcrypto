@@ -12,12 +12,12 @@ this README, there are the sources for the material.
 
 The recommended order for the lectures:
 
-  1. intro
-  2. shared-key
-  3. one-way
-  4. pub-key
-  5. zkp-smc
-  6. sidechannels
+  1. [intro](./tree/master/intro)
+  2. [shared-key](./tree/master/shared-key)
+  3. [one-way](./tree/master/one-way)
+  4. [pub-key](./tree/master/pub-key)
+  5. [zkp-smc](./tree/master/zkp-smc)
+  6. [sidechannels](./tree/master/sidechannels)
 
 
 ## File Structure and Building
