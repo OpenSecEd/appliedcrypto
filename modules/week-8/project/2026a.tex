@@ -3,11 +3,14 @@
   This chapter is from DD2520 Applied Crypto, spring 2026, at KTH\@.
 }
 
-From 1 January 2027, all electricity providers in Sweden are required to
-charge an \emph{effect tariff} (due to EU regulations).
-This means that the electricity bill will be based on the price of electricity
-at the time of use, but also on the maximum power (effect) used during the
-billing period.
+From 1 January 2027, all grid operators in Sweden are required to
+charge a \emph{power tariff} (in Swedish known as \emph{effekttariff},
+sometimes anglicized as \emph{effect tariff}), following Swedish
+regulation that implements EU requirements on cost-reflective network
+tariffs.
+This means that the electricity bill will be based on the price of
+electricity at the time of use, but also on the maximum power used during
+the billing period.
 This is done to encourage users to distribute their electricity use over time,
 so that they don't run the oven, charge their electric car, run the dishwasher
 and laundry machine all at the same time.
@@ -110,6 +113,8 @@ We have the following entities from \cref{SmartEnergyStatement}:
     car chargers, heating systems and ovens,
   \item the electricity provider~\(E\), who bills the household based on
     consumption and peak power.
+    (For simplicity, we let \(E\) represent both the electricity retailer
+    and the grid operator.)
 \end{itemize}
 
 \begin{exercise}
@@ -256,10 +261,8 @@ Let's have a look at that run:
   \item It derives the encryption key~\(\KEHD\) and MAC key~\(\KMHD\) from
     the shared key~\(\KHD\).
   \item It encrypts the command: \(c = \Enc[\KEHD, m]\).
-  \item It computes the MAC: \(t = \MAC[\KMHD, c]\).
-    Conceptually, this authenticates the whole ciphertext~\(c\), even though
-    an implementation may process \(c\) block by block or via an internal
-    hash/compression structure.
+  \item It computes the MAC: \(t = \MAC[\KMHD, c]\), authenticating the
+    whole ciphertext~\(c\) as described above.
   \item It sends the message \((c, t)\) to the device~\(D_{\text{charger}}\).
   \item The device receives \((c, t)\) and verifies the MAC:
     \(t \stackrel ?= \MAC[\KMHD, c]\).
@@ -276,9 +279,11 @@ user.
 \begin{enumerate}[resume]
   \item The device constructs an acknowledgment message \(m_{\text{ack}} =
     \text{\enquote{ack: received suspend until 14:00}}\).
-  \item It encrypts and MACs the acknowledgment: \(c_{\text{ack}} = \Enc[\KEHD, m_{\text{ack}}]\),
-    \(t' = \MAC[\KMHD, c_{\text{ack}}]\).
-  \item It sends \((c_{\text{ack}}, t')\) back to the controller.
+  \item It encrypts and MACs the acknowledgment:
+    \(c_{\text{ack}} = \Enc[\KEHD, m_{\text{ack}}]\),
+    \(t_{\text{ack}} = \MAC[\KMHD, c_{\text{ack}}]\).
+  \item It sends \((c_{\text{ack}}, t_{\text{ack}})\) back to the
+    controller.
   \item The controller verifies the acknowledgment and confirms that the
     command was received and authenticated by the device.
   \item After executing the command, the device sends a protected execution
@@ -308,8 +313,8 @@ The design has several consequences:
   \item If any device is compromised, the attacker learns the key~\(\KHD\)
     and can impersonate the controller to that device.
     But other devices are not affected (different keys).
-  \item We must choose messages \(m\) carefully to avoid ciphertexts (and thus 
-    messages) to be reused for different purposes.
+  \item We must choose messages \(m\) carefully to prevent ciphertexts (and
+    thus messages) from being reused for different purposes.
 \end{enumerate}
 
 
@@ -352,11 +357,17 @@ The sender increments~\(s\) for each message sent.
 The receiver keeps track of the highest sequence number received and rejects
 any message with a sequence number that is not strictly greater.
 
-The MAC now covers both the ciphertext and the sequence number:
+The sequence number is sent in the clear so that the receiver can check
+freshness before any cryptographic processing, and the MAC covers both the
+ciphertext and the sequence number:
 \begin{align*}
-  c &= \Enc[\KEHD, m \concat s], \\
+  c &= \Enc[\KEHD, m], \\
   t &= \MAC[\KMHD, c \concat s].
 \end{align*}
+The transmitted message is thus \((s, c, t)\).
+The receiver first checks that \(s\) is strictly greater than the last
+accepted sequence number, then verifies the tag~\(t\), and only then
+decrypts~\(c\).
 
 Alternatively, we can use timestamps as freshness values.
 The receiver then stores the timestamp from the last accepted packet and
@@ -449,6 +460,10 @@ Then encryption and authentication become
   c &= \Enc[\KEHD, n, m], \\
   t &= \MAC[\KMHD, n \concat c].
 \end{align*}
+Note that \(\Enc\) now takes the nonce~\(n\) as an explicit input alongside
+the key and the message.
+What the encryption mode requires from this input is the topic of
+\cref{EnergyEncryptionMode}.
 
 Now the two directions no longer reuse the same nonce under the same key,
 even if both sides use the same counter value.
@@ -616,7 +631,7 @@ Different modes have different requirements:
   \item[\ac{CTR}] Requires a nonce that is unique for each encryption under a
     given key.
     The nonce need not be unpredictable, but it must never repeat.
-  \item[\ac{AEAD}] Modes such as GCM combine encryption and integrity
+  \item[\ac{AEAD}] Modes such as \ac{GCM} combine encryption and integrity
     protection, but they still rely on a nonce discipline.
     In particular, nonce reuse under one key is dangerous.
 \end{description}
@@ -723,6 +738,12 @@ nonce source once direction and key separation have already been introduced.
   Following try-first pedagogy, we first ask whether a secure channel can be
   reused for sparse traffic, and then make the contrast between TLS and DTLS
   explicit.
+  We don't expect students to have detailed knowledge of how TCP keeps
+  connections alive, nor to know of DTLS.
+  We do expect them to reason about the problem for the low-energy devices;
+  rather than proposing DTLS, they will likely assume that TLS over TCP can
+  keep a channel open indefinitely without keep-alive packets---giving the
+  same result as using DTLS.
 }
 
 At this point, a natural question is whether we should stop designing our own
@@ -744,9 +765,7 @@ exists.
 
 For sparse smart-home traffic, this creates practical problems.
 If the device keeps the TCP/TLS connection open for long idle periods, network
-equipment may time it out, forcing keepalives or reconnects\footnote{%
-  I don't expect students to have that detailed knowledge of how TCP works.
-}.
+equipment may time it out, forcing keepalives or reconnects.
 If the device instead reconnects whenever it has data, it pays the cost of
 setting up TCP and then running a new TLS handshake, perhaps with session
 resumption but still with non-trivial state and latency.
@@ -760,15 +779,7 @@ re-establish transport state after the old connection has disappeared.
   Why?
 \end{exercise}
 
-DTLS~1.3 (RFC~9147) is the closer match for message-oriented 
-traffic.\footnote{%
-  I don't expect the students to know of DTLS.
-  However, I expect that they should be able to think about this problem for 
-  the low-energy devices.
-  But rather than using DTLS, I'd expect them to expect that TLS over TCP can 
-  keep a channel open indefinitely without keep-alive packets---giving the same 
-  result as using DTLS.
-}
+DTLS~1.3 (RFC~9147) is the closer match for message-oriented traffic.
 It adapts the TLS~1.3 design to datagram transports and therefore does not
 require a long-lived TCP-style stream.
 That makes DTLS conceptually attractive for command-and-report traffic where
@@ -778,8 +789,8 @@ anti-replay mechanisms.
 In particular, the receiver must still track packet numbers and reject old or
 duplicate packets, so replay protection has not disappeared---it has merely
 been packaged inside the secure-channel design.
-So it is not free; it is simply better aligned with datagram communication than TLS over
-TCP.
+So it is not free; it is simply better aligned with datagram communication
+than TLS over TCP.
 
 \begin{exercise}
   If standard protocols such as TLS and DTLS already exist, when would a
@@ -873,7 +884,8 @@ Common methods:
 After the OOB exchange provides a shared secret (or authenticated public
 keys), the devices can run a key-agreement protocol (\eg Diffie--Hellman)
 over the wireless channel, authenticated by the OOB secret, to establish
-the session key~\(\KHD\).
+the long-term shared key~\(\KHD\) that we previously assumed to be
+pre-provisioned.
 
 If this setup step is not authenticated properly, a nearby attacker can mount
 a man-in-the-middle attack during onboarding.
@@ -895,6 +907,14 @@ attacker cannot invisibly replace that authenticated endpoint.
 This is analogous to HTTPS/TLS, where authenticating the web server is enough
 to detect a man-in-the-middle attack even when the client is not authenticated
 to the server.
+
+Note carefully what authentication does and does not buy us here.
+With an authenticated key exchange, the attacker cannot learn the
+established key, so they cannot read or forge messages---they can only
+relay ciphertexts unmodified or refuse to relay them.
+Refusing to relay is then no more powerful than jamming the radio channel
+(\cref{EnergyWirelessSecurity}): a blunt, detectable availability attack
+rather than an invisible compromise.
 
 \begin{exercise}
   What are the security properties of each pairing method?
@@ -940,7 +960,7 @@ During pairing:
     or a public key that the device authenticates out-of-band.
   \item The device verifies that controller credential.
   \item They perform authenticated key exchange (using their respective
-    keys) to establish the session key~\(\KHD\).
+    keys) to establish the shared key~\(\KHD\).
 \end{enumerate}
 
 This approach doesn't require QR codes or PINs for each session, but it does
@@ -1212,7 +1232,7 @@ the manufacturer's certificate chain).
 
 Let
 \[
-  r = (\mathit{id}, \mathit{period}, E_{\text{tot}}, P_{\text{peak}},
+  r = (\mathit{id}, \mathit{period}, W_{\text{tot}}, P_{\text{peak}},
   \mathit{ts})
 \]
 be the billing report.
