@@ -4,7 +4,8 @@
 }
 
 From 1 January 2027, all grid operators in Sweden are required to
-charge a \emph{power tariff} (in Swedish known as \emph{effekttariff},
+charge a \emph{power tariff} (in Swedish known as
+\emph{\foreignlanguage{swedish}{effekttariff}},
 sometimes anglicized as \emph{effect tariff}), following Swedish
 regulation that implements EU requirements on cost-reflective network
 tariffs.
@@ -373,6 +374,9 @@ The transmitted message is thus \((s, c, t)\).
 The receiver first checks that \(s\) is strictly greater than the last
 accepted sequence number, then verifies the tag~\(t\), and only then
 decrypts~\(c\).
+The stored sequence number is updated only after successful verification,
+so that forged messages with large sequence numbers cannot desynchronize
+the channel.
 
 Alternatively, we can use timestamps as freshness values.
 The receiver then stores the timestamp from the last accepted packet and
@@ -404,9 +408,9 @@ attacker from forcing a counter reset.
 \end{exercise}
 
 No.
-The delayed command has never been accepted before, so its sequence number
-is still strictly greater than the last accepted one, and the device will
-accept it.
+The delayed command has never been accepted before, so as long as no later
+message has been accepted in the meantime, its sequence number is still
+strictly greater than the last accepted one, and the device will accept it.
 Freshness in the sense of \enquote{not previously accepted} is not the same
 as timeliness.
 For commands whose meaning depends on time, the sender should therefore
@@ -1489,8 +1493,13 @@ Cryptography protects the channel, not the honesty of the sensor.
 
 The controller can, however, cross-check: the meter~\(M\) independently
 measures the household's total consumption.
-If the sum of the devices' reported readings deviates persistently from the
-meter's total, something is wrong, and the controller can alert the user.
+The devices' reported readings can never legitimately sum to more than the
+meter's total, since the household also has loads that are not smart
+devices.
+If the sum exceeds the total, some device is over-reporting, and the
+controller can alert the user.
+(A device that under-reports hides in the unmetered remainder, so this
+check is one-sided.)
 
 \begin{exercise}
   What if the controller itself is compromised?
