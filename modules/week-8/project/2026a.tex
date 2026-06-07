@@ -86,7 +86,8 @@ minimize what we share.
   This introduces the contrast necessary to bring each aspect into
   focus \parencite[as dictated by][]{NecessaryConditionsOfLearning}.
   The critical aspects are replay protection, direction binding, key
-  separation, algorithm choice, pairing, privacy, and trust assumptions.
+  separation, algorithm choice, rekeying, pairing, privacy, and trust
+  assumptions (including insiders).
   The goal is not that the first protocol is good enough, but that its
   limitations make the later refinements intelligible.
   (One could also think of this as a sequence of games, as used in
@@ -330,6 +331,10 @@ The design has several consequences:
   The critical aspect is that encryption and authentication alone do not
   prevent replay---a separate mechanism (sequence numbers, timestamps, or
   nonces) is needed.
+  A second, related critical aspect is that replay protection is not
+  timeliness: a delayed message is not a replay, so expiry times are a
+  separate mechanism.
+  This contrast was inspired by a student solution from spring 2026.
 }
 
 In the first design, an attacker can record a valid encrypted and MACed
@@ -388,6 +393,26 @@ Alternatively, the device and controller can run a re-synchronization
 protocol after a reset, but this must be authenticated to prevent an
 attacker from forcing a counter reset.
 
+\subsection{Delayed messages and expiry}
+
+\begin{exercise}
+  Sequence numbers ensure that an old message cannot be \emph{replayed}.
+  But what if a message is merely \emph{delayed}?
+  Suppose the command \enquote{suspend charging until 14:00} is sent at
+  13:00 but, due to retransmissions, arrives only at 15:00.
+  Does the sequence number protect against this?
+\end{exercise}
+
+No.
+The delayed command has never been accepted before, so its sequence number
+is still strictly greater than the last accepted one, and the device will
+accept it.
+Freshness in the sense of \enquote{not previously accepted} is not the same
+as timeliness.
+For commands whose meaning depends on time, the sender should therefore
+include an expiry time in the message, covered by the MAC, and the receiver
+should reject commands that arrive after their expiry.
+
 \subsection{Consequences of the design}
 
 \begin{enumerate}
@@ -398,6 +423,8 @@ attacker from forcing a counter reset.
     order, they will be rejected.
     This is acceptable for command-and-control protocols but may need a
     sliding window for high-throughput telemetry.
+  \item Delayed messages are still accepted: time-dependent commands need
+    an expiry time in addition to a sequence number.
   \item The remaining issues from \cref{EnergyConsequencesFirst} still
     apply.
 \end{enumerate}
@@ -594,6 +621,9 @@ of keys that must be derived, stored, and implemented correctly.
   choices before telling them which requirements matter in this setting.
   What varies is the mode and its input requirements; what remains invariant is
   the same command-and-control setting.
+  A further critical aspect, inspired by a student solution from spring
+  2026, is that the nonce space is finite: counters wrap, so rekeying is
+  part of nonce discipline.
 }
 
 So far we have written \(\Enc\) as if it were a single black box.
@@ -713,6 +743,29 @@ dangerous.
 Our per-direction counters are therefore still useful: they provide a natural
 nonce source once direction and key separation have already been introduced.
 
+\subsection{Rekeying before the counter wraps}
+
+\begin{exercise}
+  Our nonces are counters of some fixed width.
+  What happens when a counter reaches its maximum value?
+  What must we do before that happens?
+\end{exercise}
+
+When the counter wraps around, the next nonce repeats an earlier one.
+Nonce reuse under the same key is exactly what we must avoid; for modes
+such as AES-GCM it can be catastrophic for both confidentiality and
+authenticity.
+We must therefore rotate the keys before the counter wraps: for example,
+derive fresh keys from the long-term key~\(\KHD\) with an epoch number as
+an additional \(\KDF\) input, and reset the counters when the epoch
+changes.
+In practice, implementations rotate keys after a fixed time or number of
+messages, with the counter width chosen so that wrapping never happens in
+normal operation.
+Recall from \cref{EnergyReplayProtection} that the counters must also
+survive reboots, otherwise a device may unknowingly reuse nonces after a
+power loss.
+
 \subsection{Consequences of the design}
 
 \begin{enumerate}
@@ -723,6 +776,8 @@ nonce source once direction and key separation have already been introduced.
     because they avoid dependence on strong runtime randomness.
   \item \ac{AEAD} reduces composition mistakes, but it still depends on
     correct nonce management.
+  \item Counters wrap eventually: keys must be rotated before the nonce
+    space is exhausted.
 \end{enumerate}
 
 
@@ -1402,6 +1457,57 @@ When a device is reported compromised:
     affected keys should be rotated.
 \end{enumerate}
 
+\subsection{Limiting what insiders can do}\label{EnergyInsiders}
+
+\ltnote{%
+  The object of learning is that cryptographic authentication establishes
+  who sent a message, not that its contents are true or safe.
+  We keep the protocol invariant and vary which party is compromised: first
+  a device lying in its own telemetry, then the controller itself.
+  The critical aspects are the difference between channel integrity and
+  data integrity, and between authentication and authorization.
+  This contrast was inspired by a student solution from spring 2026.
+}
+
+Revocation handles a compromised device once we know about it.
+But how do we notice, and how do we limit the damage in the meantime?
+
+\begin{exercise}
+  A compromised device cannot forge messages from other devices, since each
+  device has its own key.
+  But it can lie in its own reports.
+  What can a compromised device achieve by reporting false power readings,
+  and how can the controller detect this?
+\end{exercise}
+
+By reporting false readings, a compromised device can manipulate the
+coordination: for example, reporting a huge consumption may cause the
+controller to throttle all the other devices.
+The MAC only proves that the report comes from the device---it says nothing
+about whether the reading is true.
+Cryptography protects the channel, not the honesty of the sensor.
+
+The controller can, however, cross-check: the meter~\(M\) independently
+measures the household's total consumption.
+If the sum of the devices' reported readings deviates persistently from the
+meter's total, something is wrong, and the controller can alert the user.
+
+\begin{exercise}
+  What if the controller itself is compromised?
+  It holds all keys and can send valid commands to every device.
+\end{exercise}
+
+The controller is the most privileged party, so its compromise is the most
+damaging.
+We cannot prevent a compromised controller from sending valid commands, but
+we can limit what those commands achieve: each device should enforce local
+safety limits and reject commands that violate them, even when the command
+is cryptographically valid.
+For example, the heating system should refuse to turn off completely in
+winter, and the car charger should never exceed its electrical rating.
+A valid MAC proves who sent the command, not that the command is safe:
+authentication is not authorization.
+
 \subsection{Consequences of the design}
 
 \begin{description}
@@ -1420,6 +1526,9 @@ When a device is reported compromised:
     devices.
     There should be a mechanism to continue operating (with a clear
     security status) or to decommission them gracefully.
+  \item[Defense in depth] Local safety limits in each device bound the
+    damage of a compromised controller; cross-checks against the meter
+    bound the damage of a lying device.
 \end{description}
 
 
