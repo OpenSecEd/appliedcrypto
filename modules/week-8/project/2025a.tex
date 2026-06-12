@@ -314,6 +314,19 @@ The design has a few consequences:
 
 \section{Manually dealing with integrity}\label{HMAC}
 
+\ltnote{%
+  The object of learning is integrity granularity: a single tag over the
+  whole video can only answer yes or no, whereas chained per-chunk tags
+  localize tampering and let us salvage the intact parts.
+  What varies is how the authentication is composed: one built-in tag over
+  the entire stream versus explicit chained MACs over chunks.
+  What remains invariant is the counter-mode encryption, the keys derived
+  from \(\KCR\), and the upload flow.
+  The critical aspect is the chunking of the authentication, not the switch
+  away from \ac{GCM} itself---the body therefore points out that chunked
+  \ac{GCM} messages would achieve the same granularity.
+}
+
 Now we will use \ac{CTR} (instead of \ac{GCM}) and use HMAC separately
 to ensure integrity.
 We will use \ac{CTR} mode as this mode is lightweight and highly
@@ -398,8 +411,12 @@ drop \(N\) blocks.
 Or if someone would try to insert \(N\) blocks.
 Or reorder them.
 Or modify them.
-We would detect exactly where the problem is and we would see that other parts 
-are intact---this we couldn't do with \ac{GCM}.
+We would detect exactly where the problem is and we would see that other
+parts are intact---this we couldn't do with a single \ac{GCM} tag over the
+whole video.
+Note that this gain comes from chunking the authentication, not from
+abandoning \ac{GCM}: we could equally well have split the video into
+per-minute \ac{GCM} messages and chained them together.
 
 It would cause synchronization problems if someone would drop \emph{one} block.
 Or insert one block.
@@ -415,7 +432,20 @@ However, the consequences above (\cref{ConsequencesFirst}) still apply.
 
 \section{Switching to digital signatures}\label{DigitalSignatures}
 
-%Now we want to replace HMAC with digital signatures.
+\ltnote{%
+  The object of learning is that symmetric authentication is
+  verifier-forgeable: whoever can verify a MAC can also compute one.
+  What varies is the authentication primitive---MAC versus digital
+  signature; what remains invariant is the chunked, chained message
+  structure and the symmetric encryption.
+  The critical aspect is the separation of the verification capability from
+  the signing capability, and how this redistributes trust: the courts no
+  longer need to trust the reviewers not to fabricate footage.
+  A secondary critical aspect surfaces in the consequences: the signature
+  scheme reintroduces a randomness requirement that the symmetric design
+  had eliminated, preparing the contrast developed in
+  \cref{AsymmetricEncryption}.
+}
 
 So far, we have used symmetric primitives: encryption (\(\Enc\)) and
 authentication (\(\MAC\)), both based on a shared key \(\KCR\) between
@@ -551,7 +581,22 @@ trick the camera~\(C\) to drop video material.
 
 \section{Switching to asymmetric encryption}\label{AsymmetricEncryption}
 
-So far, our system uses \emph{symmetric} encryption (\(\KENC\)) to assure 
+\ltnote{%
+  This section repeats the symmetric-to-asymmetric move of
+  \cref{DigitalSignatures}, but for confidentiality instead of
+  authenticity---a generalization pattern: the same kind of change, applied
+  to the other security property.
+  What varies is the encryption primitive; what remains invariant is the
+  signature chain and the chunked structure.
+  The two paired exercises on nonces (why a deterministic nonce is fatal
+  for encryption but fine for signatures) form a deliberate contrast on
+  the role of randomness: same word, \enquote{nonce}, two different
+  critical requirements (unpredictability versus mere uniqueness).
+  The hybrid-encryption subsection then resolves the efficiency problem
+  while keeping the new trust structure invariant.
+}
+
+So far, our system uses \emph{symmetric} encryption (\(\KENC\)) to assure
 confidentiality: the camera and reviewers share a symmetric key \(\KCR\) used 
 to derive \(\KENC\) for \(\Enc\) and \(\Dec\).
 
@@ -793,7 +838,22 @@ The secure element should perform all operations involving \(\SKC\) and
 
 \section{Improved uploading}
 
-Currently, the camera uploads the video material to the reviewers~\(R\) when 
+\ltnote{%
+  The object of learning is that deletion is a protocol step that needs
+  cryptographic evidence, just like transmission.
+  What varies is the camera's deletion trigger: believing an upload
+  happened versus verifying a signed receipt for it.
+  What remains invariant is the chunk format and signature chain from the
+  previous sections.
+  The critical aspect is non-repudiation of \emph{receipt}---the dual of
+  the non-repudiation of \emph{origin} that the camera's signatures
+  already provide.
+  A secondary critical aspect is key separation: the server signs receipts
+  with a dedicated key pair rather than reusing its encryption keys, so
+  students see one-key-one-purpose modelled rather than violated.
+}
+
+Currently, the camera uploads the video material to the reviewers~\(R\) when
 the police officer~\(P\) returns to the station and connects the camera to its 
 docking station.
 Another option would be to continuously upload the video material, essentially 
@@ -1282,7 +1342,19 @@ A complete body camera system combines:
 
 \section{Future work and open problems}\label{FutureWork}
 
-Several aspects of body camera systems remain active areas of research and 
+\ltnote{%
+  The closing exercise is a fusion task: the student picks one open
+  problem and must coordinate the critical aspects practiced one at a
+  time in this chapter---composing confidentiality and integrity,
+  symmetric versus asymmetric trust structures, key separation and
+  management, evidence for protocol steps (receipts, audit logs), and
+  long-term security---in a new, less structured setting.
+  The list of topics varies the application context while the iterative
+  design method of the chapter remains invariant, which is intended to
+  support transfer.
+}
+
+Several aspects of body camera systems remain active areas of research and
 development:
 
 \begin{description}
