@@ -3,13 +3,15 @@
   This chapter is from DD2520 Applied Crypto, spring 2026, at KTH\@.
 }
 
-From 1 January 2027, all grid operators in Sweden are required to
-charge a \emph{power tariff} (in Swedish known as
-\emph{\foreignlanguage{swedish}{effekttariff}},
-sometimes anglicized as \emph{effect tariff}), following Swedish
-regulation that implements EU requirements on cost-reflective network
-tariffs.
-This means that the electricity bill will be based on the price of
+Many grid operators in Sweden are introducing a \emph{power tariff}
+(in Swedish known as \emph{\foreignlanguage{swedish}{effekttariff}},
+sometimes anglicized as \emph{effect tariff}).
+Swedish regulation originally required all grid operators to apply such
+tariffs from 1 January 2027, implementing EU requirements on
+cost-reflective network tariffs; that mandate was revoked in 2026,
+pending a revised tariff model, but cost reflectivity remains an EU
+requirement and many grid operators apply power tariffs voluntarily.
+With a power tariff, the electricity bill is based on the price of
 electricity at the time of use, but also on the maximum power used during
 the billing period.
 This is done to encourage users to distribute their electricity use over time,
@@ -149,8 +151,8 @@ meter~\(M\).
   How should these keys be stored and managed?
 \end{exercise}
 
-Each device stores its key in a secure element (\eg a small TPM or secure
-microcontroller).
+Each device stores its key in a secure element (\eg a small \ac{TPM} or
+secure microcontroller).
 The controller stores all keys and must be physically protected---it is
 typically installed in a locked utility cupboard or similar.
 
@@ -365,10 +367,10 @@ any message with a sequence number that is not strictly greater.
 
 The sequence number is sent in the clear so that the receiver can check
 freshness before any cryptographic processing, and the MAC covers both the
-ciphertext and the sequence number:
+sequence number and the ciphertext:
 \begin{align*}
   c &= \Enc[\KEHD, m], \\
-  t &= \MAC[\KMHD, c \concat s].
+  t &= \MAC[\KMHD, s \concat c].
 \end{align*}
 The transmitted message is thus \((s, c, t)\).
 The receiver first checks that \(s\) is strictly greater than the last
@@ -721,10 +723,11 @@ An \ac{AEAD} mode packages confidentiality and integrity into one
 well-analyzed primitive and therefore reduces the number of design choices
 that an implementer must get right.
 
-Two common \ac{AEAD} modes are AES-GCM and ChaCha20-Poly1305.
-With authenticated encryption, the protected message has the form
+Two common \ac{AEAD} modes are AES-\ac{GCM} and ChaCha20-Poly1305.
+With authenticated encryption, a protected command from \(H\) to
+\(D_i\) has the form
 \begin{align*}
-  c &= \text{AEAD-Enc}[K, n, m, a],
+  c &= \AEADEnc[\KEHD^{\rightarrow}, n, m, a],
 \end{align*}
 where \(n\) is the nonce and \(a\) is associated data that is
 authenticated but not encrypted.
@@ -742,7 +745,7 @@ protection and direction binding.
 
 This does not remove the need for nonce discipline.
 \ac{AEAD} still requires that the nonce be managed correctly.
-For modes such as AES-GCM, nonce reuse under one key is particularly
+For modes such as AES-\ac{GCM}, nonce reuse under one key is particularly
 dangerous.
 Our per-direction counters are therefore still useful: they provide a natural
 nonce source once direction and key separation have already been introduced.
@@ -757,7 +760,7 @@ nonce source once direction and key separation have already been introduced.
 
 When the counter wraps around, the next nonce repeats an earlier one.
 Nonce reuse under the same key is exactly what we must avoid; for modes
-such as AES-GCM it can be catastrophic for both confidentiality and
+such as AES-\ac{GCM} it can be catastrophic for both confidentiality and
 authenticity.
 We must therefore rotate the keys before the counter wraps: for example,
 derive fresh keys from the long-term key~\(\KHD\) with an epoch number as
@@ -935,7 +938,7 @@ Common methods:
     The user scans it with the controller's app.
   \item[NFC tap] The user holds the device near the controller (or a phone
     acting as the controller's interface) to exchange pairing data via
-    near-field communication.
+    \ac{NFC}.
   \item[PIN entry] The device displays or is labelled with a PIN code.
     The user enters it into the controller.
 \end{description}
@@ -967,6 +970,15 @@ This is analogous to HTTPS/TLS, where authenticating the web server is enough
 to detect a man-in-the-middle attack even when the client is not authenticated
 to the server.
 
+The unauthenticated endpoint can still be impersonated outright, however:
+if the device cannot authenticate itself, the attacker can pair their own
+radio with the controller, while the real device never joins.
+But this is not an invisible compromise either: the real device remains
+unpaired and unresponsive, so the user notices that onboarding failed.
+(In HTTPS, the analogous substitution is harmless for a different reason:
+the unauthenticated endpoint is the user's own client, which the attacker
+cannot usefully replace.)
+
 Note carefully what authentication does and does not buy us here.
 With an authenticated key exchange, the attacker cannot learn the
 established key, so they cannot read or forge messages---they can only
@@ -993,8 +1005,10 @@ rather than an invisible compromise.
     Harder to intercept than a QR code.
   \item[PIN entry] Requires a display or label on the device and an input
     method on the controller.
-    The PIN must be long enough to resist brute-force attempts (at least
-    6 digits).
+    A short PIN (\eg 6 digits) resists brute force only if the pairing
+    protocol limits guessing: each protocol run must admit at most one
+    PIN guess (as in a password-authenticated key exchange) and failed
+    pairing attempts must be rate-limited.
     Suitable for devices with displays (\eg ovens, car chargers).
 \end{description}
 
@@ -1003,9 +1017,9 @@ rather than an invisible compromise.
 For a more scalable approach, especially in larger installations, we can use
 certificates.
 Each device is manufactured with a device certificate signed by the
-manufacturer's CA (Certificate Authority).
+manufacturer's \ac{CA}.
 The controller~\(H\) has its own key pair~\((\SKH, \VKH)\), certified by a
-home CA trusted by the devices, or else its public key~\(\VKH\) is
+home \ac{CA} trusted by the devices, or else its public key~\(\VKH\) is
 authenticated out-of-band during onboarding.
 If the controller uses a self-signed certificate, that certificate is useful
 only once the device has learned to trust \(\VKH\) through such an out-of-band
@@ -1015,8 +1029,9 @@ During pairing:
 \begin{enumerate}
   \item The device presents its manufacturer certificate.
   \item The controller verifies the certificate chain.
-  \item The controller presents either a certificate under the trusted home CA
-    or a public key that the device authenticates out-of-band.
+  \item The controller presents either a certificate under the trusted
+    home \ac{CA} or a public key that the device authenticates
+    out-of-band.
   \item The device verifies that controller credential.
   \item They perform authenticated key exchange (using their respective
     keys) to establish the shared key~\(\KHD\).
@@ -1024,8 +1039,8 @@ During pairing:
 
 This approach doesn't require QR codes or PINs for each session, but it does
 require explicit trust roots on both sides: the controller must trust the
-manufacturer's CA, and the device must trust the controller's onboarding
-credential.
+manufacturer's \ac{CA}, and the device must trust the controller's
+onboarding credential.
 It also assumes the manufacturer has not been compromised and that device
 certificates have not been cloned.
 
@@ -1080,7 +1095,7 @@ But there are additional threats specific to wireless channels.
   encryption and authentication already address?
 \end{exercise}
 
-\subsection{Jamming (out of scope)}
+\subsection{Jamming}
 
 An attacker can transmit noise on the radio frequency to prevent all
 communication.
@@ -1093,7 +1108,8 @@ and incur higher bills.
   How can we mitigate jamming attacks?
 \end{exercise}
 
-Complete protection against jamming is difficult, but mitigations include:
+Jamming cannot be prevented by cryptographic means, so complete protection
+is out of scope for our cryptographic design, but mitigations include:
 \begin{description}
   \item[Frequency hopping] The devices agree (during pairing) on a
     pseudo-random frequency-hopping sequence.
@@ -1123,15 +1139,15 @@ Even with encryption, an attacker observing the wireless traffic can learn:
 \end{exercise}
 
 Mitigations include:
-\begin{itemize}
-  \item \emph{Constant-rate traffic}: Devices transmit at a fixed rate,
+\begin{description}
+  \item[Constant-rate traffic] Devices transmit at a fixed rate,
     sending dummy messages when there is no real data.
     This hides when actual commands are sent.
-  \item \emph{Uniform message sizes}: Pad all messages to the same length
+  \item[Uniform message sizes] Pad all messages to the same length
     so that message type cannot be inferred from size.
-  \item \emph{Randomized timing}: Add random delays to message
+  \item[Randomized timing] Add random delays to message
     transmission to obscure patterns.
-\end{itemize}
+\end{description}
 
 These measures increase power consumption and bandwidth use, so they must
 be weighed against the limited resources of battery-powered devices.
@@ -1189,7 +1205,7 @@ From fine-grained power data, one can infer:
 \end{itemize}
 
 This is called \emph{non-intrusive load monitoring} (NILM) and is a
-well-studied technique.
+well-studied technique~\autocite{Hart1992nilm}.
 
 \begin{exercise}
   How can we design the system to minimize the privacy impact while still
@@ -1198,8 +1214,9 @@ well-studied technique.
 
 \subsection{Data minimization}
 
-The principle of \emph{data minimization} (central to GDPR) states that we
-should collect only the data strictly necessary for the purpose.
+The principle of \emph{data minimization} (central to the \ac{GDPR})
+states that we should collect only the data strictly necessary for the
+purpose.
 
 For billing under effect tariffs, the provider needs:
 \begin{itemize}
@@ -1339,15 +1356,15 @@ Physical security measures complement the cryptographic ones:
 \end{exercise}
 
 The meter can communicate with the provider through several channels:
-\begin{itemize}
-  \item \emph{Power-line communication (PLC)}: Data transmitted over the
+\begin{description}
+  \item[Power-line communication (PLC)] Data transmitted over the
     existing electrical wiring.
     Common in smart metering deployments.
-  \item \emph{Cellular (4G/5G)}: The meter has its own SIM card and
+  \item[Cellular (4G/5G)] The meter has its own SIM card and
     communicates directly with the provider.
-  \item \emph{Via the household's internet connection}: Cheaper but relies
+  \item[The household's internet connection] Cheaper but relies
     on the household's network, which the household controls.
-\end{itemize}
+\end{description}
 
 Regardless of the channel, the meter authenticates to the provider and
 establishes an encrypted connection (\eg TLS with mutual authentication).
@@ -1499,7 +1516,10 @@ devices.
 If the sum exceeds the total, some device is over-reporting, and the
 controller can alert the user.
 (A device that under-reports hides in the unmetered remainder, so this
-check is one-sided.)
+check is one-sided.
+It also assumes consumption only: in a household with local generation,
+such as solar panels, devices can legitimately consume more than the
+meter measures from the grid.)
 
 \begin{exercise}
   What if the controller itself is compromised?
@@ -1562,8 +1582,8 @@ authentication is not authorization.
 
 \subsection{GDPR and energy data}
 
-Under GDPR, energy consumption data is personal data because it can reveal
-information about the household's inhabitants.
+Under the \ac{GDPR}, energy consumption data is personal data because it
+can reveal information about the household's inhabitants.
 Key obligations:
 \begin{description}
   \item[Purpose limitation] Data may only be processed for specified
@@ -1580,7 +1600,8 @@ Key obligations:
 
 \subsection{EU smart meter regulations}
 
-The EU has specific regulations for smart metering:
+The EU sets requirements for smart metering in the Electricity
+Directive~\autocite[Articles~19--24]{EUElectricityDirective}:
 \begin{itemize}
   \item Meters must be able to be read remotely by the provider.
   \item Consumers must have access to their own consumption data.
@@ -1623,7 +1644,7 @@ Key usability principles:
 \subsection{Consequences of the design}
 
 \begin{description}
-  \item[Compliance] The system must be designed with GDPR and EU
+  \item[Compliance] The system must be designed with the \ac{GDPR} and EU
     metering regulations in mind from the start, not as an afterthought.
   \item[Usability--security tension] Making the system easy to use may
     require relaxing some security measures (\eg allowing pairing with
@@ -1639,6 +1660,17 @@ Key usability principles:
 
 
 \section{Future work and open problems}\label{EnergyFutureWork}
+
+\ltnote{%
+  The closing exercise is a fusion task: the student picks one open
+  problem and must coordinate the critical aspects practiced one at a
+  time in this chapter---threat modelling, primitive choice, key
+  management, and trade-off analysis---in a new, less structured
+  setting.
+  The list of topics varies the application context while the iterative
+  design method of the chapter remains invariant, which is intended to
+  support transfer.
+}
 
 Several aspects of smart energy management systems remain active areas of
 research and development:
