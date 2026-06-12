@@ -25,7 +25,7 @@ We want it to be as usable and as secure as possible.
 It should also consider privacy in its design.
 
 \ltnote{%
-  The idea is to use more open form of pQBL~\parencite{pQBL}.
+  The idea is to use a more open form of pQBL~\parencite{pQBL}.
   This means that we start with a question.
   This lets the reader think about the problem, try to explore it based on what
   they currently know.
@@ -195,9 +195,8 @@ The box has a trusted clock (synchronized via the network or GPS).
 A replayed token will fail if the current time is outside the window.
 
 However, within the valid time window, replay is possible.
-To prevent this, the box can cache recently used tokens and reject duplicates.
-A better approach: include a nonce in the token that the box marks as
-\enquote{used} after the first access.
+To prevent this, we include a nonce in the token; the box stores the nonces
+of used tokens and rejects any token whose nonce it has already seen.
 
 \subsection{Securing the BLE channel}
 
@@ -243,8 +242,8 @@ BLE provides several pairing methods with different security levels:
   \item[Numeric Comparison] Both devices display a 6-digit number; user 
     confirms they match.
     Provides MITM protection with less user burden than passkey entry.
-  \item[Out-of-Band (OOB)] Uses a separate channel (NFC, QR code) to exchange 
-    pairing information.
+  \item[Out-of-Band (OOB)] Uses a separate channel (\ac{NFC}, QR code) to
+    exchange pairing information.
     Strongest protection when implemented correctly.
 \end{description}
 
@@ -272,7 +271,7 @@ and compartment a customer is accessing, protecting privacy.
 
 Each box~\(B\) is provisioned with its key~\(\KBS\) during manufacturing or
 installation.
-The key is stored in a secure element (TPM or similar) within the box.
+The key is stored in a secure element (\ac{TPM} or similar) within the box.
 The server stores all keys in an encrypted database, with the database
 encryption key protected by an HSM.
 
@@ -416,7 +415,8 @@ See \cref{fig:DeliveryProof} for the delivery protocol.
 
 Photos may capture bystanders, building entrances, or other sensitive
 information.
-Under GDPR and similar regulations, this personal data must be protected.
+Under the \ac{GDPR} and similar regulations, this personal data must be
+protected.
 
 Mitigations:
 \begin{itemize}
@@ -440,7 +440,7 @@ Mitigations:
 \begin{enumerate}
   \item Non-repudiation: delivery personnel cannot deny deliveries they
     made, providing dispute resolution capability.
-  \item Photo storage creates GDPR compliance obligations.
+  \item Photo storage creates \ac{GDPR} compliance obligations.
   \item The server must manage certificates and maintain an archive for
     potential disputes.
   \item Per-shift key generation requires the delivery person's device to
@@ -498,9 +498,11 @@ authentication systems.
 
 We should use ECDSA (Elliptic Curve Digital Signature Algorithm) with a
 curve like P-256 or P-384.
-ECDSA provides strong security with smaller signatures and faster
-verification than RSA, which is important for resource-constrained boxes
-communicating via BLE.
+ECDSA provides strong security with much smaller signatures and keys than
+RSA, which is important for resource-constrained boxes communicating via
+BLE\@.
+(RSA verification is actually faster than ECDSA's, thanks to the small
+public exponent, but over BLE the signature size matters more.)
 
 \subsection{Certificate chain for boxes}
 
@@ -508,7 +510,7 @@ communicating via BLE.
   How can boxes trust that \(\PKS\) is authentic?
 \end{exercise}
 
-We establish a PKI (Public Key Infrastructure):
+We establish a \ac{PKI}:
 \begin{description}
   \item[Root CA] The delivery company (or a trusted third party) operates
     a root certificate authority.
@@ -608,9 +610,9 @@ Mobile platforms provide attestation mechanisms:
 \begin{description}
   \item[Android: Play Integrity API] The app requests an integrity verdict from 
     Google's servers.
-    The verdict indicates whether the app is the genuine version from the Play 
-    Store, and whether the device passes integrity checks (not rooted, bootloader 
-    locked, etc.).
+    The verdict indicates whether the app is the genuine version from the Play
+    Store, and whether the device passes integrity checks (not rooted,
+    bootloader locked, etc.).
   \item[iOS: App Attest] Apple's DeviceCheck framework allows the server to 
     verify that requests come from a legitimate instance of the app on a 
     genuine Apple device.
@@ -739,6 +741,10 @@ Simpler alternatives include:
 \begin{enumerate}
   \item Strong privacy: the server learns only that \emph{someone}
     authorized accessed \emph{some} box, not who or which.
+  \item Blind tokens alone do not hide everything: the server assigned the
+    parcel to a compartment at delivery, so a compartment-open event
+    reported by the box still identifies the parcel---and thus the
+    customer---unless the box's access logs are minimized as well.
   \item Significant implementation complexity; requires cryptographic
     expertise to implement securely.
   \item Dispute resolution becomes harder since the link between customer
@@ -802,7 +808,7 @@ out of service.
 \end{exercise}
 
 \begin{description}
-  \item[GDPR] Personal data (access logs, photos) must be protected.
+  \item[\ac{GDPR}] Personal data (access logs, photos) must be protected.
     Data minimization: collect only what's necessary.
     Data retention: delete data after the purpose is fulfilled.
     Data subject rights: customers can request their data.
@@ -838,19 +844,6 @@ For delivery personnel, the app should:
   \item Make photo capture and signing seamless.
   \item Work reliably even in areas with poor network coverage.
 \end{itemize}
-
-\subsection{Final design summary}
-
-Our complete system combines:
-\begin{enumerate}
-  \item Asymmetrically signed tokens (JWS-style) for offline-capable
-    box access.
-  \item Per-shift certificates for delivery personnel.
-  \item Signed delivery records with photo evidence for non-repudiation.
-  \item PKI with certificate chains for trust establishment.
-  \item Secure hardware (TPM, secure boot) for implementation security.
-  \item GDPR-compliant data handling with appropriate retention policies.
-\end{enumerate}
 
 \begin{exercise}
   Propose potential improvements or alternative approaches to this design.
@@ -969,18 +962,18 @@ See \cref{fig:FallbackAccess} for the fallback protocol.
 \end{exercise}
 
 Mitigations for fallback risks:
-\begin{itemize}
-  \item \emph{Rate limiting}: Lock out after a few failed attempts on the 
+\begin{description}
+  \item[Rate limiting] Lock out after a few failed attempts on the
     keypad.
-  \item \emph{Time limits}: Fallback codes expire quickly (e.g., 30 minutes).
-  \item \emph{Audit logging}: All fallback access attempts are logged and 
+  \item[Time limits] Fallback codes expire quickly (\eg 30 minutes).
+  \item[Audit logging] All fallback access attempts are logged and
     flagged for review.
-  \item \emph{Notification}: The primary phone (if reachable) receives a 
+  \item[Notification] The primary phone (if reachable) receives a
     notification when fallback access is used.
-  \item \emph{Value-based restrictions}: High-value parcels may not allow 
-    fallback access; customer must use primary authentication or visit 
+  \item[Value-based restrictions] High-value parcels may not allow
+    fallback access; the customer must use primary authentication or visit
     customer service.
-\end{itemize}
+\end{description}
 
 \subsection{Consequences of the design}
 
@@ -1080,8 +1073,9 @@ See \cref{fig:MultiProvider} for the multi-provider protocol.
   \begin{msc}
     [/msc/action width=0.32\linewidth]
     {Multi-provider access}
-      \declinst{prov}{Provider}{PostNord, DHL, \ldots}
       \declinst{oper}{Operator}{Box keys}
+      \declinst{prov}{Provider}{PostNord, DHL, \ldots}
+      \declinst{cust}{Customer \(C\)}{App}
       \declinst{box}{Box \(B\)}{\(\PKProv\) for all providers}
       \mess{Request compartment}{prov}{oper}
       \nextlevel[2]
@@ -1089,14 +1083,16 @@ See \cref{fig:MultiProvider} for the multi-provider protocol.
       \nextlevel
       \mess{Compartment ID + authorization token}{oper}{prov}
       \nextlevel[2]
-      \mscaction{Provider issues customer token}{prov}
+      \mscaction{Issue customer token}{prov}
       \nextlevel[2]
-      \mess{Customer presents token (via BLE)}{prov}{box}
+      \mess{Token + authorization}{prov}{cust}
+      \nextlevel[2]
+      \mess{Token + authorization (via BLE)}{cust}{box}
       \nextlevel
       \mscaction{Verify provider authorization}{box}
       \mscaction{Verify customer token signature}{box}
       \nextlevel
-      \mess{Access granted/denied}{box}{prov}
+      \mess{Access granted/denied}{box}{cust}
       \nextlevel
   \end{msc}
   \end{sidecaption}
@@ -1138,6 +1134,26 @@ The trust model must acknowledge that the operator has some visibility.
   \item[Standardization] Requires agreement on token formats, APIs, and 
     security requirements across providers.
 \end{description}
+
+
+\section{Final design summary}
+
+Our complete system combines:
+\begin{enumerate}
+  \item Asymmetrically signed tokens (JWS-style) for offline-capable
+    box access.
+  \item Per-shift certificates for delivery personnel.
+  \item Signed delivery records with photo evidence for non-repudiation.
+  \item \ac{PKI} with certificate chains for trust establishment.
+  \item Secure hardware (\ac{TPM}, secure boot) for implementation
+    security.
+  \item \ac{GDPR}-compliant data handling with appropriate retention
+    policies.
+  \item Fallback authentication (rate-limited one-time codes) for
+    availability when the app-based method fails.
+  \item A federated multi-provider architecture mediated by the box
+    operator.
+\end{enumerate}
 
 
 \section{Future work and open problems}\label{ParcelFutureWork}
