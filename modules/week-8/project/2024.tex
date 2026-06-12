@@ -60,14 +60,17 @@ refining it step by step.
 
 \ltnote{%
   This section establishes the invariant artifact for the whole chapter:
-  the signed-image tuple \((d, \CertC, \sigma)\) defined in
-  \cref{CameraSignedImageFormat}.
-  Each later section varies exactly one component of this tuple (the hash
-  that \(\sigma\) covers, the validity of \(\CertC\), the identity
-  information in \(\CertC\) and \(\sigma\), the payload behind the hash,
-  added timestamps, the signature algorithm) while the rest of the tuple
-  stays fixed.
-  Pinning the format down concretely here is what makes that variation
+  the signed-image tuple defined in \cref{CameraSignedImageFormat}.
+  It starts as bare-bones as possible---\((d, \sigma)\) with the
+  verification key distributed out of band---so that each later section
+  can vary exactly one thing: a component of the tuple (the certificate,
+  the hash that \(\sigma\) covers, the payload behind the hash, added
+  timestamps, the signature algorithm) or the trust assumptions around
+  one component.
+  The consequences list at the end (\cref{CameraConsequencesFirst}) seeds
+  the rest of the chapter; each section opens by naming the consequence
+  it addresses, as in the police-camera chapter.
+  Pinning the format down concretely here is what makes the variation
   experienceable rather than merely asserted.
 }
 
@@ -98,8 +101,9 @@ Each camera is provisioned with a unique key pair \((\SKC, \PKC)\) during
 manufacturing.
 The private key~\(\SKC\) is stored in a secure element (similar to a
 \ac{TPM}) within the camera, from which it cannot be extracted.
-The public key~\(\PKC\) is embedded in a certificate signed by the
-manufacturer.
+For now we use the simplest possible key distribution: the manufacturer
+publishes the public keys of its cameras, and the viewer~\(V\) keeps a
+list of camera keys it trusts.
 
 \begin{exercise}
   How should the signing happen within the camera?
@@ -127,16 +131,14 @@ See \cref{fig:CameraSigningUnit} for the architecture.
 We can now write down exactly what the camera produces.
 For raw image data~\(d\), the camera outputs the \emph{signed image}
 \[
-  (d, \CertC, \sigma),
+  (d, \sigma),
   \quad\text{where}\quad
-  \sigma = \Sign[\SKC, H(d)]
+  \sigma = \Sign[\SKC, H(d)].
 \]
-and \(\CertC\) is the certificate binding the public key~\(\PKC\) to
-camera~\(C\), signed by the manufacturer~\(M\).
 This tuple is the artifact that travels from the camera to every viewer.
 We will refine it step by step throughout this chapter: each section
-changes one component of the tuple and examines what that change buys
-us---and what it costs.
+changes one component of the tuple---or the trust assumptions around one
+component---and examines what that change buys us, and what it costs.
 
 \begin{figure}
   \begin{sidecaption}[Camera signing unit architecture]{%
@@ -165,14 +167,13 @@ us---and what it costs.
   \end{sidecaption}
 \end{figure}
 
-\subsection{Verification in image viewers}
+\subsection{Verification in image viewers}\label{CameraVerification}
 
-When an image viewer~\(V\) displays a signed image \((d, \CertC, \sigma)\):
+When an image viewer~\(V\) displays a signed image \((d, \sigma)\):
 \begin{enumerate}
-  \item Extract \(\sigma\) and the certificate~\(\CertC\) from the
-    image metadata.
-  \item Verify the certificate chain of \(\CertC\) back to a trusted
-    manufacturer; this yields the verified public key~\(\PKC\).
+  \item Extract the signature~\(\sigma\) from the image metadata.
+  \item Look up the camera's public key~\(\PKC\) in the viewer's list of
+    trusted camera keys.
   \item Compute the hash \(H(d)\) of the image data.
   \item Verify: \(\Ver[\PKC, H(d), \sigma] \stackrel{?}{=}
     \text{true}\).
@@ -180,174 +181,90 @@ When an image viewer~\(V\) displays a signed image \((d, \CertC, \sigma)\):
 
 If verification fails, the viewer displays a warning (e.g., a red border).
 
-\subsection{Consequences of the design}
+\subsection{Consequences of the design}\label{CameraConsequencesFirst}
 
 \begin{exercise}
   Evaluate this design.
   What are its consequences (advantages and disadvantages)?
 \end{exercise}
 
+The design has a few consequences:
 \begin{enumerate}
-  \item The design provides authenticity: we can verify an image came from
-    a specific camera.
-  \item The camera manufacturer must be trusted---if they leak private
-    keys or sign malicious cameras, the system fails.
+  \item The design provides authenticity: we can verify that an image came
+    from a specific camera---provided that the viewer already has that
+    camera's public key.
+  \item Key distribution does not scale: there are hundreds of millions of
+    cameras, and the viewer has no way to tell a genuine camera's key from
+    a key that an attacker generated and published as a
+    \enquote{camera key}.
+  \item If a camera is compromised, there is no way to make viewers stop
+    trusting its key.
   \item Edited images lose their signatures.
     Even legitimate edits (cropping, color correction) break verification.
   \item The private key must never leave the camera.
     Side-channel attacks on the signing unit are a concern.
-  \item Key revocation is needed if a camera is compromised.
 \end{enumerate}
 
+We will deal with these consequences one at a time in the coming sections.
 
-\section{Handling image editing}\label{CameraEditing}
+
+\section{Scaling trust: certificates and
+revocation}\label{CameraKeyManagement}
 
 \ltnote{%
-  We now address the limitation that any edit breaks the signature.
-  This creates contrast with the previous design, helping students discern
-  that there is a tension between verifiability and legitimate modification.
-  The three approaches form a generalization pattern over the signed-image
-  tuple of \cref{CameraSignedImageFormat}: the editing problem stays
-  invariant while each approach changes a different part of the
-  tuple---approach 1 keeps the tuple untouched and appends to it,
-  approach 2 varies the hash function inside \(\sigma\), and approach 3
-  wraps the tuple in a new signature.
+  This section varies the key-distribution mechanism while the signed
+  image and its verification stay invariant: the viewer's list of camera
+  keys is replaced by a certificate embedded in the image.
+  The critical aspect is that a signature on a public key turns key
+  distribution from a per-camera problem into a per-manufacturer
+  problem---and, applying the same idea again, into a single-root
+  problem.
+  A second critical aspect follows by varying time instead: nothing in
+  \((d, \CertC, \sigma)\) changes when a camera is compromised, so our
+  trust in \(\CertC\) must---certificates need lifecycles (revocation,
+  rotation).
 }
 
-The first solution fails when images are legitimately edited.
-Photographers often adjust exposure, crop images, or apply filters.
-An edit changes the image data \(d\) into some \(d'\), so the
-signature~\(\sigma\) in our tuple \((d, \CertC, \sigma)\) no longer
-verifies against the new data.
+The second and third consequences in \cref{CameraConsequencesFirst} are
+both about key management: the viewer cannot keep a list of all genuine
+camera keys, and a compromised camera cannot be untrusted.
+We deal with them in turn.
 
 \begin{exercise}
-  How can we allow legitimate editing while still providing some form of
-  authenticity verification?
+  How can the viewer obtain the authentic public key of any one of
+  millions of cameras, without storing them all in advance?
 \end{exercise}
 
-\subsection{Approach 1: Preserve original alongside edits}
+\subsection{Certificates}
 
-One approach: keep the original signed image and store edits as a
-transformation applied to it.
-The file now contains \((d, \CertC, \sigma, \mathit{ops})\), where
-\(\mathit{ops}\) is the sequence of editing operations:
-\begin{itemize}
-  \item The original tuple \((d, \CertC, \sigma)\) is preserved unchanged.
-  \item Edits are recorded as the operations~\(\mathit{ops}\).
-  \item Viewers verify the original as before and replay \(\mathit{ops}\)
-    to display the edited result.
-\end{itemize}
-
-This is complex and increases file sizes.
-
-\subsection{Approach 2: Perceptual hashing}
-
-Instead of signing the exact image data, we could sign a
-\emph{perceptual hash}---a hash that remains stable under minor
-modifications.
-Only one component of the tuple changes: the signature becomes
-\(\sigma = \Sign[\SKC, \mathit{PH}(d)]\) for a perceptual hash
-function~\(\mathit{PH}\) instead of the cryptographic hash~\(H\).
+The insight is that the viewer does not need to know each \emph{camera}:
+it suffices to know each \emph{manufacturer}.
+The manufacturer~\(M\) signs a \emph{certificate} binding the public
+key~\(\PKC\) to the camera~\(C\):
+\[
+  \CertC = \bigl(C, \PKC, \Sign[\sk_M, (C, \PKC)]\bigr).
+\]
+The camera embeds its certificate in every signed image, so the signed
+image grows to
+\[
+  (d, \CertC, \sigma).
+\]
+Verification (\cref{CameraVerification}) changes in exactly one step:
+instead of looking up \(\PKC\) in a list of camera keys (step~2), the
+viewer verifies \(\CertC\) using the manufacturer's public key and takes
+\(\PKC\) from the certificate.
+The viewer now stores one key per manufacturer instead of one key per
+camera.
 
 \begin{exercise}
-  What are the trade-offs of perceptual hashing for authenticity?
+  There are many camera manufacturers, and new ones appear all the time.
+  Have we not just moved the problem from cameras to manufacturers?
 \end{exercise}
-
-Trade-offs:
-\begin{description}
-  \item[Robustness] Minor edits don't break verification.
-  \item[Security weakness] The boundary between \enquote{minor} and
-    \enquote{significant} edits is unclear.
-    An attacker might make just enough modifications to change the
-    meaning while keeping the perceptual hash valid.
-  \item[Collision risk] Perceptual hashes have weaker collision resistance
-    than cryptographic hashes.
-\end{description}
-
-For high-assurance applications, cryptographic hashes are preferred.
-
-\subsection{Approach 3: Re-signing after editing}
-
-Professional editing software could include the capability to re-sign
-images:
-\begin{enumerate}
-  \item The editor verifies the original tuple \((d, \CertC, \sigma)\).
-  \item The user makes edits, producing \(d'\).
-  \item The editor signs the new image with its own key~\(\sk_E\):
-    \[
-      \sigma_E = \Sign[\sk_E, H(d') \concat H(d) \concat \sigma].
-    \]
-  \item The edited file contains \((d', \mathit{cert}_E, \sigma_E,
-    H(d), \CertC, \sigma)\): the metadata records \enquote{edited from an
-    image signed by camera~\(C\), now signed by editor~\(E\)}.
-\end{enumerate}
-
-This wraps the original tuple in a new layer of the same shape, creating a
-chain of custody---but it requires trusted editing software.
-
-\subsection{Consequences}
-
-\begin{enumerate}
-  \item No perfect solution exists for edited images.
-  \item Perceptual hashing weakens security guarantees.
-  \item Chain-of-custody approaches require trusted software.
-  \item For maximum assurance, only unedited images should be trusted.
-\end{enumerate}
-
-
-\section{Key management and revocation}\label{CameraKeyManagement}
-
-\ltnote{%
-  We now address key management, creating contrast with the implicit
-  assumption in earlier sections that keys are never compromised.
-  Students should discern the importance of key lifecycle management.
-  In terms of the signed-image tuple, nothing in
-  \((d, \CertC, \sigma)\) changes; what varies is the \emph{validity} of
-  the component \(\CertC\) over time.
-  Keeping the artifact invariant while varying time makes the new critical
-  aspect---that trust in a certificate is not permanent---discernible.
-}
-
-\begin{exercise}
-  What happens if a camera's private key is compromised?
-  How should the system handle this?
-\end{exercise}
-
-\subsection{Certificate revocation}
-
-A signed image \((d, \CertC, \sigma)\) does not change when the camera's
-key is compromised---but our trust in its certificate~\(\CertC\) must.
-When a camera is compromised (lost, stolen, or hacked), its certificate
-must be revoked:
-\begin{itemize}
-  \item The manufacturer maintains a Certificate Revocation List (CRL)
-    or an Online Certificate Status Protocol (OCSP) responder.
-  \item Image viewers check the revocation status before accepting a
-    signature.
-  \item Images signed by revoked cameras are flagged as untrusted.
-\end{itemize}
-
-\begin{exercise}
-  What challenges arise with certificate revocation?
-\end{exercise}
-
-Challenges:
-\begin{description}
-  \item[Timeliness] Revocation information must propagate quickly.
-  \item[Offline verification] If the viewer is offline, it cannot check
-    current revocation status.
-  \item[Backdating] An attacker with a compromised key could backdate
-    signatures to before revocation.
-\end{description}
-
-\subsection{Key rotation}
-
-For long-lived cameras (e.g., security cameras), periodic key rotation
-reduces the impact of potential compromise.
-However, this requires a mechanism to update keys securely.
 
 \subsection{PKI structure}
 
+We have---but the numbers are much smaller, and the same trick applies
+again: a root \ac{CA} signs the manufacturers' certificates.
 We establish a three-level \ac{PKI}:
 \begin{description}
   \item[Root CA] A trusted authority (possibly a consortium of
@@ -388,9 +305,55 @@ See \cref{fig:CameraPKI} for the certificate chain.
   \end{sidecaption}
 \end{figure}
 
+The viewer now needs to store only the root \ac{CA}'s key.
+
+\begin{exercise}
+  What happens if a camera's private key is compromised?
+  How should the system handle this?
+\end{exercise}
+
+\subsection{Certificate revocation}
+
+A signed image \((d, \CertC, \sigma)\) does not change when the camera's
+key is compromised---but our trust in its certificate~\(\CertC\) must.
+When a camera is compromised (lost, stolen, or hacked), its certificate
+must be revoked:
+\begin{itemize}
+  \item The manufacturer maintains a Certificate Revocation List (CRL)
+    or an Online Certificate Status Protocol (OCSP) responder.
+  \item Image viewers check the revocation status before accepting a
+    signature.
+  \item Images signed by revoked cameras are flagged as untrusted.
+\end{itemize}
+
+\begin{exercise}
+  What challenges arise with certificate revocation?
+\end{exercise}
+
+Challenges:
+\begin{description}
+  \item[Timeliness] Revocation information must propagate quickly.
+  \item[Offline verification] If the viewer is offline, it cannot check
+    current revocation status.
+  \item[Backdating] An attacker with a compromised key could backdate
+    signatures to before revocation.
+\end{description}
+
+\subsection{Key rotation}
+
+For long-lived cameras (e.g., security cameras), periodic key rotation
+reduces the impact of potential compromise.
+However, this requires a mechanism to update keys securely.
+
 \subsection{Consequences}
 
 \begin{enumerate}
+  \item One signed image is now verifiable by any viewer that knows the
+    root \ac{CA}'s key---key distribution scales.
+    This addresses the second and third consequences in
+    \cref{CameraConsequencesFirst}.
+  \item The camera manufacturer must be trusted: if they leak private
+    keys or sign certificates for malicious devices, the system fails.
   \item Revocation infrastructure adds complexity and requires network
     connectivity for real-time checking.
   \item Key rotation for embedded devices is challenging.
@@ -409,6 +372,10 @@ See \cref{fig:CameraPKI} for the certificate chain.
   scenarios.
   Many students discussed this challenge in their submissions.
 }
+
+The consequences of the previous section included that revocation checking
+requires network connectivity.
+We now remove the assumption that the viewer is online.
 
 \begin{exercise}
   Image viewers may not always have network connectivity.
@@ -498,6 +465,106 @@ Practical systems must define policies for offline scenarios:
 \end{enumerate}
 
 
+\section{Handling image editing}\label{CameraEditing}
+
+\ltnote{%
+  We now address the limitation that any edit breaks the signature.
+  This creates contrast with the previous sections, helping students
+  discern that there is a tension between verifiability and legitimate
+  modification.
+  The three approaches form a generalization pattern over the signed-image
+  tuple of \cref{CameraSignedImageFormat}: the editing problem stays
+  invariant while each approach changes a different part of the
+  tuple---approach 1 keeps the tuple untouched and appends to it,
+  approach 2 varies the hash function inside \(\sigma\), and approach 3
+  wraps the tuple in a new signature.
+}
+
+We now turn to the fourth consequence in \cref{CameraConsequencesFirst}:
+the design fails when images are legitimately edited.
+Photographers often adjust exposure, crop images, or apply filters.
+An edit changes the image data \(d\) into some \(d'\), so the
+signature~\(\sigma\) in our tuple \((d, \CertC, \sigma)\) no longer
+verifies against the new data.
+
+\begin{exercise}
+  How can we allow legitimate editing while still providing some form of
+  authenticity verification?
+\end{exercise}
+
+\subsection{Approach 1: Preserve original alongside edits}
+
+One approach: keep the original signed image and store edits as a
+transformation applied to it.
+The file now contains \((d, \CertC, \sigma, \mathit{ops})\), where
+\(\mathit{ops}\) is the sequence of editing operations:
+\begin{itemize}
+  \item The original tuple \((d, \CertC, \sigma)\) is preserved unchanged.
+  \item Edits are recorded as the operations~\(\mathit{ops}\).
+  \item Viewers verify the original as before and replay \(\mathit{ops}\)
+    to display the edited result.
+\end{itemize}
+
+This is complex and increases file sizes.
+
+\subsection{Approach 2: Perceptual hashing}
+
+Instead of signing the exact image data, we could sign a
+\emph{perceptual hash}---a hash that remains stable under minor
+modifications.
+Only one component of the tuple changes: the signature becomes
+\(\sigma = \Sign[\SKC, \mathit{PH}(d)]\) for a perceptual hash
+function~\(\mathit{PH}\) instead of the cryptographic hash~\(H\).
+
+\begin{exercise}
+  What are the trade-offs of perceptual hashing for authenticity?
+\end{exercise}
+
+Trade-offs:
+\begin{description}
+  \item[Robustness] Minor edits don't break verification.
+  \item[Security weakness] The boundary between \enquote{minor} and
+    \enquote{significant} edits is unclear.
+    An attacker might make just enough modifications to change the
+    meaning while keeping the perceptual hash valid.
+  \item[Collision risk] Perceptual hashes have weaker collision resistance
+    than cryptographic hashes.
+\end{description}
+
+For high-assurance applications, cryptographic hashes are preferred.
+
+\subsection{Approach 3: Re-signing after editing}
+
+Professional editing software could include the capability to re-sign
+images:
+\begin{enumerate}
+  \item The editor verifies the original tuple \((d, \CertC, \sigma)\).
+  \item The user makes edits, producing \(d'\).
+  \item The editor signs the new image with its own key~\(\sk_E\):
+    \[
+      \sigma_E = \Sign[\sk_E, H(d') \concat H(d) \concat \sigma].
+    \]
+  \item The edited file contains \((d', \mathit{cert}_E, \sigma_E,
+    H(d), \CertC, \sigma)\): the metadata records \enquote{edited from an
+    image signed by camera~\(C\), now signed by editor~\(E\)}.
+\end{enumerate}
+
+This wraps the original tuple in a new layer of the same shape, creating a
+chain of custody---but it requires trusted editing software.
+The editor's certificate \(\mathit{cert}_E\) fits into the \ac{PKI} from
+\cref{CameraKeyManagement}: a software vendor \ac{CA} can certify editors
+just as manufacturers certify cameras.
+
+\subsection{Consequences}
+
+\begin{enumerate}
+  \item No perfect solution exists for edited images.
+  \item Perceptual hashing weakens security guarantees.
+  \item Chain-of-custody approaches require trusted software.
+  \item For maximum assurance, only unedited images should be trusted.
+\end{enumerate}
+
+
 \section{Hardware security and side-channel
 attacks}\label{CameraHardwareSecurity}
 
@@ -510,6 +577,10 @@ attacks}\label{CameraHardwareSecurity}
   Students should discern that a correct format can still be broken
   through the implementation of the signing operation.
 }
+
+The fifth consequence in \cref{CameraConsequencesFirst} concerned the
+signing unit itself: everything in this chapter rests on \(\SKC\) never
+leaving the camera.
 
 \begin{exercise}
   Even with a secure signing unit, what attacks remain possible?
@@ -1216,7 +1287,7 @@ See \cref{fig:BotDetection} for the detection mechanism.
   \end{sidecaption}
 \end{figure}
 
-\subsection{Consequences}
+\subsection{Consequences}\label{BotConsequencesFirst}
 
 \begin{enumerate}
   \item Bot operators must use different keys for each account to avoid
@@ -1226,6 +1297,9 @@ See \cref{fig:BotDetection} for the detection mechanism.
   \item Privacy concern: all tweets by a user are cryptographically
     linked to that user.
 \end{enumerate}
+
+We will deal with these consequences one at a time in the coming
+sections.
 
 
 \section{Identity binding and attestation}\label{BotIdentityBinding}
@@ -1247,8 +1321,9 @@ See \cref{fig:BotDetection} for the detection mechanism.
   each bot account?
 \end{exercise}
 
-The first solution fails if bot operators simply generate unique keys for
-each account.
+The first consequence in \cref{BotConsequencesFirst} shows how the first
+solution fails: bot operators simply generate a fresh key for each
+account.
 We need to bind keys to verified identities.
 
 \subsection{Approach 1: Certificate authority attestation}
@@ -1314,6 +1389,9 @@ Trade-offs:
   varies the value of the critical aspect
   accountability---full linkability, conditional openability, or none.
 }
+
+The third consequence in \cref{BotConsequencesFirst} remains: every
+signed tweet is cryptographically linked to its author.
 
 \begin{exercise}
   How can we detect bot networks without revealing user identities or
