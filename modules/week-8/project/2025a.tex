@@ -7,7 +7,7 @@ Law enforcement agencies increasingly rely on body-worn cameras to log
 interactions with the public.
 
 \ltnote{%
-  The idea is to use more open form of pQBL~\parencite{pQBL}.
+  The idea is to use a more open form of pQBL~\parencite{pQBL}.
   This means that we start with a question.
   This lets the reader think about the problem, try to explore it based on what 
   they currently know.
@@ -28,8 +28,8 @@ With concerns over tampering, withholding of critical parts or realistic fake
 footage, there is a need to cryptographically verify the authenticity of these 
 recordings.
 
-These videos are also strictly confidential, due to many people's privacy is 
-violated (whoever is captured in the videos).
+These videos are also strictly confidential, since the privacy of many
+people is at stake (whoever is captured in the videos).
 The video material is only partially released as evidence in a trial after 
 review.
 
@@ -116,9 +116,8 @@ reviewers~\(R\).
 \end{exercise}
 
 This key must be stored in a secure way in each camera.
-We can use some form of secure element to store the key, \eg a TPM (Trusted 
-Platform Module) or an HSM (Hardware Security Module) or a smart card (think 
-SIM card).
+We can use some form of secure element to store the key, \eg a \ac{TPM} or
+an HSM (Hardware Security Module) or a smart card (think SIM card).
 
 We let the reviewers~\(R\) be represented by a server.
 The server is much more physically secure and must store many more keys,
@@ -146,13 +145,13 @@ We will use a key size of 256 bits, until we can motivate a smaller key.
 \begin{exercise}
   How exactly should we do this encryption?
   The entire video (many megabytes, even gigabytes) will not fit into one block 
-  of AES (128 bits\footnote{The block size should not to be confused with the 
+  of AES (128 bits\footnote{The block size should not be confused with the
   key size.}).
 \end{exercise}
 
 We can see in \cref{fig:EncModes} that it is very important to pick a good mode 
 of operation in this context (videos).
-We will use GCM (Galois/Counter Mode) to get authenticated encryption.
+We will use \ac{GCM} to get authenticated encryption.
 This mode has a built-in MAC\@.
 We will need a random IV (initialization vector).
 We can use a key-derivation function to derive the encryption key from 
@@ -166,20 +165,22 @@ We can use a key-derivation function to derive the encryption key from
   \text{ is the decryption.}
   \intertext{However, what happens under the hood is that}
   c &= c_1, c_2, \ldots, c_n, t \text{ where each} \\
-  c_i &\text{ depends on \(m_i\) and \(c_{i-1}\) in line with GCM,} \\
-  t &\text{ is the built-in MAC tag.}
+  c_i &= m_i \oplus \Enc[\KENC, \IV \concat i]
+  \text{ in line with \ac{GCM} (a counter mode),} \\
+  t &\text{ is the built-in MAC tag, computed over all of }
+  c_1, \ldots, c_n.
 \end{align*}
-The decryption fails if the built-in MAC is invalid---that is, \(c_i\) has been 
-tampered with.
-Tampered with, in this context, includes bit modifications and that someone has 
-dropped a few bits the entire block.
-Running the decryption on \(c' = c_1, c_3, \ldots, c_n,\) will fail.
+The decryption fails if the built-in MAC is invalid---that is, if any \(c_i\)
+has been tampered with.
+Tampered with, in this context, includes bit modifications and that someone
+has dropped a few bits or even an entire block.
+Running the decryption on \(c' = c_1, c_3, \ldots, c_n\) will fail.
 
 \begin{figure}
   \begin{sidecaption}[Tux encrypted using different modes.]{%
     Tux encrypted using different block modes of operation.
-    When using ECB mode (\cref{fig:EncModes:TuxECB}), we can still distinguish 
-    Tux.
+    When using \ac{ECB} mode (\cref{fig:EncModes:TuxECB}), we can still
+    distinguish Tux.
     But we expect encryption to have the effect as shown in 
     \cref{fig:EncModes:TuxCTR}.
   }[fig:EncModes]
@@ -222,12 +223,20 @@ We need to rotate the keys in all the cameras at regular time intervals.
 We'll have to do that by hand.
 Whenever we replace a key, we also replace the IV\@.
 
-However, an alternative would be to use a key-derivation function to derive the 
+However, an alternative would be to use a key-derivation function to derive the
 next key (and IV):
 \begin{align*}
   k_{CR}^{(i+1)} &= \KDF[\text{next key}, k_{CR}^{(i)}]. \\
   \IV_{i+1} &= \KDF[\text{next IV}, \IV_i].
 \end{align*}
+
+One caution applies to both variants: the IV must never repeat under the
+same key.
+In counter-based modes such as \ac{GCM}, encrypting twice with the same
+key--IV pair is catastrophic for both confidentiality and integrity.
+The camera must therefore ratchet to a fresh key and IV for every new
+recording, and the ratchet state must be stored in non-volatile memory;
+otherwise the camera would reuse an old key--IV pair after a power cycle.
 
 \subsection{Uploading data to \(R\)}
 
@@ -247,10 +256,10 @@ See \cref{fig:TransferCR} for the protocol.
 \begin{figure}
   \begin{sidecaption}[Transfer data from \(C\) to \(R\).]{%
     The camera~\(C\) uploads video material to the reviewers~\(R\).
-    It first encrypts the video \(m\) as it is captured.
-    So that it stores only \(c\).
-    It identifies as \(C\) so that that \(R\) knows where the video material 
-    comes from, but more importantly so that \(R\) knows which key to use 
+    It first encrypts the video \(m\) as it is captured, so that it stores
+    only \(c\).
+    It identifies as \(C\) so that \(R\) knows where the video material
+    comes from, but more importantly so that \(R\) knows which key to use
     (\(\KCR\)).
     Once the encrypted video material \(c\) is uploaded, the reviewers can 
     decrypt it.
@@ -305,12 +314,12 @@ The design has a few consequences:
 
 \section{Manually dealing with integrity}\label{HMAC}
 
-Now we will use CTR mode (instead of GCM) and use HMAC separately to ensure 
-integrity.
-We will use CTR (counter) mode as this mode is light-weight and highly 
-parallellizable (same benefit as in GCM).
-This requires a random IV (initialization vector) in addition to the key, same 
-as for GCM\@.
+Now we will use \ac{CTR} (instead of \ac{GCM}) and use HMAC separately
+to ensure integrity.
+We will use \ac{CTR} mode as this mode is lightweight and highly
+parallelizable (same benefit as in \ac{GCM}).
+This requires a random IV (initialization vector) in addition to the key, same
+as for \ac{GCM}\@.
 
 Similarly to above, we let
 \begin{align*}
@@ -344,10 +353,10 @@ This gives us the protocol in \cref{fig:TransferCRHMAC}.
   \begin{sidecaption}[Transfer data from \(C\) to \(R\) using HMAC]
     {%
       The camera~\(C\) uploads video material to the reviewers~\(R\).
-      It first encrypts the video \(m = m_0, \ldots, m_n\) as it is captured.
-      So that it stores only \(c = c_0, \ldots, c_{N-1}, t1, c_{N}, \ldots\).
-      It identifies as \(C\) so that that \(R\) knows where the video material 
-      comes from, but more importantly so that \(R\) knows which key to use 
+      It first encrypts the video \(m = m_0, \ldots, m_n\) as it is captured,
+      so that it stores only \(c = c_0, \ldots, c_{N-1}, t_0, c_N, \ldots\).
+      It identifies as \(C\) so that \(R\) knows where the video material
+      comes from, but more importantly so that \(R\) knows which key to use
       (\(\KCR\)).
       Once the encrypted video material \(c\) is uploaded, the reviewers can 
       decrypt it.
@@ -372,8 +381,8 @@ This gives us the protocol in \cref{fig:TransferCRHMAC}.
       \nextlevel[6]
       \mess{I'm camera \(C\).}{cam}{rev}
       \nextlevel[2]
-      \mess{\(c = c_0, \ldots, c_{N-1}, t_1, \ldots, c_N, \ldots, c_{2\cdot 
-      N-1}, t_2, \ldots\)}{cam}{rev}
+      \mess{\(c = c_0, \ldots, c_{N-1}, t_0, c_N, \ldots, c_{2\cdot
+      N-1}, t_1, \ldots\)}{cam}{rev}
       \nextlevel
       \mscaction[/msc/action width=10em]{\(m = \Dec[\KENC, c]\)}{rev}
       \mscaction[/msc/action width=8em]{Drop \(c\)}{cam}
@@ -390,7 +399,7 @@ Or if someone would try to insert \(N\) blocks.
 Or reorder them.
 Or modify them.
 We would detect exactly where the problem is and we would see that other parts 
-are intact---this we couldn't do with GCM.
+are intact---this we couldn't do with \ac{GCM}.
 
 It would cause synchronization problems if someone would drop \emph{one} block.
 Or insert one block.
@@ -400,7 +409,7 @@ opposite.
 It's not that efficient though, but then we could detect what is still usable 
 and in which \(N\)-block that blocks are missing.
 
-This change improves the situation over GCM\@.
+This change improves the situation over \ac{GCM}\@.
 However, the consequences above (\cref{ConsequencesFirst}) still apply.
 
 
@@ -515,7 +524,8 @@ withhold material.
 On the downside, we note the following complications:
 \begin{description}
   \item[Secure key storage] \(\SKC\) must be stored in a secure element in the 
-    camera (e.g., TPM/HSM); any compromise must be reported and new key issued.
+    camera (\eg \ac{TPM} or HSM); any compromise must be reported and a new
+    key issued.
     However, this was already true for \(\KCR\) in the previous design.
   \item[Revocation] Registry must track valid/expired public keys \(\VKC\) 
     (e.g., when a camera is lost or compromised).
@@ -687,22 +697,25 @@ then keep the same efficiency as before.
 
 We do gain some advantages:
 \begin{description}
-  \item[Forward secrecy] Session keys are ephemeral---compromise of a single 
-    session key does not expose earlier material.
-    If a camera is lost or physically attacked, previous footage remains secure 
-    (no persistent symmetric key stored).
+  \item[Compromise containment] Session keys are ephemeral---compromise of a
+    single session key does not expose earlier material.
+    If a camera is lost or physically attacked, previous footage remains
+    secure (no persistent symmetric key stored).
     Only the current session can be decrypted.
+    Note that this is \emph{not} forward secrecy: every session key is
+    encrypted under \(\PKR\), so compromise of the long-term private
+    key~\(\SKR\) still exposes all past material.
   \item[Flexible access control] Video chunks can, in principle, be encrypted 
     to multiple authorized public keys (\eg both police reviewers and an 
     independent authority).
     We just need one envelope per public key, and will use the same encryption 
     of the data for all.
-  \item[Key management] Each camera must be provisioned with the reviewers’ (or 
-    authority’s) public key \(\PKR\) during manufacturing or issuing.
-    And each camera's digital signature public key \(\VKC\) must be registered 
+  \item[Key management] Each camera must be provisioned with the reviewers'
+    (or authority's) public key \(\PKR\) during manufacturing or issuing.
+    And each camera's digital signature public key \(\VKC\) must be registered
     with the reviewers \(R\).
     We must also manage which keys are revoked and when.
-    We can use a public-key infrastructure (PKI) to manage the public/private 
+    We can use a \ac{PKI} to manage the public/private
     key pairs.
     This simplifies the key management problem compared to the fully symmetric 
     case.
@@ -760,20 +773,20 @@ These operations can leak information through \emph{side channels}:
 \end{exercise}
 
 Countermeasures include:
-\begin{itemize}
-  \item \emph{Constant-time implementations}: Ensure all operations take the 
+\begin{description}
+  \item[Constant-time implementations] Ensure all operations take the
     same time regardless of key bits.
     This is standard practice in modern cryptographic libraries.
-  \item \emph{Power filtering and noise injection}: Add capacitors and noise 
+  \item[Power filtering and noise injection] Add capacitors and noise
     generators to mask power consumption patterns.
-  \item \emph{Shielding}: Metal enclosures reduce electromagnetic emanations.
-  \item \emph{Randomized execution}: Add random delays and dummy operations to 
+  \item[Shielding] Metal enclosures reduce electromagnetic emanations.
+  \item[Randomized execution] Add random delays and dummy operations to
     decorrelate power traces from actual computations.
-\end{itemize}
+\end{description}
 
-Using a certified secure element (such as a TPM or smartcard meeting Common 
-Criteria EAL4+ or FIPS 140-2 Level 3) provides hardware-level protection 
-against these attacks.
+Using a certified secure element (such as a \ac{TPM} or smartcard meeting
+Common Criteria EAL4+ or FIPS 140-3 Level 3) provides hardware-level
+protection against these attacks.
 The secure element should perform all operations involving \(\SKC\) and 
 \(\SKR\).
 
@@ -804,49 +817,67 @@ This leads to data loss.
 
 \subsection{Secure upload protocol: explicit verifiability and redundancy}
 
-We consider addressing this by designing a protocol where the camera only 
-deletes footage from its local storage after receiving explicit, 
-cryptographically verifiable confirmation that the reviewers (\(R\)) have 
-received and correctly stored the data:
+We consider addressing this by designing a protocol where the camera only
+deletes footage from its local storage after receiving explicit,
+cryptographically verifiable confirmation that the reviewers (\(R\)) have
+received and correctly stored the data.
+For this, the reviewers' server gets its own signing key pair
+\((\SKSrv, \VKSrv)\), separate from the encryption key pair
+\((\PKR, \SKR)\)---one key pair, one purpose (key separation).
+Each camera is provisioned with \(\VKSrv\) so that it can verify the
+server's receipts:
 
 \begin{enumerate}
-  \item The camera (\(C\)) collects and stores encrypted video chunks 
-    \((c_i, \sigma_{i-1}, \sigma_i)\), as previously described, in local 
+  \item The camera (\(C\)) collects and stores encrypted video chunks
+    \((c_i, \sigma_{i-1}, \sigma_i)\), as previously described, in local
     non-volatile memory.
-  \item Upon reaching a docking station or establishing a reliable connection, the camera initiates an upload session with the reviewers’ server (\(R\)).
-  \item The camera transmits each chunk to the reviewers’ server.
-  \item For each chunk (or batch of chunks), the reviewers’ server computes a cryptographic hash digest (\(h\)) of the received data and returns a server-generated digital signature (\(\tau\)) on the tuple (camera identifier, chunk indices, received hashes, timestamp, etc.):
+  \item Upon reaching a docking station or establishing a reliable
+    connection, the camera initiates an upload session with the reviewers'
+    server (\(R\)).
+  \item The camera transmits each chunk to the reviewers' server.
+  \item For each chunk (or batch of chunks), the reviewers' server computes
+    a cryptographic hash digest (\(h\)) of the received data and returns a
+    server-generated digital signature (\(\tau\)) on the tuple (camera
+    identifier, chunk indices, received hashes, timestamp, etc.):
     \[
-      \tau_i = \Sign[\SKR, (\text{camera ID}, i, h(c_i), t)]
+      \tau_i = \Sign[\SKSrv, (\text{camera ID}, i, h(c_i), t)]
     \]
-  \item The camera verifies \(\tau_i\) using the reviewers’ public verification key.
-  \item Only after the camera has received and verified all the relevant signatures (\(\tau\)) for the uploaded data, does it mark those chunks as safely received and deletes them from local storage.
+  \item The camera verifies \(\tau_i\) using the server's verification
+    key~\(\VKSrv\).
+  \item Only after the camera has received and verified all the relevant
+    signatures (\(\tau\)) for the uploaded data, does it mark those chunks
+    as safely received and deletes them from local storage.
 \end{enumerate}
 
-This ensures that until receipt has been cryptographically acknowledged, the footage remains on the camera, making accidental (or deliberate) removal much harder.
+This ensures that until receipt has been cryptographically acknowledged, the
+footage remains on the camera, making accidental (or deliberate) removal
+much harder.
 
 \begin{figure}
   \begin{sidecaption}[Robust upload protocol with explicit receipt]
     {%
       The enhanced upload protocol ensures the camera does not erase stored 
       video until verifiable server confirmation is received.
-      Each uploaded chunk is only deleted after the reviewers’ server returns a 
-      digital signature acknowledging receipt and integrity.
+      Each uploaded chunk is only deleted after the reviewers' server returns
+      a digital signature acknowledging receipt and integrity.
     }[fig:TransferCRReceipt]
   \flushright
   \begin{msc}
     [/msc/action width=0.4\linewidth]
     {Robust upload from \(C\) to \(R\) with explicit receipt}
-      \declinst{cam}{Camera \(C\)}{\(\SKC, \VKC\)}
-      \declinst{rev}{Reviewers \(R\)}{\(\SKR, \PKR\)}
-      \mscaction{For each chunk \(c_i, \sigma_{i-1}, \sigma_i\) in local storage}{cam}
+      \declinst{cam}{Camera \(C\)}{\(\SKC, \VKSrv\)}
+      \declinst{rev}{Reviewers \(R\)}{\(\SKR, \SKSrv\)}
+      \mscaction{For each chunk \(c_i, \sigma_{i-1}, \sigma_i\) in local
+      storage}{cam}
       \nextlevel[2]
       \mess{Send chunk \((c_i, \sigma_{i-1}, \sigma_i)\)}{cam}{rev}
       \mscaction{Compute \(h = H(c_i, \sigma_{i-1}, \sigma_i)\)}{rev}
-      \mscaction{Generate receipt signature \(\tau_i = \Sign[\SKR, (\text{camera ID}, i, h, t)]\)}{rev}
+      \mscaction{Generate receipt signature \(\tau_i = \Sign[\SKSrv,
+      (\text{camera ID}, i, h, t)]\)}{rev}
       \nextlevel[2]
       \mess{Receipt signature \(\tau_i\)}{rev}{cam}
-      \mscaction{Verify signature \(\Ver[\PKR, (\text{camera ID}, i, h, t), \tau_i]\)}{cam}
+      \mscaction{Verify signature \(\Ver[\VKSrv, (\text{camera ID}, i, h, t),
+      \tau_i]\)}{cam}
       \mscaction{Delete \(c_i, \sigma_{i-1}, \sigma_i\) if receipt valid}{cam}
       \nextlevel
   \end{msc}
@@ -855,28 +886,52 @@ This ensures that until receipt has been cryptographically acknowledged, the foo
 
 \subsection{Additional redundancy: external backup and delayed deletion}
 
-For even greater assurance, cameras could be configured to maintain a rolling buffer, retaining a fixed period (e.g., one week) of footage locally, regardless of receipt acknowledgements, unless specifically commanded otherwise over a secure management interface. This further reduces the risk that footage is lost due to mistakes, local storage failures at reviewers, or other exceptional events.
+For even greater assurance, cameras could be configured to maintain a
+rolling buffer, retaining a fixed period (\eg one week) of footage locally,
+regardless of receipt acknowledgements, unless specifically commanded
+otherwise over a secure management interface.
+This further reduces the risk that footage is lost due to mistakes, local
+storage failures at reviewers, or other exceptional events.
 
-Additionally, upload could be performed to multiple geographically separated servers (georedundancy), requiring acknowledgements from each before permitting deletion.
+Additionally, upload could be performed to multiple geographically separated
+servers (georedundancy), requiring acknowledgements from each before
+permitting deletion.
 
 \subsection{Detection of missing or tampered uploads}
 
-Because each chunk (and its associated signatures and hashes) forms a cryptographically linked chain (as in \cref{DigitalSignatures}), reviewers (or external auditors) can easily detect gaps, missing data, or reordering in the server-side archives---and these will be detectable by the camera’s deletion logic as well.
+Because each chunk (and its associated signatures and hashes) forms a
+cryptographically linked chain (as in \cref{DigitalSignatures}), reviewers
+(or external auditors) can easily detect gaps, missing data, or reordering
+in the server-side archives---and these will be detectable by the camera's
+deletion logic as well.
 
 \subsection{Consequences and limitations}
 
 The improved protocol has the following consequences:
 
-\begin{itemize}
-  \item \emph{Strong non-repudiation}: The server’s signed receipt forms a 
+\begin{description}
+  \item[Strong non-repudiation] The server's signed receipt forms a
     durable record confirming which data was received, when, and by whom.
-  \item \emph{Reduced opportunity for tampering or data loss}: A corrupt police officer \(P\) cannot cause premature deletion of footage by faking uploads or disrupting connectivity, nor can a rogue server operator delete evidence without leaving a cryptographically accountable trail.
-  \item \emph{Storage management tradeoff}: Cameras need sufficient non-volatile storage to buffer footage awaiting upload and receipt; storage limits might delay full deletion of old material.
-  \item \emph{Server private key sensitivity}: Loss or compromise of the reviewers’ server’s signing key would affect trust in receipts; this key must be tightly managed and, ideally, backed with hardware security controls.
-  \item \emph{Operational complexity}: More sophisticated protocols increase system complexity and introduce the need for robust handling of communication failures, partial uploads, or out-of-order receipt handling.
-\end{itemize}
+  \item[Reduced opportunity for tampering or data loss] A corrupt police
+    officer \(P\) cannot cause premature deletion of footage by faking
+    uploads or disrupting connectivity, nor can a rogue server operator
+    delete evidence without leaving a cryptographically accountable trail.
+  \item[Storage management tradeoff] Cameras need sufficient non-volatile
+    storage to buffer footage awaiting upload and receipt; storage limits
+    might delay full deletion of old material.
+  \item[Server private key sensitivity] Loss or compromise of the server's
+    signing key~\(\SKSrv\) would affect trust in receipts; this key must be
+    tightly managed and, ideally, backed with hardware security controls.
+  \item[Operational complexity] More sophisticated protocols increase
+    system complexity and introduce the need for robust handling of
+    communication failures, partial uploads, or out-of-order receipt
+    handling.
+\end{description}
 
-Overall, this enhancement makes the system much more robust to both accidental and malicious data loss during the upload process. The protocol also leaves an accountable, auditable chain of custody for all video material from capture to deletion.
+Overall, this enhancement makes the system much more robust to both
+accidental and malicious data loss during the upload process.
+The protocol also leaves an accountable, auditable chain of custody for all
+video material from capture to deletion.
 
 \begin{exercise}
   Propose potential mitigations for the scenario where both the camera and the 
@@ -1175,7 +1230,8 @@ See \cref{fig:Redaction} for the protocol.
       \nextlevel[2]
       \mess{Release redacted + \(\sigma_R\) + manifest}{rev}{court}
       \nextlevel
-      \mscaction{Verify \(\sigma_R\), optionally request original for audit}{court}
+      \mscaction{Verify \(\sigma_R\), optionally request original for
+      audit}{court}
       \nextlevel
   \end{msc}
   \end{sidecaption}
@@ -1204,6 +1260,26 @@ See \cref{fig:Redaction} for the protocol.
 \end{description}
 
 
+\section{Final design summary}
+
+A complete body camera system combines:
+\begin{enumerate}
+  \item Hybrid (envelope) encryption of all video under the reviewers'
+    public key~\(\PKR\), with a fresh session key per recording.
+  \item Per-camera signing keys~\(\SKC\) with chained signatures over the
+    encrypted chunks, so that anyone can verify authenticity
+    using~\(\VKC\).
+  \item A receipt-based upload protocol: the camera deletes footage only
+    after verifying the server's signed receipt.
+  \item Tamper-evident audit logging with externally timestamped
+    checkpoints for the chain of custody.
+  \item Hybrid classical/post-quantum key encapsulation for long-term
+    confidentiality.
+  \item A dual-signature redaction workflow that preserves the original
+    alongside the redacted version.
+\end{enumerate}
+
+
 \section{Future work and open problems}\label{FutureWork}
 
 Several aspects of body camera systems remain active areas of research and 
@@ -1226,9 +1302,9 @@ development:
   \item[Blockchain-based audit logs] Distributed ledger technology could 
     provide a more decentralized and tamper-evident audit trail, removing the 
     need to trust a central timestamp authority.
-  \item[Automated GDPR compliance] Tools for automatic face detection, consent 
-    management, and retention policy enforcement could reduce the burden on 
-    reviewers while ensuring legal compliance.
+  \item[Automated \ac{GDPR} compliance] Tools for automatic face detection,
+    consent management, and retention policy enforcement could reduce the
+    burden on reviewers while ensuring legal compliance.
   \item[Real-time streaming with end-to-end encryption] For situations 
     requiring immediate oversight, secure real-time streaming to reviewers 
     presents additional challenges around key management and bandwidth.
