@@ -1224,27 +1224,32 @@ refining it step by step.
 
 \ltnote{%
   As in the camera chapter, this section establishes the invariant
-  artifact: the signed tweet
-  \((\text{tweet\_content}, \text{timestamp}, \text{account\_id},
-  \sigma)\) verifiable under \(\pk_U\).
+  artifact: the signed tweet \((m, \sigma)\) verifiable under \(\pk_U\).
   The later sections each vary one aspect around this invariant: how
   \(\pk_U\) is bound to something scarce (identity binding), which
-  signature scheme produces \(\sigma\) (privacy), and at what scale the
-  scheme must run (scalability).
+  signature scheme produces \(\sigma\) (privacy), at what scale the
+  scheme must run (scalability), and what posting costs (Sybil
+  resistance).
+  Each section states its variation as a change to the tuple, so the
+  invariance is experienceable in the displayed formats, not just
+  asserted in prose.
 }
 
 \subsection{Key pair binding}
 
 Each user generates or receives a key pair \((\sk_U, \pk_U)\) upon
 registration.
-Every tweet or interaction is signed:
+Every tweet or interaction is signed.
+For the payload
 \[
-  \sigma = \Sign[\sk_U, (\text{tweet\_content}, \text{timestamp},
-  \text{account\_id})].
+  m = (\text{tweet\_content}, \text{timestamp}, \text{account\_id}),
+\]
+the user's client computes
+\[
+  \sigma = \Sign[\sk_U, m].
 \]
 
-The published object is the \emph{signed tweet}
-\((\text{tweet\_content}, \text{timestamp}, \text{account\_id}, \sigma)\),
+The published object is the \emph{signed tweet} \((m, \sigma)\),
 and anyone can verify \(\sigma\) using the user's public key~\(\pk_U\).
 This tuple is the artifact we will refine throughout the chapter.
 
@@ -1314,6 +1319,10 @@ sections.
   device).
   The critical aspect is that unforgeability of \(\sigma\) says nothing
   about the scarcity of key pairs---these are separate properties.
+  The two approaches produce tuples of the same shape,
+  \((m, \sigma, \cdot)\), differing only in who signs the third
+  component; displaying both formats makes that the only thing that
+  varies.
 }
 
 \begin{exercise}
@@ -1328,15 +1337,22 @@ We need to bind keys to verified identities.
 
 \subsection{Approach 1: Certificate authority attestation}
 
-A trusted Certificate Authority (CA) issues certificates only after
+A trusted \ac{CA} issues certificates only after
 identity verification:
 \begin{enumerate}
   \item User proves their identity (e.g., via passport, ID card, or
     phone number verification).
-  \item The CA issues a certificate binding their public key to their
-    verified identity.
+  \item The \ac{CA} issues a certificate binding their public key to
+    their verified identity:
+    \[
+      \CertU = \bigl(U, \pk_U, \Sign[\sk_{\text{CA}}, (U, \pk_U)]\bigr).
+    \]
   \item Users can only have one valid certificate at a time.
 \end{enumerate}
+
+The signed tweet grows to \((m, \sigma, \CertU)\)---the same move as for
+the cameras in \cref{CameraKeyManagement}: verifiers store one \ac{CA}
+key instead of one key per user.
 
 Now, to operate multiple accounts with different keys, a bot operator
 would need multiple verified identities---which is expensive or illegal.
@@ -1346,13 +1362,22 @@ would need multiple verified identities---which is expensive or illegal.
 Instead of identity verification, we could bind keys to physical devices:
 \begin{itemize}
   \item Each smartphone or computer has a secure element with a
-    device-specific key.
-  \item The platform verifies that tweets are signed by a real device.
+    device-specific key~\(\sk_D\), certified by the device vendor.
+  \item The secure element attests the user's key:
+    \[
+      \mathit{att}_U = \Sign[\sk_D, \pk_U].
+    \]
+  \item The signed tweet carries \((m, \sigma, \mathit{att}_U)\) (plus
+    the device's vendor certificate), so the platform can verify that
+    \(\pk_U\) lives in a real device.
   \item Operating bots at scale would require many physical devices.
 \end{itemize}
 
 This is similar to Google's SafetyNet/Play Integrity API or Apple's
 DeviceCheck.
+Note that the two approaches yield tuples of the same shape; the only
+difference is whether the third component is signed by an identity
+\ac{CA} or by a device.
 
 \begin{exercise}
   What are the trade-offs between identity-based and device-based
@@ -1402,12 +1427,26 @@ signed tweet is cryptographically linked to its author.
 
 With group signatures:
 \begin{itemize}
-  \item All legitimate users share a group key.
-  \item Any member can sign, and the signature verifies as coming from
-    the group---but not from which member.
-  \item A group manager can \enquote{open} signatures to identify the
-    signer if abuse is detected.
+  \item All legitimate users are members of one group with a single group
+    public key~\(\mathit{gpk}\); each member~\(U\) holds their own
+    signing key~\(\mathit{gsk}_U\).
+  \item Any member can sign,
+    \[
+      \sigma = \GSign[\mathit{gsk}_U, m],
+    \]
+    and the signature verifies as coming from the group,
+    \(\GVer[\mathit{gpk}, m, \sigma] \in \{\top, \bot\}\)---but not from
+    which member.
+  \item A group manager holding an opening key~\(\mathit{osk}\) can
+    \enquote{open} signatures to identify the signer if abuse is
+    detected:
+    \[
+      \GOpen[\mathit{osk}, m, \sigma] = U.
+    \]
 \end{itemize}
+
+The signed tweet keeps its shape \((m, \sigma)\); only the scheme behind
+\(\sigma\) has changed---and with it, what verification reveals.
 
 This provides:
 \begin{itemize}
@@ -1434,11 +1473,22 @@ Challenges:
 Ring signatures allow a user to sign on behalf of a group without
 revealing which member signed---and without needing a group manager:
 \begin{itemize}
-  \item The signer chooses a \enquote{ring} of public keys.
-  \item The signature proves the signer owns one of the private keys,
-    but not which one.
-  \item No one can later identify the actual signer.
+  \item The signer chooses a \emph{ring} of public keys
+    \(R = \{\pk_1, \ldots, \pk_n\}\) that includes their own.
+  \item The signature
+    \[
+      \sigma = \RSign[\sk_U, R, m]
+    \]
+    proves that the signer holds the private key to \emph{one} of the
+    keys in~\(R\), but not which one:
+    \(\RVer[R, m, \sigma] \in \{\top, \bot\}\).
+  \item No one can later identify the actual signer; there is no
+    \(\GOpen\) algorithm.
 \end{itemize}
+
+Here the tuple visibly changes: the ring must travel with the tweet,
+\((m, R, \sigma)\), and both the signature size and the verification
+time grow with the size of the ring.
 
 This provides stronger privacy than group signatures but no
 accountability.
@@ -1485,8 +1535,14 @@ Each tweet verification requires:
 
 \begin{description}
   \item[Batch verification] Some signature schemes (e.g., Schnorr,
-    BLS) support batch verification of multiple signatures more
-    efficiently than individual verification.
+    BLS) support batch verification: a single check
+    \[
+      \BVer[(\pk_1, m_1, \sigma_1), \ldots, (\pk_n, m_n, \sigma_n)]
+      \in \{\top, \bot\}
+    \]
+    replaces \(n\) independent verifications and runs significantly
+    faster; with BLS, the \(n\) signatures can even be aggregated into
+    one short signature.
   \item[Caching] Frequently used public keys and verification results
     can be cached.
   \item[Probabilistic verification] For bot detection (not per-tweet
@@ -1568,13 +1624,20 @@ enough to deter most attackers.
 
 One approach is to require computational work for each signature:
 \begin{enumerate}
-  \item Before posting, the client must solve a computational puzzle 
-    (similar to Bitcoin mining, but much easier).
-  \item The puzzle difficulty is tuned so legitimate users barely notice 
-    (e.g., 100ms of computation), but operating 10,000 bots requires 
+  \item Before posting~\(m\), the client must solve a computational
+    puzzle (similar to Bitcoin mining, but much easier): find a
+    nonce~\(\nu\) such that
+    \[
+      H(m \concat \nu) < T,
+    \]
+    where the threshold~\(T\) sets the difficulty.
+  \item The difficulty is tuned so legitimate users barely notice
+    (e.g., 100\,ms of computation), but operating 10\,000 bots requires
     significant resources.
-  \item The puzzle can be bound to the message content, preventing 
-    pre-computation.
+  \item Since the puzzle is bound to the message~\(m\), the work cannot
+    be precomputed or reused for another tweet.
+  \item The signed tweet grows to \((m, \nu, \sigma)\); the platform
+    checks \(H(m \concat \nu) < T\) before accepting the post.
 \end{enumerate}
 
 \begin{exercise}
@@ -1692,6 +1755,25 @@ If signatures provide non-repudiation:
 
 
 \section{Final design summary}
+
+\ltnote{%
+  As in the camera chapter, the summary is a fusion: the components that
+  were varied one at a time are reassembled into the final tuple, so the
+  student experiences them simultaneously and sees which section
+  contributed which part.
+}
+
+We can read the chapter's development off the final signed-tweet format.
+Starting from \((m, \sigma)\), the tweet has grown to
+\[
+  (m, \nu, \sigma, \CertU),
+\]
+where the proof-of-work nonce~\(\nu\) makes bulk posting expensive
+(\cref{BotSybilResistance}), the certificate~\(\CertU\) binds the key to
+a scarce identity or device (\cref{BotIdentityBinding}), and \(\sigma\)
+may be an ordinary, group, or ring signature depending on the chosen
+accountability--privacy trade-off (\cref{BotPrivacy}; a ring signature
+additionally carries its ring~\(R\)).
 
 A complete bot detection system via signatures combines:
 \begin{enumerate}
