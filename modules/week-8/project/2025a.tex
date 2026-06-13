@@ -136,7 +136,7 @@ decrypt the video material by camera~\(C\).
   How do we choose parameters for instantiation (\eg key size)?
 \end{exercise}
 
-We will use AES to do encryption.
+We will use \ac{AES} to do encryption.
 Due to the privacy aspects of the problem, we need to choose the key size based 
 on how long the data must be confidential.
 This should probably be related to some regulation or law.
@@ -149,13 +149,14 @@ We will use a key size of 256 bits, until we can motivate a smaller key.
   key size.}).
 \end{exercise}
 
-We can see in \cref{fig:EncModes} that it is very important to pick a good mode 
-of operation in this context (videos).
-We will use \ac{GCM} to get authenticated encryption.
+We can see in \cref{fig:EncModes} that it is very important to pick a good
+mode of operation~\autocite{blockmodes} in this context (videos).
+We will use \ac{GCM}~\autocite{McGrewViega2004gcm,SP80038D} to get
+authenticated encryption.
 This mode has a built-in MAC\@.
 We will need a random IV (initialization vector).
-We can use a key-derivation function to derive the encryption key from 
-\(\KCR\):
+We can use a key-derivation function (such as HKDF~\autocite{HKDF}) to
+derive the encryption key from \(\KCR\):
 \begin{align*}
   \KENC &= \KDF[\Enc, \KCR]. \\
   \intertext{For \(m = m_1, m_2, \ldots, m_n\), we let}
@@ -343,7 +344,7 @@ Similarly to above, we let
 \end{align*}
 
 We also need to ensure integrity.
-We will use HMAC-SHA256 for this.
+We will use HMAC-SHA256~\autocite{HMAC,shs} for this.
 We use another key-derivation function to derive the HMAC key from \(\KCR\):
 \begin{align*}
   \KMAC &= \KDF[\MAC, \KCR].
@@ -520,11 +521,13 @@ We want to use a signature algorithm that is efficient, as we must run it on a
 camera.
 This means that an elliptic curve signature algorithm is a good choice,
 then we get short keys.
-We will use ECDSA (Elliptic Curve Digital Signature Algorithm) with a curve 
-that is secure for the key size we choose.
+We will use ECDSA (Elliptic Curve Digital Signature
+Algorithm)~\autocite{FIPS186-5} with a curve that is secure for the key
+size we choose.
 
-We should look at the recommendations from NIST or similar standards, but the 
-curves \texttt{P-256} or \texttt{P-384} are probably good choices.
+We should look at the recommendations from NIST~\autocite{SP80057} or
+similar standards, but the curves \texttt{P-256} or \texttt{P-384} are
+probably good choices.
 We must consider the key size in relation to how long we want the authenticity 
 to be valid---for how many years into the future should anyone be able to 
 verify the signatures?
@@ -564,9 +567,9 @@ On the downside, we note the following complications:
   \item[Randomness] The signatures require randomness.
     The camera must have a good source of randomness to generate the nonces 
     required by the signature scheme.
-    However, one could use constructions such as RFC 6979 to deterministically 
-    calculate the nonce in a secure way, and thus avoid the need for generating 
-    randomness.
+    However, one could use constructions such as
+    RFC~6979~\autocite{RFC6979} to deterministically calculate the nonce
+    in a secure way, and thus avoid the need for generating randomness.
   \item[Key management] Each camera needs its own key pair; this complicates 
     key management, especially in large systems.
     However, this is similar to the previous design where each camera had its 
@@ -653,7 +656,8 @@ So now the camera must be able to generate good-quality random numbers.
 \end{exercise}
 
 \begin{solution}
-  We want the encryption system to be (at least) \emph{semantically secure}.
+  We want the encryption system to be (at least) \emph{semantically
+  secure}~\autocite{GoldwasserMicali1984}.
   This means that the ciphertext must not leak any information about the 
   plaintext.
   (In the symmetric case, we achieve this by choosing a block mode other than 
@@ -678,9 +682,10 @@ So now the camera must be able to generate good-quality random numbers.
   If a nonce is reused, an attacker can (usually) compute the signing key.
 \end{solution}
 
-The algorithm and padding can be chosen by looking at the PKCS standards, \eg 
-PKCS\ \#1 to use RSA with OAEP\@.
-It's worth noting that the version of RSA used here is not the same as RSA 
+The algorithm and padding can be chosen by looking at the PKCS standards,
+\eg PKCS\ \#1~\autocite{RFC8017} to use RSA~\autocite{RSA1978} with
+OAEP~\autocite{BellareRogaway1994oaep}.
+It's worth noting that the version of RSA used here is not the same as RSA
 presented in textbooks---ciphertexts must be randomized to be secure.
 This means that we now need the camera to generate good-quality randomness.
 
@@ -698,8 +703,8 @@ drain the battery very quickly---not particularly useful.
 Direct asymmetric encryption of large video data is inefficient and 
 impractical; most public-key schemes are only suitable for encrypting short 
 messages (\eg symmetric keys).
-So instead, we let \(\AsymEnc\) (and \(\AsymDec\)) use \emph{hybrid 
-encryption}:
+So instead, we let \(\AsymEnc\) (and \(\AsymDec\)) use \emph{hybrid
+encryption}~\autocite{CramerShoup2003hybrid}:
 
 \begin{enumerate}
   \item For session \(n\), the camera generates a fresh, random symmetric key 
@@ -747,7 +752,8 @@ We do gain some advantages:
     If a camera is lost or physically attacked, previous footage remains
     secure (no persistent symmetric key stored).
     Only the current session can be decrypted.
-    Note that this is \emph{not} forward secrecy: every session key is
+    Note that this is \emph{not} forward
+    secrecy~\autocite{PerfectForwardSecrecy}: every session key is
     encrypted under \(\PKR\), so compromise of the long-term private
     key~\(\SKR\) still exposes all past material.
   \item[Flexible access control] Video chunks can, in principle, be encrypted 
@@ -802,15 +808,16 @@ The camera performs cryptographic operations (signing, encrypting) using its
 secure element.
 These operations can leak information through \emph{side channels}:
 \begin{description}
-  \item[Timing attacks] If the time to compute a signature depends on the 
-    secret key bits, an attacker measuring operation times can reconstruct the 
-    key.
-  \item[Power analysis] The power consumption of a chip varies depending on 
+  \item[Timing attacks] If the time to compute a signature depends on the
+    secret key bits, an attacker measuring operation times can reconstruct
+    the key~\autocite{Kocher1996timing}.
+  \item[Power analysis] The power consumption of a chip varies depending on
     which operations it performs.
-    By measuring power traces during cryptographic operations, attackers can 
-    extract secret keys.
-  \item[Electromagnetic emanations] Similar to power analysis, but measuring 
-    electromagnetic radiation from the chip.
+    By measuring power traces during cryptographic operations, attackers
+    can extract secret keys~\autocite{KocherJaffeJun1999dpa}.
+  \item[Electromagnetic emanations] Similar to power analysis, but
+    measuring electromagnetic radiation from the
+    chip~\autocite{QuisquaterSamyde2001ema}.
 \end{description}
 
 \begin{exercise}
@@ -1039,7 +1046,8 @@ action performed, and a reference to the affected data.
 
 \subsection{Tamper-evident logging with hash chains}
 
-To make the audit log tamper-evident, we use a hash chain.
+To make the audit log tamper-evident, we use a hash
+chain~\autocite{SchneierKelsey1999logs}.
 Each log entry~\(\LogEntry_i\) includes a hash of the previous entry:
 \begin{align*}
   \LogHash_0 &= H(\LogEntry_0) \\
@@ -1060,9 +1068,10 @@ that generated it:
   \sigma_i = \Sign[\sk_{\text{actor}}, \LogEntry_i \concat \LogHash_{i-1}].
 \]
 
-The reviewers' server maintains the master log and periodically publishes 
-\emph{checkpoints}---signed commitments to the current log state---to an 
-external timestamp authority or public bulletin board.
+The reviewers' server maintains the master log and periodically publishes
+\emph{checkpoints}---signed commitments to the current log state---to an
+external timestamp authority~\autocite{HaberStornetta1991,RFC3161} or
+public bulletin board.
 This prevents even the server operator from rewriting history undetected.
 
 See \cref{fig:AuditLog} for the logging protocol.
@@ -1131,8 +1140,9 @@ See \cref{fig:AuditLog} for the logging protocol.
 
 Our system uses ECDSA for signatures and RSA or elliptic-curve cryptography for 
 asymmetric encryption.
-These algorithms are secure against classical computers, but would be broken by 
-a sufficiently powerful quantum computer running Shor's algorithm.
+These algorithms are secure against classical computers, but would be
+broken by a sufficiently powerful quantum computer running Shor's
+algorithm~\autocite{Shor1997}.
 
 \begin{exercise}
   Body camera footage may be used as evidence decades after capture.
@@ -1163,18 +1173,19 @@ a sufficiently powerful quantum computer running Shor's algorithm.
 
 Several approaches exist:
 \begin{description}
-  \item[Hybrid encryption] Use both a classical algorithm (RSA/ECDH) and a 
-    post-quantum algorithm (such as ML-KEM, formerly Kyber) for key 
-    encapsulation.
+  \item[Hybrid encryption] Use both a classical algorithm (RSA/ECDH) and a
+    post-quantum algorithm (such as ML-KEM, formerly
+    Kyber~\autocite{FIPS203}) for key encapsulation.
     The session key is derived from both, so an attacker must break both 
     algorithms.
-  \item[Larger symmetric keys] AES-256 provides 128-bit security against 
-    quantum attacks (due to Grover's algorithm), which is considered 
-    sufficient.
+  \item[Larger symmetric keys] AES-256 provides 128-bit security against
+    quantum attacks (due to Grover's algorithm~\autocite{Grover1996}),
+    which is considered sufficient.
     Our system already uses AES-256.
-  \item[Post-quantum signatures] For new deployments, use post-quantum 
-    signature algorithms such as ML-DSA (formerly Dilithium) or SLH-DSA 
-    (formerly SPHINCS+).
+  \item[Post-quantum signatures] For new deployments, use post-quantum
+    signature algorithms such as ML-DSA (formerly
+    Dilithium)~\autocite{FIPS204} or SLH-DSA (formerly
+    SPHINCS+)~\autocite{FIPS205}.
     These have larger signatures, which increases storage and bandwidth 
     requirements.
 \end{description}
@@ -1231,10 +1242,11 @@ non-redacted portions.
 
 Two approaches address this:
 \begin{description}
-  \item[Redactable signatures] Use a signature scheme that allows designated 
-    portions to be removed while the signature on remaining portions stays 
-    valid.
-    This is an active research area with schemes based on chameleon hashes.
+  \item[Redactable signatures] Use a signature scheme that allows
+    designated portions to be removed while the signature on remaining
+    portions stays valid~\autocite{JMSW2002redactable}.
+    This is an active research area with schemes based on chameleon
+    hashes~\autocite{KrawczykRabin2000chameleon}.
   \item[Dual-signature workflow] The original camera signature proves 
     authenticity of the original.
     A separate reviewer signature on the redacted version proves the chain of 
@@ -1360,9 +1372,9 @@ development:
 \begin{description}
   \item[Deepfake detection and prevention] As synthetic media becomes more 
     convincing, additional countermeasures may be needed.
-    Frame-by-frame signing with hardware attestation, content authenticity 
-    watermarks (such as C2PA), and AI-based tampering detection are being 
-    explored.
+    Frame-by-frame signing with hardware attestation, content authenticity
+    watermarks (such as C2PA~\autocite{C2PAspec}), and AI-based tampering
+    detection are being explored.
   \item[Threshold cryptography] To reduce trust in any single reviewer, 
     threshold schemes could require multiple parties to collaborate for 
     decryption or signing.

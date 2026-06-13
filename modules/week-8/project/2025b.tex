@@ -139,7 +139,7 @@ We can construct the token as:
   \text{token} = (\text{box\_id}, \text{compartment}, \text{user\_id},
   t_{\text{start}}, t_{\text{end}}, \text{permission})
 \]
-and compute an HMAC to authenticate it:
+and compute an HMAC~\autocite{HMAC} to authenticate it:
 \[
   \tau = \MAC[\KBS, \text{token}].
 \]
@@ -232,7 +232,8 @@ to:
   What are the different pairing modes and their security properties?
 \end{exercise}
 
-BLE provides several pairing methods with different security levels:
+BLE provides several pairing methods with different security
+levels~\autocite{BluetoothCore}:
 \begin{description}
   \item[Just Works] No user interaction; vulnerable to MITM attacks.
     Should not be used for security-critical applications.
@@ -489,15 +490,15 @@ with signature:
 The box verifies: \(\Ver[\PKS, \text{token}, \sigma_{\text{token}}]
 \stackrel{?}{=} \text{true}\).
 
-This is similar to JSON Web Signatures (JWS) used in many web
-authentication systems.
+This is similar to JSON Web Signatures (JWS)~\autocite{RFC7515} used in
+many web authentication systems.
 
 \begin{exercise}
   What algorithm should we use for the signatures?
 \end{exercise}
 
-We should use ECDSA (Elliptic Curve Digital Signature Algorithm) with a
-curve like P-256 or P-384.
+We should use ECDSA (Elliptic Curve Digital Signature
+Algorithm)~\autocite{FIPS186-5} with a curve like P-256 or P-384.
 ECDSA provides strong security with much smaller signatures and keys than
 RSA, which is important for resource-constrained boxes communicating via
 BLE\@.
@@ -684,7 +685,7 @@ significant privacy concern.
 
 \subsection{Blind signatures for access tokens}
 
-One approach uses blind signatures.
+One approach uses blind signatures~\autocite{ecash}.
 The customer blinds their access request before sending it to the server:
 
 \begin{enumerate}
@@ -706,15 +707,15 @@ The customer blinds their access request before sending it to the server:
 \end{exercise}
 
 This requires a separate authorization proof.
-The customer proves (perhaps using zero-knowledge techniques) that they
-have a valid delivery notification for \emph{some} box, without revealing
-which one.
+The customer proves (perhaps using zero-knowledge
+techniques~\autocite{GMR1989zk}) that they have a valid delivery
+notification for \emph{some} box, without revealing which one.
 
 This is complex to implement correctly.
 Simpler alternatives include:
 \begin{itemize}
-  \item Using an anonymizing proxy or onion routing so the server sees
-    the request but not who sent it.
+  \item Using an anonymizing proxy or onion routing~\autocite{Tor} so the
+    server sees the request but not who sent it.
   \item Decentralizing: have boxes generate their own tokens after
     verifying a capability from the server.
 \end{itemize}
@@ -1176,8 +1177,8 @@ Several aspects of parcel box systems remain active areas of development:
   \item[Denial-of-service protection] How do we prevent attackers from 
     exhausting compartments, flooding the server with requests, or jamming BLE 
     communications?
-    Rate limiting, proof-of-work, and physical design (tamper-resistant radios) 
-    are partial solutions.
+    Rate limiting, proof-of-work~\autocite{DworkNaor1992pow}, and physical
+    design (tamper-resistant radios) are partial solutions.
   \item[Supply chain security] How do we ensure boxes haven't been tampered 
     with during manufacturing or installation?
     Hardware attestation, secure boot chains, and physical inspection 

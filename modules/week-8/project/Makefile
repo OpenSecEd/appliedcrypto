@@ -9,6 +9,9 @@ SRC+=		2026a.tex
 SRC+=		2025a.tex 2025b.tex
 SRC+=		2024.tex
 SRC+=		bibsp.sty
+SRC+=		bibliography.bib
+SRC+=		crypto.bib sybil.bib anon.bib ecurrency.bib auth.bib
+SRC+=		blockchain.bib
 
 FIGS+=		figs/Tux.pdf
 FIGS+=		figs/Tux_encrypted_ecb.png
