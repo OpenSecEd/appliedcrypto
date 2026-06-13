@@ -753,8 +753,8 @@ We do gain some advantages:
     secure (no persistent symmetric key stored).
     Only the current session can be decrypted.
     Note that this is \emph{not} forward
-    secrecy~\autocite{PerfectForwardSecrecy}: every session key is
-    encrypted under \(\PKR\), so compromise of the long-term private
+    secrecy~\autocite{PerfectForwardSecrecy,AuthKeyExchange}: every session
+    key is encrypted under \(\PKR\), so compromise of the long-term private
     key~\(\SKR\) still exposes all past material.
   \item[Flexible access control] Video chunks can, in principle, be encrypted 
     to multiple authorized public keys (\eg both police reviewers and an 
