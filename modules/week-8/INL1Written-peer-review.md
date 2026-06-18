@@ -1,14 +1,14 @@
 ---
-name: INL1Written
-regex: INL1Written
+name: INL1Written Peer Review
+regex: INL1Written Peer Review
 due_at: null
 unlock_at: null
 lock_at: null
-points_possible: 25.0
+points_possible: 100.0
 published: true
 rubric: null
 modules:
-- 'Week 7 (calendar week 9) '
+- Week 7
 ---
 # Background
 

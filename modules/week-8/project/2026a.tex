@@ -1,0 +1,1755 @@
+\chapter{Smart home energy management}\label{SmartEnergyStatement}
+\chapterprecis{%
+  This chapter is from DD2520 Applied Crypto, spring 2026, at KTH\@.
+}
+
+Many grid operators in Sweden are introducing a \emph{power tariff}
+(in Swedish known as \emph{\foreignlanguage{swedish}{effekttariff}},
+sometimes anglicized as \emph{effect tariff}).
+Swedish regulation originally required all grid operators to apply such
+tariffs from 1 January 2027, implementing EU requirements on
+cost-reflective network tariffs; that mandate was revoked in 2026,
+pending a revised tariff model, but cost reflectivity remains an EU
+requirement and many grid operators apply power tariffs voluntarily.
+With a power tariff, the electricity bill is based on the price of
+electricity at the time of use, but also on the maximum power used during
+the billing period.
+This is done to encourage users to distribute their electricity use over time,
+so that they don't run the oven, charge their electric car, run the dishwasher
+and laundry machine all at the same time.
+
+To help households distribute their electricity use, we want smart products to
+coordinate when they consume power.
+For instance, the car charger and the heating system can automatically lower
+their consumption when they detect that the oven, vacuum cleaner, dishwasher
+or laundry machine are running.
+The dishwasher can delay its start until power consumption is lower or the
+price is cheaper.
+
+\ltnote{%
+  We want the students to learn
+  \LOapply*
+  \LOanalyse*
+
+  The object of learning is to identify which security, privacy, and
+  functionality requirements arise in the smart-home setting before we discuss
+  any protocol details.
+  We use a more open form of pQBL~\parencite{pQBL} by starting with questions.
+  This lets the reader explore the problem from their current understanding
+  before we tell them more explicitly, which should reinforce the later
+  explanation~\parencite{Szekely1950}.
+  It also helps the reader to discern relevant
+  aspects~\parencite{NecessaryConditionsOfLearning}.
+
+  What varies is the perspective on the same household scenario: first
+  benefits and drawbacks, then possible mitigations.
+  What remains invariant is the underlying smart-energy setting.
+  The critical aspects are confidentiality, integrity, authentication,
+  authorization, privacy, and data minimization.
+  The intention of
+  \cref{EnergyBenefitsDrawbacks,EnergyAlleviateDrawbacks} is therefore to let
+  the reader discover the properties that the coming protocol design must
+  capture.
+}
+\begin{exercise}\label{EnergyBenefitsDrawbacks}
+  What are the benefits and drawbacks of having smart devices coordinate
+  their electricity use?
+\end{exercise}
+
+Typical benefits include lower electricity bills by avoiding peak-power
+charges,
+reduced strain on the electricity grid, and automatic comfort optimization
+without manual intervention.
+
+Drawbacks include the risk of exposing private habits through power-usage
+data (when you cook, when you're home, when you sleep), the risk of
+unauthorized control of devices (an attacker turning off your heating in
+winter), and dependence on the security of wireless communication.
+
+\begin{exercise}\label{EnergyAlleviateDrawbacks}
+  What can we do to alleviate the drawbacks while enjoying the benefits?
+\end{exercise}
+
+We can use cryptography to protect the communication between devices:
+encryption for confidentiality, authentication to prevent unauthorized
+commands, and integrity protection to detect tampering.
+We must also carefully consider what data the electricity provider needs and
+minimize what we share.
+
+\begin{exercise}
+  Think about how you would design a system using cryptographic primitives to
+  ensure the security and privacy of the smart energy system.
+\end{exercise}
+
+\ltnote{%
+  The object of learning is that secure protocol design is an iterative process
+  of refining a simple design by addressing one critical aspect at a time.
+  We therefore begin with the simplest plausible protocol and then vary one
+  design aspect per section while keeping as much else invariant as possible.
+  This introduces the contrast necessary to bring each aspect into
+  focus \parencite[as dictated by][]{NecessaryConditionsOfLearning}.
+  The critical aspects are replay protection, direction binding, key
+  separation, algorithm choice, rekeying, pairing, privacy, and trust
+  assumptions (including insiders).
+  The goal is not that the first protocol is good enough, but that its
+  limitations make the later refinements intelligible.
+  (One could also think of this as a sequence of games, as used in
+  cryptography \parencite{Shoup2004Sequences}.
+  Arguably, the reason why the sequences of games method by
+  \citeauthor{Shoup2004Sequences} is good for humans is explained by
+  \citeauthor{NecessaryConditionsOfLearning}.)
+}
+
+In this chapter, we will iteratively develop a cryptographic solution,
+refining it step by step.
+\chapterminitoc
+
+
+\section{A first solution}\label{EnergyFirstSolution}
+
+We have the following entities from \cref{SmartEnergyStatement}:
+\begin{itemize}
+  \item the power meter~\(M\), which measures the household's current power
+    consumption and reports the maximum to the electricity provider,
+  \item the controller~\(H\) (home hub), which coordinates electricity use
+    among the devices,
+  \item the smart devices~\(D_1, D_2, \ldots, D_n\), such as dishwashers,
+    car chargers, heating systems and ovens,
+  \item the electricity provider~\(E\), who bills the household based on
+    consumption and peak power.
+    (For simplicity, we let \(E\) represent both the electricity retailer
+    and the grid operator.)
+\end{itemize}
+
+\begin{exercise}
+  What is the goal of the system, in terms of these entities?
+\end{exercise}
+
+The goal is that the controller~\(H\) receives power-usage data from the
+meter~\(M\) and from each device~\(D_i\), and sends commands to the
+devices to adjust their consumption.
+The provider~\(E\) receives billing data from the meter~\(M\).
+All communication is wireless (radio), which means anyone nearby can
+eavesdrop or inject messages.
+
+\begin{exercise}
+  Design a cryptographic system that ensures the confidentiality, integrity
+  and authenticity of the communication between these entities.
+\end{exercise}
+
+The simplest design uses a shared symmetric key between the controller~\(H\)
+and each device~\(D_i\).
+The controller also shares a key with the meter~\(M\).
+
+\subsection{Keys and communication}
+
+We have a shared symmetric key~\(\KHD\) between the controller~\(H\) and
+each device~\(D_i\), and a key~\(\KHM\) between the controller and the
+meter~\(M\).
+
+\begin{exercise}
+  How should these keys be stored and managed?
+\end{exercise}
+
+Each device stores its key in a secure element (\eg a small \ac{TPM} or
+secure microcontroller).
+The controller stores all keys and must be physically protected---it is
+typically installed in a locked utility cupboard or similar.
+
+The keys can be pre-provisioned during manufacturing: each device comes with
+a unique key, and the controller learns the key during a pairing procedure
+(\eg by scanning a QR code on the device or by entering a code printed on
+the device's label).
+
+\subsection{A simple command protocol}
+
+As a concrete instance, imagine that the controller tells the car charger to
+\enquote{suspend charging until 14:00}.
+Our first idea is to protect that command with a shared secret between the
+controller and the charger.
+
+We derive an encryption key~\(\KEHD\) and a MAC key~\(\KMHD\) from the
+shared key~\(\KHD\), using a key-derivation function (such as
+HKDF~\autocite{HKDF}):
+\begin{align*}
+  \KEHD &= \KDF[\text{\enquote{enc}}, \KHD], \\
+  \KMHD &= \KDF[\text{\enquote{mac}}, \KHD].
+\end{align*}
+
+When the controller~\(H\) wants to send a command to device~\(D_i\)
+(\eg \enquote{suspend until 14:00}), it encrypts and MACs the message:
+\begin{align*}
+  c &= \Enc[\KEHD, m], \\
+  t &= \MAC[\KMHD, c].
+\end{align*}
+
+The device verifies the MAC before decrypting.
+Conceptually, the tag~\(t\) authenticates the whole ciphertext~\(c\).
+In practice, a MAC algorithm processes the data internally---often
+incrementally and sometimes via a hash- or compression-based structure---but
+the security claim is still that the tag is bound to the entire message.
+Similarly, when a device reports its power consumption to the controller, it
+encrypts and MACs using the same keys.
+
+See \cref{fig:EnergyFirstProtocol} for the protocol.
+
+\begin{figure}
+  \begin{sidecaption}[Command protocol between \(H\) and \(D_i\)]
+    {%
+      The controller~\(H\) sends a command to device~\(D_i\).
+      The message is encrypted for confidentiality and MACed for integrity
+      and authentication.
+      The device verifies the MAC, acknowledges authenticated receipt, executes
+      the command, and finally reports the execution result.
+    }[fig:EnergyFirstProtocol]
+  \flushright
+  \begin{msc}
+    [/msc/action width=0.4\linewidth]
+    {Command from \(H\) to \(D_i\)}
+      \declinst{ctrl}{Controller \(H\)}{\(\KHD\)}
+      \declinst{dev}{Device \(D_i\)}{\(\KHD\)}
+      \mscaction{\begin{align*}
+          c &= \Enc[\KEHD, m],\\
+          t &= \MAC[\KMHD, c]
+      \end{align*}}{ctrl}
+      \nextlevel[5]
+      \mess{\(c, t\)}{ctrl}{dev}
+      \nextlevel
+      \mscaction{\begin{align*}
+          t &\stackrel ?= \MAC[\KMHD, c] \\
+          m &= \Dec[\KEHD, c]
+      \end{align*}}{dev}
+      \nextlevel[5]
+      \mscaction{If \(t\) invalid, abort; otherwise: \begin{align*}
+          m_{\text{ack}} &= \text{\enquote{ack: received }} \concat m \\
+          c_{\text{ack}} &= \Enc[\KEHD, m_{\text{ack}}] \\
+          t_{\text{ack}} &= \MAC[\KMHD, c_{\text{ack}}]
+      \end{align*}}{dev}
+      \nextlevel[7]
+      \mess{\(c_{\text{ack}}, t_{\text{ack}}\)}{dev}{ctrl}
+      \nextlevel
+      \mscaction{Execute command in \(m\).}{dev}
+      \nextlevel
+      \mscaction{\begin{align*}
+          t_{\text{ack}} &\stackrel ?= \MAC[\KMHD, c_{\text{ack}}] \\
+          m_{\text{ack}} &= \Dec[\KEHD, c_{\text{ack}}]
+      \end{align*}}{ctrl}
+      \nextlevel
+      \mscaction{\begin{align*}
+          m_{\text{report}} &= \text{\enquote{report: execution result}} \\
+          c_{\text{report}} &= \Enc[\KEHD, m_{\text{report}}] \\
+          t_{\text{report}} &= \MAC[\KMHD, c_{\text{report}}]
+      \end{align*}}{dev}
+      \nextlevel[7]
+      \mess{\(c_{\text{report}}, t_{\text{report}}\)}{dev}{ctrl}
+      \nextlevel
+      \mscaction{\begin{align*}
+          t_{\text{report}} &\stackrel ?= \MAC[\KMHD, c_{\text{report}}] \\
+          m_{\text{report}} &= \Dec[\KEHD, c_{\text{report}}]
+      \end{align*}}{ctrl}
+  \end{msc}
+  \end{sidecaption}
+\end{figure}
+
+\subsection{An example run}
+
+\begin{exercise}
+  Walk through an example run of the protocol.
+  For instance, the controller sends a \enquote{suspend charging until 14:00}
+  command to the car charger~\(D_{\text{charger}}\).
+\end{exercise}
+
+Let's have a look at that run:
+\begin{enumerate}
+  \item The controller~\(H\) prepares the command \(m = \text{\enquote{suspend 
+    until 14:00}}\).
+  \item It derives the encryption key~\(\KEHD\) and MAC key~\(\KMHD\) from
+    the shared key~\(\KHD\).
+  \item It encrypts the command: \(c = \Enc[\KEHD, m]\).
+  \item It computes the MAC: \(t = \MAC[\KMHD, c]\), authenticating the
+    whole ciphertext~\(c\) as described above.
+  \item It sends the message \((c, t)\) to the device~\(D_{\text{charger}}\).
+  \item The device receives \((c, t)\) and verifies the MAC:
+    \(t \stackrel ?= \MAC[\KMHD, c]\).
+  \item If the MAC is valid, it decrypts the command: \(m = \Dec[\KEHD, c]\).
+  \item It executes the command, suspending charging until 14:00.
+\end{enumerate}
+
+If we leave it here, an attacker could drop the message and the controller 
+would think that the charger will suspend charging whereas it will not.
+We therefore add two further messages: an acknowledgment of authenticated
+receipt, and then a separate execution report.
+If the controller doesn't receive the acknowledgment, it can retry or alert the
+user.
+\begin{enumerate}[resume]
+  \item The device constructs an acknowledgment message \(m_{\text{ack}} =
+    \text{\enquote{ack: received suspend until 14:00}}\).
+  \item It encrypts and MACs the acknowledgment:
+    \(c_{\text{ack}} = \Enc[\KEHD, m_{\text{ack}}]\),
+    \(t_{\text{ack}} = \MAC[\KMHD, c_{\text{ack}}]\).
+  \item It sends \((c_{\text{ack}}, t_{\text{ack}})\) back to the
+    controller.
+  \item The controller verifies the acknowledgment and confirms that the
+    command was received and authenticated by the device.
+  \item After executing the command, the device sends a protected execution
+    report, such as \enquote{charging suspended until 14:00}.
+  \item The controller verifies that report and only then concludes that the
+    command was executed successfully.
+\end{enumerate}
+
+\subsection{Consequences of the design}\label{EnergyConsequencesFirst}
+
+\begin{exercise}
+  Evaluate the design.
+  What are its consequences (advantages and disadvantages) that we must
+  consider?
+\end{exercise}
+
+The design has several consequences:
+\begin{enumerate}
+  \item Simple and efficient: symmetric cryptography is fast, which suits
+    resource-constrained devices like light bulbs and appliances.
+  \item Key management is manual: the user must pair each device individually
+    with the controller.
+  \item No replay protection: an attacker who records a valid
+    \enquote{suspend} command can replay it later to disrupt the household.
+  \item We have not yet said what concrete encryption mode realizes
+    \(\Enc\), nor what it requires from IVs or nonces.
+  \item If any device is compromised, the attacker learns the key~\(\KHD\)
+    and can impersonate the controller to that device.
+    But other devices are not affected (different keys).
+  \item We must choose messages \(m\) carefully to prevent ciphertexts (and
+    thus messages) from being reused for different purposes.
+\end{enumerate}
+
+
+\section{Protecting against replay attacks}\label{EnergyReplayProtection}
+
+\ltnote{%
+  The object of learning is that confidentiality and authenticity are not the
+  same as freshness.
+  We create contrast with the previous design where messages could be replayed.
+  What varies is whether the protocol contains explicit freshness information.
+  What remains invariant is the same shared-key setting and the same protected
+  payload.
+  The critical aspect is that encryption and authentication alone do not
+  prevent replay---a separate mechanism (sequence numbers, timestamps, or
+  nonces) is needed.
+  A second, related critical aspect is that replay protection is not
+  timeliness: a delayed message is not a replay, so expiry times are a
+  separate mechanism.
+  This contrast was inspired by a student solution from spring 2026.
+}
+
+In the first design, an attacker can record a valid encrypted and MACed
+command and replay it later.
+For example, replaying a \enquote{suspend charging} command to the car
+charger every evening could prevent the car from ever charging.
+
+\begin{exercise}
+  How can we prevent replay attacks in this protocol?
+\end{exercise}
+
+To see the problem more concretely, suppose the controller once sent a valid
+encrypted command meaning \enquote{suspend charging tonight} and the device
+accepted it.
+If an attacker records the pair \((c, t)\), then the attacker can later send
+that same pair again.
+The replayed message is still confidential and still has a valid tag, so the
+device has no way to tell, from encryption and MAC verification alone, that
+this is an old command rather than a fresh one.
+
+\subsection{Sequence numbers}
+
+We add a monotonically increasing sequence number~\(s\) to each message.
+The sender increments~\(s\) for each message sent.
+The receiver keeps track of the highest sequence number received and rejects
+any message with a sequence number that is not strictly greater.
+
+The sequence number is sent in the clear so that the receiver can check
+freshness before any cryptographic processing, and the MAC covers both the
+sequence number and the ciphertext:
+\begin{align*}
+  c &= \Enc[\KEHD, m], \\
+  t &= \MAC[\KMHD, s \concat c].
+\end{align*}
+The transmitted message is thus \((s, c, t)\).
+The receiver first checks that \(s\) is strictly greater than the last
+accepted sequence number, then verifies the tag~\(t\), and only then
+decrypts~\(c\).
+The stored sequence number is updated only after successful verification,
+so that forged messages with large sequence numbers cannot desynchronize
+the channel.
+
+Alternatively, we can use timestamps as freshness values.
+The receiver then stores the timestamp from the last accepted packet and
+rejects any packet whose timestamp is not strictly greater.
+Used this way, timestamps act just like counters, so clock synchronization is
+not required.
+But then a plain sequence counter is usually simpler and more efficient.
+
+\begin{exercise}
+  What happens if the controller or a device loses power and resets its
+  sequence counter?
+\end{exercise}
+
+If a device resets, its sequence counter returns to zero.
+The controller would then reject its messages (sequence number too low).
+To handle this, the sequence counter should be stored in non-volatile memory.
+Alternatively, the device and controller can run a re-synchronization
+protocol after a reset, but this must be authenticated to prevent an
+attacker from forcing a counter reset.
+
+\subsection{Delayed messages and expiry}
+
+\begin{exercise}
+  Sequence numbers ensure that an old message cannot be \emph{replayed}.
+  But what if a message is merely \emph{delayed}?
+  Suppose the command \enquote{suspend charging until 14:00} is sent at
+  13:00 but, due to retransmissions, arrives only at 15:00.
+  Does the sequence number protect against this?
+\end{exercise}
+
+No.
+The delayed command has never been accepted before, so as long as no later
+message has been accepted in the meantime, its sequence number is still
+strictly greater than the last accepted one, and the device will accept it.
+Freshness in the sense of \enquote{not previously accepted} is not the same
+as timeliness.
+For commands whose meaning depends on time, the sender should therefore
+include an expiry time in the message, covered by the MAC, and the receiver
+should reject commands that arrive after their expiry.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item Replay attacks are prevented: old messages are rejected.
+  \item Sequence counters must be stored in non-volatile memory to survive
+    power loss.
+  \item Out-of-order delivery is not supported: if messages arrive out of
+    order, they will be rejected.
+    This is acceptable for command-and-control protocols but may need a
+    sliding window for high-throughput telemetry.
+  \item Delayed messages are still accepted: time-dependent commands need
+    an expiry time in addition to a sequence number.
+  \item The remaining issues from \cref{EnergyConsequencesFirst} still
+    apply.
+\end{enumerate}
+
+
+\section{Binding messages to a direction}
+\label{EnergyDirectionBinding}
+
+\ltnote{%
+  We now focus on another critical aspect of protocol messages: their
+  direction.
+  The object of learning is that a message is not only a payload with
+  freshness, but also belongs to a role and a direction.
+  We keep the actors, shared-secret setting, and replay-protection mechanism
+  invariant while varying whether direction is represented explicitly.
+  This creates contrast between a protocol where direction is only implicit
+  in the surrounding prose and one where direction is cryptographically bound
+  to each message.
+  Following try-first pedagogy, we first ask the students to reason about
+  whether two counters---one in each direction---are enough on their own.
+  The generalization will come later: direction can be introduced in several
+  ways, such as in the nonce, in authenticated metadata, or by deriving
+  separate keys.
+}
+
+In \cref{EnergyReplayProtection}, we introduced sequence numbers to stop
+replays.
+Suppose now that the controller and the device each maintain one counter for
+the messages they send.
+Then both directions may use the values \(0, 1, 2, \ldots\).
+If direction is not represented explicitly, the protocol leaves it unclear
+whether the same sequence number under the same key is meant for the same or
+for different purposes.
+
+\begin{exercise}
+  If both the controller and the device send a message with sequence
+  number~\(0\), using the same keys, what tells the receiver which direction
+  the message belongs to?
+  Is the sequence number alone enough?
+\end{exercise}
+
+The sequence number alone is not enough.
+Freshness tells us whether a message is new, but not whether it is a command,
+an acknowledgment, or a report, nor whether it was meant for the
+\(H \rightarrow D_i\) direction or the \(D_i \rightarrow H\) direction.
+Direction is part of the contract of the protocol and should therefore be
+bound cryptographically, not only inferred from context.
+
+\subsection{Direction as part of the nonce}
+
+One simple way to do this is to include the direction in the nonce.
+Let \(\mathit{dir} \in \{H \rightarrow D_i, D_i \rightarrow H\}\) denote the
+direction and let \(s\) be the sequence number used in that direction.
+We define the nonce as
+\[
+  n = \mathit{dir} \concat s.
+\]
+Then encryption and authentication become
+\begin{align*}
+  c &= \Enc[\KEHD, n, m], \\
+  t &= \MAC[\KMHD, n \concat c].
+\end{align*}
+Note that \(\Enc\) now takes the nonce~\(n\) as an explicit input alongside
+the key and the message.
+What the encryption mode requires from this input is the topic of
+\cref{EnergyEncryptionMode}.
+
+Now the two directions no longer reuse the same nonce under the same key,
+even if both sides use the same counter value.
+The receiver also verifies the nonce together with the ciphertext, so a
+message valid in one direction is not automatically valid in the other.
+
+\begin{exercise}
+  Why do we authenticate the nonce~\(n\) together with the ciphertext,
+  instead of only authenticating~\(c\)?
+\end{exercise}
+
+If the nonce were not authenticated, an attacker could tamper with the
+direction field or the sequence number in transit.
+The ciphertext might then still be delivered to the wrong cryptographic
+context.
+By authenticating the nonce, we bind both freshness and direction to the
+message.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item The protocol now states explicitly which direction a message belongs
+    to.
+  \item Reusing the same counter value in opposite directions is safe, since
+    the nonce values are still different.
+  \item The protocol depends on a precise encoding of the direction field:
+    both sides must agree on exactly how \(H \rightarrow D_i\) and
+    \(D_i \rightarrow H\) are represented.
+  \item Direction is now bound in the message format.
+    In the next step, we will see that it can also be bound in the keys.
+\end{enumerate}
+
+
+\section{Separating keys by direction}
+\label{EnergyDirectionalKeys}
+
+\ltnote{%
+  The previous section established the critical aspect that direction must be
+  represented explicitly.
+  We now keep that aspect invariant while varying how we realize it.
+  This is a generalization pattern: the same security property can be
+  achieved in more than one way.
+  Here we move the directional information from the nonce into the key
+  derivation, which gives students contrast between two design realizations
+  of the same principle.
+}
+
+In \cref{EnergyDirectionBinding}, we encoded direction directly in the
+nonce.
+That works, but it is not the only possibility.
+Another common way to bind direction is to derive different keys for the two
+directions.
+
+\begin{exercise}
+  Can we express the direction of communication in the key material instead
+  of in the nonce?
+  What would that buy us?
+\end{exercise}
+
+Yes.
+Starting from the long-term shared key~\(\KHD\), we derive separate keys for
+encryption and MACing in each direction:
+\begin{align*}
+  \KEHD^{\rightarrow} &= \KDF[\text{\enquote{enc to device}}, \KHD], \\
+  \KEHD^{\leftarrow} &= \KDF[\text{\enquote{enc to controller}}, \KHD], \\
+  \KMHD^{\rightarrow} &= \KDF[\text{\enquote{mac to device}}, \KHD], \\
+  \KMHD^{\leftarrow} &= \KDF[\text{\enquote{mac to controller}}, \KHD].
+\end{align*}
+Here \(\rightarrow\) means traffic from \(H\) to \(D_i\), and
+\(\leftarrow\) means traffic from \(D_i\) to \(H\).
+
+Now each direction uses its own sequence number and its own keys:
+\begin{align*}
+  c &= \Enc[\KEHD^{\rightarrow}, s^{\rightarrow}, m], \\
+  t &= \MAC[\KMHD^{\rightarrow}, s^{\rightarrow} \concat c]
+\end{align*}
+for commands from \(H\) to \(D_i\), and
+\begin{align*}
+  c &= \Enc[\KEHD^{\leftarrow}, s^{\leftarrow}, m], \\
+  t &= \MAC[\KMHD^{\leftarrow}, s^{\leftarrow} \concat c]
+\end{align*}
+for acknowledgments and reports from \(D_i\) to \(H\).
+
+Because the keys are different, the same counter value can safely appear in
+both directions without causing nonce reuse under one and the same key.
+We have made direction part of the cryptographic context by domain-separating
+the derived keys.
+
+\begin{exercise}
+  Compare the two ways of representing direction:
+  as part of the nonce or as part of the key derivation.
+  What are the advantages and disadvantages of each?
+\end{exercise}
+
+Putting direction in the nonce keeps the key schedule simpler but makes the
+message format more explicit.
+Putting direction in the key derivation gives strong domain separation and
+lets each direction use a plain counter as nonce, but it increases the number
+of keys that must be derived, stored, and implemented correctly.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item The two directions are cryptographically separated even if they use
+    the same counter values.
+  \item Implementations become less likely to confuse commands with
+    acknowledgments or reports, since they use different keys.
+  \item The protocol now uses more key material and requires more careful key
+    management inside the controller and each device.
+  \item We still have not said what concrete encryption mode
+    \(\Enc\) should be, nor what it requires from IVs, nonces, and
+    randomness.
+\end{enumerate}
+
+
+\section{Choosing an encryption mode}
+\label{EnergyEncryptionMode}
+
+\ltnote{%
+  The object of learning is that choosing \(\Enc\) means choosing both a mode
+  of operation and the corresponding nonce/IV discipline.
+  We keep the protocol structure invariant and vary only the concrete
+  realization of \(\Enc\).
+  The critical aspect is that different secure block-cipher modes require
+  different things from the extra input: some need unpredictable IVs, others
+  only unique nonces.
+  Following try-first pedagogy, we first let students compare plausible mode
+  choices before telling them which requirements matter in this setting.
+  What varies is the mode and its input requirements; what remains invariant is
+  the same command-and-control setting.
+  A further critical aspect, inspired by a student solution from spring
+  2026, is that the nonce space is finite: counters wrap, so rekeying is
+  part of nonce discipline.
+}
+
+So far we have written \(\Enc\) as if it were a single black box.
+In practice, we must choose a concrete encryption mode.
+That choice matters because different modes leak different information and
+place different demands on IVs, nonces, and randomness.
+
+\begin{exercise}
+  Suppose two commands begin with the same header, such as
+  \enquote{command: suspend ...}.
+  If we encrypt them block by block in the most direct way, what information
+  might an eavesdropper still learn?
+\end{exercise}
+
+If we use \ac{ECB}, equal plaintext blocks become equal ciphertext blocks.
+Then repeated structure in commands, acknowledgments, or reports is visible to
+an eavesdropper even though the content is encrypted.
+For a command-and-control protocol, this may reveal message types or repeated
+operations.
+So \ac{ECB} is not a suitable choice here.
+
+\subsection{Different modes, different requirements}
+
+\begin{exercise}
+  If we replace \(\Enc\) by a better block-cipher mode, what extra value must
+  usually accompany the plaintext?
+  Must that value be random, unique, or both?
+\end{exercise}
+
+Different modes have different requirements:
+\begin{description}
+  \item[\ac{CBC}] Requires a fresh, unpredictable IV for each encryption.
+    Reusing or predicting the IV can reveal information about related
+    plaintexts.
+  \item[\ac{CTR}] Requires a nonce that is unique for each encryption under a
+    given key.
+    The nonce need not be unpredictable, but it must never repeat.
+  \item[\ac{AEAD}] Modes such as \ac{GCM} combine encryption and integrity
+    protection, but they still rely on a nonce discipline.
+    In particular, nonce reuse under one key is dangerous.
+\end{description}
+
+This difference is important in our smart-home setting.
+Many devices are cheap, resource-constrained, and may not have a strong random
+number generator available every time they send a message.
+That makes modes requiring fresh unpredictable IVs harder to justify.
+By contrast, our protocol already maintains sequence numbers in each
+direction, so we can reuse those counters as nonces for modes that only need
+uniqueness.
+
+\subsection{Where should the randomness come from?}
+
+\begin{exercise}
+  Is it reasonable to expect a simple smart plug or thermostat to generate a
+  high-quality random IV every time it sends a message?
+  If not, how can we avoid relying on that capability?
+\end{exercise}
+
+It is risky to rely on strong runtime randomness in low-end devices.
+Some devices have weak entropy sources, especially just after boot.
+If the security of the mode depends on a fresh unpredictable IV each time,
+then implementation mistakes or poor randomness can break confidentiality.
+
+Our current design therefore points toward a mode that tolerates deterministic
+nonce generation, provided the nonce is unique under each key.
+With per-direction keys from \cref{EnergyDirectionalKeys} and per-direction
+counters, the protocol already provides such a uniqueness source.
+This is another reason why counter-based modes fit this setting well.
+
+Long-term key generation is a different issue.
+The shared secret~\(\KHD\) should not be generated by an ad hoc weak random
+process inside a cheap device during normal operation.
+Instead, long-term keys should come either from a proper provisioning process
+during manufacturing or from a later pairing procedure that is designed to
+establish keys securely.
+
+\subsection{Switching to authenticated encryption}
+
+\begin{exercise}
+  If we already use encryption and a MAC, why might we still prefer an
+  authenticated-encryption mode instead of combining two separate
+  primitives ourselves?
+\end{exercise}
+
+Using separate encryption and MAC primitives can be secure, but only if they
+are combined correctly.
+There are many ways to get this wrong: authenticating the wrong fields,
+forgetting to authenticate the nonce, or using a less suitable order of
+operations.
+An \ac{AEAD} mode~\autocite{Rogaway2002aead} packages confidentiality and
+integrity into one well-analyzed primitive and therefore reduces the number
+of design choices that an implementer must get right.
+
+Two common \ac{AEAD} modes are
+AES-\ac{GCM}~\autocite{McGrewViega2004gcm,SP80038D} and
+ChaCha20-Poly1305~\autocite{RFC8439}.
+With authenticated encryption, a protected command from \(H\) to
+\(D_i\) has the form
+\begin{align*}
+  c &= \AEADEnc[\KEHD^{\rightarrow}, n, m, a],
+\end{align*}
+where \(n\) is the nonce and \(a\) is associated data that is
+authenticated but not encrypted.
+
+\begin{exercise}
+  What information in our protocol should be authenticated even if we do not
+  want to encrypt it?
+\end{exercise}
+
+The associated data should include the context that the receiver must trust in
+order to interpret the message correctly, such as the sequence number, sender
+and receiver identities, direction, and protocol version.
+In our setting, this fits naturally with the earlier sections on replay
+protection and direction binding.
+
+This does not remove the need for nonce discipline.
+\ac{AEAD} still requires that the nonce be managed correctly.
+For modes such as AES-\ac{GCM}, nonce reuse under one key is particularly
+dangerous.
+Our per-direction counters are therefore still useful: they provide a natural
+nonce source once direction and key separation have already been introduced.
+
+\subsection{Rekeying before the counter wraps}
+
+\begin{exercise}
+  Our nonces are counters of some fixed width.
+  What happens when a counter reaches its maximum value?
+  What must we do before that happens?
+\end{exercise}
+
+When the counter wraps around, the next nonce repeats an earlier one.
+Nonce reuse under the same key is exactly what we must avoid; for modes
+such as AES-\ac{GCM} it can be catastrophic for both confidentiality and
+authenticity.
+We must therefore rotate the keys before the counter wraps: for example,
+derive fresh keys from the long-term key~\(\KHD\) with an epoch number as
+an additional \(\KDF\) input, and reset the counters when the epoch
+changes.
+In practice, implementations rotate keys after a fixed time or number of
+messages, with the counter width chosen so that wrapping never happens in
+normal operation.
+Recall from \cref{EnergyReplayProtection} that the counters must also
+survive reboots, otherwise a device may unknowingly reuse nonces after a
+power loss.
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item \ac{ECB} is unsuitable because it leaks repeated block patterns.
+  \item Some secure modes require unpredictable IVs, while others require only
+    nonce uniqueness.
+  \item In this setting, per-direction counters are an attractive nonce source
+    because they avoid dependence on strong runtime randomness.
+  \item \ac{AEAD} reduces composition mistakes, but it still depends on
+    correct nonce management.
+  \item Counters wrap eventually: keys must be rotated before the nonce
+    space is exhausted.
+\end{enumerate}
+
+
+\section{Should we just use TLS?}
+\label{EnergyTLS}
+
+\ltnote{%
+  We now compare our purpose-built protected message protocol with a standard
+  secure-channel protocol.
+  The critical aspect is that transport assumptions matter: TLS gives strong
+  security properties, but it assumes a reliable stream transport, whereas
+  DTLS is designed for datagrams.
+  Following try-first pedagogy, we first ask whether a secure channel can be
+  reused for sparse traffic, and then make the contrast between TLS and DTLS
+  explicit.
+  We don't expect students to have detailed knowledge of how TCP keeps
+  connections alive, nor to know of DTLS.
+  We do expect them to reason about the problem for the low-energy devices;
+  rather than proposing DTLS, they will likely assume that TLS over TCP can
+  keep a channel open indefinitely without keep-alive packets---giving the
+  same result as using DTLS.
+}
+
+At this point, a natural question is whether we should stop designing our own
+message protection and simply use Transport Layer Security,
+TLS~1.3~\autocite{RFC8446}, or Datagram Transport Layer Security,
+DTLS~1.3~\autocite{RFC9147}.
+
+\begin{exercise}
+  If a smart device sends only one short message per hour, would using TLS
+  mean performing a full handshake for every message?
+  If not, what practical difficulty remains?
+\end{exercise}
+
+TLS does not require a handshake for every message.
+If the connection remains open, the endpoints can establish a TLS session once
+and then send protected application data whenever needed.
+However, TLS assumes a reliable, in-order byte stream, typically TCP.
+That means the protected channel exists only while the underlying connection
+exists.
+
+For sparse smart-home traffic, this creates practical problems.
+If the device keeps the TCP/TLS connection open for long idle periods, network
+equipment may time it out, forcing keepalives or reconnects.
+If the device instead reconnects whenever it has data, it pays the cost of
+setting up TCP and then running a new TLS handshake, perhaps with session
+resumption but still with non-trivial state and latency.
+Session resumption helps, because it avoids the cost of a full fresh
+authentication and key exchange every time, but it does not remove the need to
+re-establish transport state after the old connection has disappeared.
+
+\begin{exercise}
+  If our traffic is naturally packet-oriented rather than stream-oriented,
+  which is the better fit: TLS or DTLS?
+  Why?
+\end{exercise}
+
+DTLS~1.3~\autocite{RFC9147} is the closer match for message-oriented
+traffic.
+It adapts the TLS~1.3 design to datagram transports and therefore does not
+require a long-lived TCP-style stream.
+That makes DTLS conceptually attractive for command-and-report traffic where
+messages are naturally separate packets.
+However, DTLS still has a handshake, state, retransmission logic, and
+anti-replay mechanisms.
+In particular, the receiver must still track packet numbers and reject old or
+duplicate packets, so replay protection has not disappeared---it has merely
+been packaged inside the secure-channel design.
+So it is not free; it is simply better aligned with datagram communication
+than TLS over TCP.
+
+\begin{exercise}
+  If standard protocols such as TLS and DTLS already exist, when would a
+  purpose-built protocol still be justified?
+\end{exercise}
+
+A custom protocol may still be justified when the devices are extremely
+constrained, the traffic pattern is simple and narrowly scoped, and the system
+has requirements that do not fit comfortably into a stream-oriented or general
+datagram secure channel.
+But the price is that we must design, implement, and analyze replay
+protection, direction binding, nonce management, algorithm choices, and error
+handling ourselves.
+In other words, the custom design is attractive only if the gain in simplicity
+or efficiency is large enough to compensate for the extra design risk.
+
+In our setting, the comparison becomes a design trade-off:
+\begin{description}
+  \item[TLS~1.3 (RFC~8446)] Attractive for richer devices and for links that
+    already have a stable TCP connection.
+    It is especially natural for the meter's communication with the provider,
+    where an Internet-style client/server model already exists.
+  \item[DTLS~1.3 (RFC~9147)] More natural for sparse packet-based traffic
+    inside the home, because it does not impose a byte-stream abstraction.
+    It still carries handshake, retransmission, anti-replay, and
+    state-management complexity.
+  \item[Purpose-built protocol] Can be lighter and more tailored to the
+    devices, but is justified only if the constraints are strong enough to
+    outweigh the safety of reusing a standard protocol.
+\end{description}
+
+\subsection{Consequences of the design}
+
+\begin{enumerate}
+  \item A standard secure-channel protocol can reduce design risk by reusing a
+    well-analyzed construction.
+  \item TLS is awkward for sleepy devices if traffic is sparse and idle
+    connections are expensive to maintain.
+  \item DTLS is a better fit than TLS for datagram-style traffic, but it still
+    does not remove the need for handshake state, retransmissions,
+    authentication, anti-replay tracking, and key establishment.
+  \item A purpose-built protocol is easiest to justify only when the device
+    constraints are severe and the communication pattern is very simple.
+  \item The remaining problem is still how a new device obtains the shared
+    key~\(\KHD\) in the first place.
+    That is the purpose of the next section on pairing.
+\end{enumerate}
+
+
+\section{Device authentication and pairing}\label{EnergyPairing}
+
+\ltnote{%
+  The object of learning is that secure pairing is a bootstrapping problem:
+  how do you establish trust and a shared secret when there is no prior shared
+  secret?
+  We create contrast with the previous assumption that keys are
+  pre-provisioned.
+  What varies is the way trust is established during onboarding.
+  What remains invariant is the later protected communication protocol.
+  The critical aspects are authentication of the other endpoint, resistance to
+  impersonation, and the usability cost of the onboarding step.
+}
+
+In \cref{EnergyFirstSolution}, we assumed that each device is pre-provisioned
+with a key known to the controller.
+In practice, a user buys a new smart light bulb and wants to add it to their
+home network.
+The bulb has no prior relationship with the controller.
+
+\begin{exercise}
+  How can a new device securely join the home network and establish a shared
+  key with the controller?
+\end{exercise}
+
+\subsection{Out-of-band pairing}
+
+The standard approach is \emph{out-of-band} (OOB) pairing: using a separate,
+trusted channel to bootstrap the key exchange.
+Common methods:
+\begin{description}
+  \item[QR code] The device has a QR code (printed on its body or packaging)
+    containing a pre-shared secret or a public key.
+    The user scans it with the controller's app.
+  \item[NFC tap] The user holds the device near the controller (or a phone
+    acting as the controller's interface) to exchange pairing data via
+    \ac{NFC}.
+  \item[PIN entry] The device displays or is labelled with a PIN code.
+    The user enters it into the controller.
+\end{description}
+
+After the OOB exchange provides a shared secret (or authenticated public
+keys), the devices can run a key-agreement protocol (\eg Diffie--Hellman)
+over the wireless channel, authenticated by the OOB secret, to establish
+the long-term shared key~\(\KHD\) that we previously assumed to be
+pre-provisioned.
+
+If this setup step is not authenticated properly, a nearby attacker can mount
+a man-in-the-middle attack during onboarding.
+Consider a neighbour who is annoyed by the dishwasher running at night.
+If the neighbour inserts themselves between the controller and the dishwasher
+during setup, the dishwasher may appear to work normally as long as the
+neighbour relays the messages.
+Later, the neighbour can simply stop relaying in the evening or at night,
+preventing the controller from starting the dishwasher.
+The same attack works against a smart-speaker system: the speaker functions
+while the neighbour relays traffic, but stops responding whenever the
+neighbour chooses not to forward the messages.
+
+To detect this kind of setup attack, we do not necessarily need mutual
+authentication.
+Authenticating one side is already enough: if either the controller can
+authenticate the device, or the device can authenticate the controller, the
+attacker cannot invisibly replace that authenticated endpoint.
+This is analogous to HTTPS/TLS, where authenticating the web server is enough
+to detect a man-in-the-middle attack even when the client is not authenticated
+to the server.
+
+The unauthenticated endpoint can still be impersonated outright, however:
+if the device cannot authenticate itself, the attacker can pair their own
+radio with the controller, while the real device never joins.
+But this is not an invisible compromise either: the real device remains
+unpaired and unresponsive, so the user notices that onboarding failed.
+(In HTTPS, the analogous substitution is harmless for a different reason:
+the unauthenticated endpoint is the user's own client, which the attacker
+cannot usefully replace.)
+
+Note carefully what authentication does and does not buy us here.
+With an authenticated key exchange, the attacker cannot learn the
+established key, so they cannot read or forge messages---they can only
+relay ciphertexts unmodified or refuse to relay them.
+Refusing to relay is then no more powerful than jamming the radio channel
+(\cref{EnergyWirelessSecurity}): a blunt, detectable availability attack
+rather than an invisible compromise.
+
+\begin{exercise}
+  What are the security properties of each pairing method?
+  Which is most suitable for the different types of devices in our system?
+\end{exercise}
+
+\begin{description}
+  \item[QR code] Works well for devices that are too simple for a display or
+    keypad (\eg light bulbs).
+    The code is static, so if an attacker photographs it, they can pair
+    later.
+    The code should be inside the packaging and treated as confidential
+    until pairing.
+  \item[NFC tap] Requires proximity (a few centimetres), which provides
+    physical authentication.
+    Good for devices the user can physically approach.
+    Harder to intercept than a QR code.
+  \item[PIN entry] Requires a display or label on the device and an input
+    method on the controller.
+    A short PIN (\eg 6 digits) resists brute force only if the pairing
+    protocol limits guessing: each protocol run must admit at most one
+    PIN guess (as in a password-authenticated key exchange) and failed
+    pairing attempts must be rate-limited.
+    Suitable for devices with displays (\eg ovens, car chargers).
+\end{description}
+
+\subsection{Certificate-based onboarding}
+
+For a more scalable approach, especially in larger installations, we can use
+certificates~\autocite{Kohnfelder1978}.
+Each device is manufactured with a device certificate signed by the
+manufacturer's \ac{CA}.
+The controller~\(H\) has its own key pair~\((\SKH, \VKH)\), certified by a
+home \ac{CA} trusted by the devices, or else its public key~\(\VKH\) is
+authenticated out-of-band during onboarding.
+If the controller uses a self-signed certificate, that certificate is useful
+only once the device has learned to trust \(\VKH\) through such an out-of-band
+step.
+
+During pairing:
+\begin{enumerate}
+  \item The device presents its manufacturer certificate.
+  \item The controller verifies the certificate chain.
+  \item The controller presents either a certificate under the trusted
+    home \ac{CA} or a public key that the device authenticates
+    out-of-band.
+  \item The device verifies that controller credential.
+  \item They perform authenticated key exchange (using their respective
+    keys) to establish the shared key~\(\KHD\).
+\end{enumerate}
+
+This approach doesn't require QR codes or PINs for each session, but it does
+require explicit trust roots on both sides: the controller must trust the
+manufacturer's \ac{CA}, and the device must trust the controller's
+onboarding credential.
+It also assumes the manufacturer has not been compromised and that device
+certificates have not been cloned.
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate the pairing methods.
+  What are the trade-offs?
+\end{exercise}
+
+\begin{description}
+  \item[Usability vs.\ security] QR codes and NFC are easy for users but
+    rely on physical security; certificate-based pairing is seamless but
+    requires trust in manufacturers.
+  \item[Setup MITM risk] If onboarding authenticates neither side strongly
+    enough, a nearby attacker can place themselves between the controller and
+    the device during pairing and later disrupt availability by selectively
+    stopping relayed traffic.
+  \item[Scalability] Certificate-based pairing scales better to many
+    devices, since no per-device manual step is needed.
+  \item[Device cost] Certificates require more capable hardware (crypto
+    coprocessor) in each device, increasing cost.
+    Symmetric-key OOB pairing can work with very cheap hardware.
+  \item[Revocation] If a device is compromised, we need a way to revoke its
+    key.
+    With pre-shared keys, the controller simply deletes the key.
+    With certificates, a revocation mechanism is needed.
+\end{description}
+
+
+\section{Protecting wireless communication}\label{EnergyWirelessSecurity}
+
+\ltnote{%
+  The object of learning is that a secure message format does not by itself
+  secure the wireless medium.
+  We create contrast with the previous focus on message-level security
+  (encryption and MACs).
+  What remains invariant is the same protected protocol.
+  What varies is the threat that comes from the channel itself: availability in
+  the jamming case, and metadata leakage in the traffic-analysis case.
+  The critical aspects are therefore separate threat dimensions rather than one
+  single wireless-security property.
+}
+
+All communication in the system happens over wireless radio.
+Our encrypted and authenticated messages protect against eavesdropping on
+content and against message forgery.
+But there are additional threats specific to wireless channels.
+
+\begin{exercise}
+  What threats exist at the wireless channel level, beyond what our
+  encryption and authentication already address?
+\end{exercise}
+
+\subsection{Jamming}
+
+An attacker can transmit noise on the radio frequency to prevent all
+communication.
+This is a denial-of-service attack.
+If the devices cannot communicate, the controller cannot coordinate
+power use, potentially causing the household to exceed its power limit
+and incur higher bills.
+
+\begin{exercise}
+  How can we mitigate jamming attacks?
+\end{exercise}
+
+Jamming cannot be prevented by cryptographic means, so complete protection
+is out of scope for our cryptographic design, but mitigations include:
+\begin{description}
+  \item[Frequency hopping] The devices agree (during pairing) on a
+    pseudo-random frequency-hopping sequence.
+    An attacker must jam all frequencies simultaneously, which requires
+    much more power.
+    This is standard in protocols like Bluetooth.
+  \item[Graceful degradation] Devices should have sensible defaults when
+    they cannot reach the controller.
+    For example, the car charger could continue charging at a low rate
+    rather than stopping entirely.
+  \item[Detection and alerting] The controller can detect communication
+    failures and alert the user.
+\end{description}
+
+\subsection{Traffic analysis}
+
+Even with encryption, an attacker observing the wireless traffic can learn:
+\begin{itemize}
+  \item Which devices are communicating (by radio fingerprinting or
+    observing communication patterns).
+  \item When commands are sent (indicating changes in household activity).
+  \item The volume of data, which may reveal whether devices are active.
+\end{itemize}
+
+\begin{exercise}
+  How can we mitigate traffic analysis?
+\end{exercise}
+
+Mitigations include:
+\begin{description}
+  \item[Constant-rate traffic] Devices transmit at a fixed rate,
+    sending dummy messages when there is no real data.
+    This hides when actual commands are sent.
+  \item[Uniform message sizes] Pad all messages to the same length
+    so that message type cannot be inferred from size.
+  \item[Randomized timing] Add random delays to message
+    transmission to obscure patterns.
+\end{description}
+
+These measures increase power consumption and bandwidth use, so they must
+be weighed against the limited resources of battery-powered devices.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Availability] Frequency hopping and graceful degradation improve
+    resilience against jamming.
+  \item[Privacy] Traffic-analysis countermeasures protect activity patterns
+    but consume more energy and bandwidth.
+  \item[Complexity] Frequency hopping requires shared state between devices
+    and controller; constant-rate traffic requires careful timing management.
+  \item[Battery life] Continuous dummy traffic significantly reduces battery
+    life for battery-powered devices (sensors, smart plugs).
+    A reasonable trade-off may be to use constant-rate traffic only for
+    sensitive devices.
+\end{description}
+
+
+\section{Privacy of energy data}\label{EnergyPrivacy}
+
+\ltnote{%
+  The object of learning is that privacy is not only about protecting data in
+  transit, but also about limiting what data is disclosed to legitimate
+  external parties.
+  This creates contrast with the previous focus on securing communication
+  between the controller and devices.
+  What remains invariant is the local smart-home protocol.
+  What varies is the granularity of the data shared with the provider.
+  The critical aspect is that the electricity provider~\(E\) learning detailed
+  consumption data is a different threat from a wireless eavesdropper learning
+  ciphertexts and metadata.
+}
+
+The power meter~\(M\) records the household's power consumption over time.
+The electricity provider~\(E\) needs this data for billing.
+But detailed consumption data reveals intimate information about the
+household's daily life.
+
+\begin{exercise}
+  What can an electricity provider (or an attacker who compromises the
+  meter data) learn from detailed power consumption data?
+\end{exercise}
+
+From fine-grained power data, one can infer:
+\begin{itemize}
+  \item When residents are home and when they are away.
+  \item When they wake up and go to sleep.
+  \item What appliances they use (each appliance has a characteristic power
+    signature).
+  \item Whether they have an electric car and when they charge it.
+  \item How many people live in the household (from shower and cooking
+    patterns).
+\end{itemize}
+
+This is called \emph{non-intrusive load monitoring} (NILM) and is a
+well-studied technique~\autocite{Hart1992nilm}.
+
+\begin{exercise}
+  How can we design the system to minimize the privacy impact while still
+  enabling the provider to bill correctly?
+\end{exercise}
+
+\subsection{Data minimization}
+
+The principle of \emph{data minimization} (central to the \ac{GDPR})
+states that we should collect only the data strictly necessary for the
+purpose.
+
+For billing under effect tariffs, the provider needs:
+\begin{itemize}
+  \item Total energy consumed during the billing period.
+  \item Maximum power observed during the billing period.
+\end{itemize}
+
+The provider does \emph{not} need minute-by-minute or second-by-second
+consumption readings.
+Therefore, the meter should report only aggregated values.
+
+\subsection{Aggregation at the meter}
+
+The meter~\(M\) can compute the aggregated billing data locally and report
+only the result to the provider~\(E\):
+\begin{itemize}
+  \item Total consumption: \(\sum_{t} P(t) \cdot \Delta t\).
+  \item Peak power: \(\max_{t} P(t)\) over the billing period.
+\end{itemize}
+
+The meter sends these values to the provider, encrypted and signed, at the
+end of each billing period.
+The detailed time series stays within the household.
+
+\begin{exercise}
+  The controller~\(H\) needs detailed data from the meter for coordination.
+  How do we handle this without leaking data to the provider?
+\end{exercise}
+
+The meter~\(M\) shares detailed readings with the controller~\(H\) over the
+local wireless network, protected by the key~\(\KHM\).
+The provider only receives the aggregated billing data.
+This separation is enforced by the meter's software, which must be trusted.
+
+\subsection{Consequences of the design}
+
+\begin{exercise}
+  Evaluate the privacy design.
+  What are its strengths and weaknesses?
+\end{exercise}
+
+\begin{description}
+  \item[Privacy] The provider learns only aggregate billing data, not
+    detailed usage patterns.
+    This is a significant improvement over reporting fine-grained data.
+  \item[Trust in the meter] The meter must be trusted to correctly compute
+    aggregates and not leak detailed data.
+    This is a single point of trust.
+  \item[Provider's perspective] The provider cannot verify that the meter
+    is reporting honestly.
+    We address this in \cref{EnergyMeteringIntegrity}.
+  \item[Local privacy] Within the household, the controller sees detailed
+    data.
+    If the controller is cloud-connected (\eg for remote access), this
+    data could leak to the cloud provider.
+\end{description}
+
+
+\section{Integrity of metering data}\label{EnergyMeteringIntegrity}
+
+\ltnote{%
+  The object of learning is the tension between privacy and verifiability in
+  metering.
+  We create contrast with the previous section where the meter was simply
+  trusted.
+  What remains invariant is the privacy goal of reporting only aggregates.
+  What varies is whether the provider receives cryptographic evidence for those
+  aggregates.
+  The critical aspect is that data minimization and provider-side confidence
+  are in tension, and that signatures plus hardware trust are one way to bridge
+  that tension.
+}
+
+The electricity provider~\(E\) needs to trust that the billing data from the
+meter~\(M\) is correct.
+A dishonest household could tamper with the meter to report lower consumption
+or a lower peak power, reducing their bill.
+
+\begin{exercise}
+  How can the provider verify that the meter's reports are correct?
+\end{exercise}
+
+\subsection{Signed meter readings}
+
+Each meter~\(M\) has a signing key pair~\((\SKM, \VKM)\), provisioned during
+manufacturing.
+The public key~\(\VKM\) is registered with the provider~\(E\) (possibly via
+the manufacturer's certificate chain).
+
+Let
+\[
+  r = (\mathit{id}, \mathit{period}, W_{\text{tot}}, P_{\text{peak}},
+  \mathit{ts})
+\]
+be the billing report.
+The meter signs that report:
+\[
+  \sigma = \Sign[\SKM, r].
+\]
+
+The provider verifies:
+\(\Ver[\VKM, r, \sigma] \stackrel{?}{=} \text{true}\).
+
+This ensures that the report was produced by the authentic meter and has not
+been modified in transit.
+Conceptually, the signature authenticates the whole report~\(r\).
+In practice, modern signature schemes first hash the report and then apply the
+public-key operation to that short digest.
+This is also why public-key cryptography is normally used to authenticate
+reports, identities, or freshly established symmetric keys, while the actual
+bulk payload is protected with symmetric cryptography.
+
+\begin{exercise}
+  The signature proves the report came from the meter, but what if the
+  meter's hardware has been physically tampered with?
+\end{exercise}
+
+\subsection{Tamper-evident meters}
+
+Physical security measures complement the cryptographic ones:
+\begin{description}
+  \item[Tamper-evident seals] Visible indicators that the meter's enclosure
+    has been opened.
+  \item[Tamper-responsive hardware] The meter's secure element erases the
+    signing key if physical intrusion is detected, making further signed
+    reports impossible.
+  \item[Secure boot] The meter verifies its own firmware integrity at
+    start-up, refusing to operate if the software has been modified.
+  \item[Remote attestation] The meter can prove to the provider that it is
+    running genuine, unmodified firmware.
+\end{description}
+
+\subsection{The communication channel to the provider}
+
+\begin{exercise}
+  How should the meter communicate with the electricity provider?
+\end{exercise}
+
+The meter can communicate with the provider through several channels:
+\begin{description}
+  \item[Power-line communication (PLC)] Data transmitted over the
+    existing electrical wiring.
+    Common in smart metering deployments.
+  \item[Cellular (4G/5G)] The meter has its own SIM card and
+    communicates directly with the provider.
+  \item[The household's internet connection] Cheaper but relies
+    on the household's network, which the household controls.
+\end{description}
+
+Regardless of the channel, the meter authenticates to the provider and
+establishes an encrypted connection (\eg TLS with mutual authentication).
+The signed billing reports provide an additional layer of integrity that
+holds even if the transport channel is compromised.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Billing integrity] Signed reports provide origin authentication and
+    accountability: the provider can attribute a valid report to the meter
+    (assuming the meter hardware is intact).
+  \item[Privacy preserved] The provider still receives only aggregate data;
+    the signature doesn't require sharing more information.
+  \item[Hardware cost] Tamper-evident meters with secure elements are more
+    expensive than simple meters.
+  \item[Key management] The provider must maintain a database of all meter
+    public keys and manage certificate revocation for decommissioned meters.
+  \item[Single device trust] The entire billing integrity depends on the
+    meter's hardware and software being trustworthy.
+    This is a strong assumption, but it is standard practice in metering.
+\end{description}
+
+
+\section{Firmware updates and device lifecycle}\label{EnergyFirmware}
+
+\ltnote{%
+  The object of learning is that even a well-designed protocol depends on a
+  trustworthy implementation.
+  We create contrast with the protocol-level security we have focused on so
+  far.
+  What remains invariant is the protocol design itself.
+  What varies is whether the device software executing that design can be
+  replaced or modified by an attacker.
+  The critical aspect is therefore the trust chain from firmware signing to
+  secure boot.
+}
+
+Smart devices, the controller, and the meter all run software (firmware) that
+implements our protocols.
+This firmware will need updates to fix bugs, patch security vulnerabilities,
+and add features.
+
+\begin{exercise}
+  What threats are associated with firmware updates?
+  How can an attacker exploit the update mechanism?
+\end{exercise}
+
+An attacker who can install malicious firmware on a device can:
+\begin{itemize}
+  \item Extract cryptographic keys from the device.
+  \item Disable security checks (MAC verification, encryption).
+  \item Cause the device to malfunction (\eg the heating system running
+    at maximum in summer).
+  \item Use the device as a foothold to attack other devices on the
+    network.
+\end{itemize}
+
+\subsection{Signed firmware updates}
+
+Each manufacturer has a firmware-signing key pair
+\((\SKManuf, \VKManuf)\).
+The device stores the manufacturer's public key~\(\VKManuf\) in its secure
+element.
+
+Before installing a firmware update, the device verifies:
+\[
+  \Ver[\VKManuf, f, \sigma_{\text{fw}}]
+  \stackrel{?}{=} \text{true}.
+\]
+
+Here \(f\) denotes the whole firmware image.
+As with meter signatures, the verification claim is about the entire object
+being authenticated, even though the underlying signature algorithm will in
+practice hash that object internally before applying the public-key operation.
+
+If verification fails, the update is rejected.
+
+\subsection{Secure boot}
+
+\begin{exercise}
+  Even if we only install signed firmware, what happens if the device's
+  storage is modified directly (by physical access)?
+\end{exercise}
+
+\emph{Secure boot} provides the answer: at every power-on, the device
+verifies the integrity of its own firmware before executing it.
+The chain of trust starts from an immutable boot ROM that verifies the
+bootloader, which in turn verifies the main firmware.
+
+If any stage fails verification, the device refuses to boot normally and
+enters a recovery mode that only accepts signed firmware from the
+manufacturer.
+
+\subsection{Revoking compromised devices}
+
+\begin{exercise}
+  If a device is compromised (its keys extracted by an attacker), how
+  should the system respond?
+\end{exercise}
+
+The controller should maintain a list of authorized devices.
+When a device is reported compromised:
+\begin{enumerate}
+  \item The controller removes the device's key~\(\KHD\) from its
+    database, refusing further communication.
+  \item If certificate-based pairing is used, the device's certificate is
+    added to a revocation list.
+  \item The user is notified to replace or reset the device.
+  \item If the compromised device's key was used for any shared state,
+    affected keys should be rotated.
+\end{enumerate}
+
+\subsection{Limiting what insiders can do}\label{EnergyInsiders}
+
+\ltnote{%
+  The object of learning is that cryptographic authentication establishes
+  who sent a message, not that its contents are true or safe.
+  We keep the protocol invariant and vary which party is compromised: first
+  a device lying in its own telemetry, then the controller itself.
+  The critical aspects are the difference between channel integrity and
+  data integrity, and between authentication and authorization.
+  This contrast was inspired by a student solution from spring 2026.
+}
+
+Revocation handles a compromised device once we know about it.
+But how do we notice, and how do we limit the damage in the meantime?
+
+\begin{exercise}
+  A compromised device cannot forge messages from other devices, since each
+  device has its own key.
+  But it can lie in its own reports.
+  What can a compromised device achieve by reporting false power readings,
+  and how can the controller detect this?
+\end{exercise}
+
+By reporting false readings, a compromised device can manipulate the
+coordination: for example, reporting a huge consumption may cause the
+controller to throttle all the other devices.
+The MAC only proves that the report comes from the device---it says nothing
+about whether the reading is true.
+Cryptography protects the channel, not the honesty of the sensor.
+
+The controller can, however, cross-check: the meter~\(M\) independently
+measures the household's total consumption.
+The devices' reported readings can never legitimately sum to more than the
+meter's total, since the household also has loads that are not smart
+devices.
+If the sum exceeds the total, some device is over-reporting, and the
+controller can alert the user.
+(A device that under-reports hides in the unmetered remainder, so this
+check is one-sided.
+It also assumes consumption only: in a household with local generation,
+such as solar panels, devices can legitimately consume more than the
+meter measures from the grid.)
+
+\begin{exercise}
+  What if the controller itself is compromised?
+  It holds all keys and can send valid commands to every device.
+\end{exercise}
+
+The controller is the most privileged party, so its compromise is the most
+damaging.
+We cannot prevent a compromised controller from sending valid commands, but
+we can limit what those commands achieve: each device should enforce local
+safety limits and reject commands that violate them, even when the command
+is cryptographically valid.
+For example, the heating system should refuse to turn off completely in
+winter, and the car charger should never exceed its electrical rating.
+A valid MAC proves who sent the command, not that the command is safe:
+authentication is not authorization.
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Software integrity] Signed firmware and secure boot prevent
+    unauthorized software from running on devices.
+  \item[Manufacturer trust] Devices must trust their manufacturer's
+    signing key.
+    If a manufacturer's key is compromised, all their devices are
+    vulnerable.
+  \item[Update delivery] Firmware updates must reach all devices reliably,
+    including battery-powered devices that may be offline for extended
+    periods.
+  \item[Backward compatibility] Updated firmware must maintain protocol
+    compatibility with devices that haven't been updated yet.
+  \item[Device lifecycle] Eventually, manufacturers stop supporting old
+    devices.
+    There should be a mechanism to continue operating (with a clear
+    security status) or to decommission them gracefully.
+  \item[Defense in depth] Local safety limits in each device bound the
+    damage of a compromised controller; cross-checks against the meter
+    bound the damage of a lying device.
+\end{description}
+
+
+\section{Legal and usability considerations}\label{EnergyLegalUsability}
+
+\ltnote{%
+  The object of learning is that a technically plausible cryptographic design
+  must still be evaluated against legal and usability constraints.
+  This creates contrast with the purely technical focus of previous
+  sections.
+  What remains invariant is the same technical system.
+  What varies is the evaluation perspective: compliance and everyday use.
+  The critical aspects are that a system can fail in practice even if its core
+  cryptography is sound, because it may violate legal requirements or be too
+  hard for ordinary households to operate correctly.
+}
+
+\begin{exercise}
+  What legal requirements apply to a smart energy management system that
+  processes household energy data?
+\end{exercise}
+
+\subsection{GDPR and energy data}
+
+Under the \ac{GDPR}, energy consumption data is personal data because it
+can reveal information about the household's inhabitants.
+Key obligations:
+\begin{description}
+  \item[Purpose limitation] Data may only be processed for specified
+    purposes (billing, grid management).
+  \item[Data minimization] Collect only what is strictly necessary, as we
+    designed in \cref{EnergyPrivacy}.
+  \item[Storage limitation] Detailed data should not be retained longer
+    than needed.
+  \item[Data subject rights] Households can request access to their data,
+    correction, or deletion.
+  \item[Security] Appropriate technical measures (our cryptographic
+    protocols) must protect the data.
+\end{description}
+
+\subsection{EU smart meter regulations}
+
+The EU sets requirements for smart metering in the Electricity
+Directive~\autocite[Articles~19--24]{EUElectricityDirective}:
+\begin{itemize}
+  \item Meters must be able to be read remotely by the provider.
+  \item Consumers must have access to their own consumption data.
+  \item Data must be provided in a standardized format.
+  \item Consumers can choose to share their data with third parties (\eg
+    energy-management services).
+\end{itemize}
+
+Our design must ensure that the consumer can share data selectively,
+without giving the third party access to more data than necessary.
+
+\subsection{Usability for non-technical households}
+
+\begin{exercise}
+  How do we make the system usable for households where nobody has
+  technical expertise?
+\end{exercise}
+
+Key usability principles:
+\begin{description}
+  \item[Automatic coordination] Devices should coordinate without
+    requiring the user to understand the underlying protocols.
+    The system should work out of the box with sensible defaults.
+  \item[Simple pairing] Adding a new device should require at most scanning
+    a QR code or pressing a button.
+    The user should not have to configure keys, algorithms, or
+    security parameters.
+  \item[Transparent operation] The user should see the system's effect
+    (\enquote{you saved X kr this month by shifting dishwasher runs to
+    off-peak hours}) without needing to understand how.
+  \item[Graceful failure] If a device cannot communicate, it should
+    continue operating at reasonable defaults rather than failing silently
+    or requiring manual intervention.
+  \item[Clear error messages] If something goes wrong, messages should be
+    actionable: \enquote{the dishwasher lost contact with the controller,
+    check that the controller is powered on} rather than
+    \enquote{AEAD authentication failure on frame 4712}.
+\end{description}
+
+\subsection{Consequences of the design}
+
+\begin{description}
+  \item[Compliance] The system must be designed with the \ac{GDPR} and EU
+    metering regulations in mind from the start, not as an afterthought.
+  \item[Usability--security tension] Making the system easy to use may
+    require relaxing some security measures (\eg allowing pairing with
+    just a button press, which provides weaker authentication than a
+    QR code with a long secret).
+  \item[Third-party data sharing] Providing APIs for third-party services
+    introduces new attack surfaces and privacy risks.
+    Consent management and access-token scoping are essential.
+  \item[Accessibility] The system must be usable by people with
+    disabilities, which may affect the choice of pairing methods
+    (not everyone can scan a QR code).
+\end{description}
+
+
+\section{Future work and open problems}\label{EnergyFutureWork}
+
+\ltnote{%
+  The closing exercise is a fusion task: the student picks one open
+  problem and must coordinate the critical aspects practiced one at a
+  time in this chapter---threat modelling, primitive choice, key
+  management, and trade-off analysis---in a new, less structured
+  setting.
+  The list of topics varies the application context while the iterative
+  design method of the chapter remains invariant, which is intended to
+  support transfer.
+}
+
+Several aspects of smart energy management systems remain active areas of
+research and development:
+
+\begin{description}
+  \item[Post-quantum cryptography] The symmetric algorithms (AES,
+    HMAC) used in device-to-controller communication are largely
+    quantum-resistant.
+    However, any Diffie--Hellman-style key
+    establishment~\autocite{DiffieHellman} must be migrated to a
+    post-quantum key-establishment mechanism such as
+    ML-KEM~\autocite{FIPS203}, and any certificate/signature layer must
+    likewise migrate to a post-quantum signature scheme such as
+    ML-DSA~\autocite{FIPS204} to ensure long-term security.
+  \item[Denial-of-service on the radio channel] Jamming and flooding
+    attacks on the wireless channel can disrupt coordination.
+    Advanced techniques such as spread-spectrum communication,
+    cryptographic puzzles for rate limiting, and redundant communication
+    paths (\eg combining radio with power-line communication) could
+    improve resilience.
+  \item[Multi-household coordination] In apartment buildings, multiple
+    households share the same electrical supply.
+    Coordinating across households raises privacy challenges: how can
+    the building optimize collective consumption without any household
+    revealing its individual usage?
+    Techniques from secure multi-party computation could enable this.
+  \item[Renewable energy and local trading] Households with solar panels
+    may want to sell excess electricity to neighbours.
+    This peer-to-peer energy trading requires authenticated and
+    privacy-preserving transaction protocols.
+  \item[Supply-chain security for devices] How do we ensure that smart
+    devices have not been tampered with during manufacturing, transport,
+    or retail?
+    Hardware attestation and supply-chain verification protocols are
+    relevant.
+  \item[Machine-learning on encrypted data] The controller could use
+    machine learning to predict consumption patterns and optimize
+    scheduling.
+    If this processing moves to the cloud, homomorphic encryption or
+    federated learning could preserve privacy.
+\end{description}
+
+\begin{exercise}
+  Choose one of the topics above and outline how you would approach
+  designing a solution.
+  What cryptographic primitives would you use?
+  What are the main challenges?
+\end{exercise}
+
+
+\section*{Acknowledgements}
+
+This chapter was written by Daniel Bosk with the assistance of Dan-Claude
+van Thropic.
+
+Thanks to the students of the spring 2026 course for their inspiring 
+submissions (random order):
+Luca Manzari, Amin Nouiser, Fredrik Bjälå Ursäter, Elvis Tran, David Schalin, 
+Jens Jonsson, William Malmberg, Elias Vitell, Hasim Demirok, Eric Lexenberg, 
+Wiktor Dobrosierdow, Love Lindgren, Josef Anhede, Silvia Lin Lü, Vanja 
+Grigoriev, Linnéa Wennberg, Anna Akopyan, Mathias Magnusson, Zhongmin Hu, 
+Tobias Bjurström, Ahmedhadi Bashir Ibrahim, Chloe Joyce Wabingga Raneses, 
+Oliver Bojs, Jimmy Tran, Tenzin Sangpo Choedon, Ivar Boqvist, Elias 
+Kristiansson, Felix Winkelmann, Fredrik Magnevill, Vilhelm Prytz, Seerat Yasir, 
+Daniel Norman, Axel Axhag, Benjamin Widman, Daniel Nikolic, Jonathan Blomlöf, 
+Anders Mouanga, Mohammed Faisal Ahmed Ba Rashed, Karl Walfridson, David 
+Byström, Daniel Svensson, Marcus Pramborg, Naveed Rahman, Felix Bergqvist 
+Widström, Theodor Björkman, Jonathan Nilsson Cullgert, Henrik Nur, Denise 
+Hommik, Viktor Sandström, Zeyuan Zhao, Mulham Abo Khalaf, Adam Maeedi, Vivienne 
+Curewitz, Samreen Sidhu, Lorenzo Deflorian, Tamás Ferenc Fülöp, Simone 
+Brunello, Sarah Susanne Winter, Haik Hovhannesian, Shenyu Dai, Anton Holderied, 
+Manuel Michael Voit, Paula Oramas Badillo, Nils Kovacic, Alexandru Carp, Aurora 
+Navas Jimenez, Robert Rittner, Venetia Ioanna Papadopoulou, Ana Maria Dobrescu, 
+Zoi Koukouve, Baptiste Drouet, Timothée Finck, Aleksander Kregiel, Yousra Al 
+Mowahed, Sumeya Yasir Isse, Jonas Ralf Jostan, Jafar Mohammadi, Gabriel 
+Alejandro Arias Goa, Only Badle, Augusto Sebastian Barthelemy Solá, Ignacio 
+Searles, and Romain Foucaud.

@@ -7,17 +7,34 @@
 
 % XXX Summary
 \emph{Summary:}
-In this document we explore solutions to old INL1Written problems.
+This document works through a sequence of open-ended design problems in
+applied cryptography.\footnote{%
+  The scenarios are drawn from the INL1Written assignment in successive
+  years of DD2520 Applied Cryptography at KTH\@.
+}
+Each problem asks how to build a secure system for a concrete real-world
+scenario: authenticating photographs taken by a camera, detecting
+social-media bot networks, protecting police body-camera footage,
+controlling access to parcel-delivery boxes, and securing a smart-home
+energy-management system.
+For each scenario we develop a solution iteratively.
+We begin with the simplest design that meets the core goal and then refine
+it one concern at a time---confidentiality, integrity, authenticity, key
+management, revocation, privacy, and so on---examining at each step what the
+change buys us and what it costs.
+The aim is not a single finished protocol but the reasoning that leads from
+requirements to a defensible design, and an understanding of the trade-offs
+encountered along the way.
 
 % XXX Prerequisites
 \emph{Prerequisites:}
 We require the following learning objectives to be fulfilled:
 \begin{restatable}{lo}{LOterminology}\label{LOterminology}
-  The student should be albe to \emph{use} basic terminology in computer 
-  security and cryptography correctly
+  The student should be able to \emph{use} basic terminology in computer
+  security and cryptography correctly.
 \end{restatable}
 \begin{restatable}{lo}{LOdescribe}\label{LOdescribe}
-  The student should be albe to \emph{describe} cryptographic concepts and 
+  The student should be able to \emph{describe} cryptographic concepts and
   \emph{explain} their security properties.
 \end{restatable}
 

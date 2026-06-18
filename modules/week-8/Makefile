@@ -7,7 +7,8 @@ PAGES += guest-lecture.md
 PAGES += lecture-conclusion.md
 
 ASSIGNMENTS += INL1Oral.md
-ASSIGNMENTS += INL1Written.md
+ASSIGNMENTS += INL1Written-peer-review.md
+ASSIGNMENTS += INL1Written-final.md
 
 include ../module.mk
 

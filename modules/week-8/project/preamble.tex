@@ -13,6 +13,12 @@
   isbn=false,doi=false,url=false
 ]{biblatex}
 \addbibresource{bibliography.bib}
+\addbibresource{crypto.bib}
+\addbibresource{sybil.bib}
+\addbibresource{anon.bib}
+\addbibresource{ecurrency.bib}
+\addbibresource{auth.bib}
+\addbibresource{blockchain.bib}
 
 \usepackage[all]{foreign}
 \renewcommand{\foreignfullfont}{}
@@ -23,6 +29,7 @@
 
 \usepackage[strict]{csquotes}
 \usepackage[single]{acro}
+\acsetup{cite/cmd=\autocite}
 
 \usepackage{subcaption}
 
@@ -62,6 +69,78 @@
   {learning objective}{learning objectives}
   {Learning objective}{Learning objectives}
 \usepackage{bibsp}
+
+\DeclareAcronym{ECB}{short=ECB, long=Electronic Codebook}
+\DeclareAcronym{CBC}{short=CBC, long=Cipher Block Chaining}
+\DeclareAcronym{CTR}{short=CTR, long=Counter mode}
+\DeclareAcronym{GCM}{short=GCM, long=Galois/Counter Mode}
+\DeclareAcronym{AEAD}{short=AEAD, long=Authenticated Encryption with Associated Data}
+
+% Shared cryptographic notation (used across all chapters)
+% Algorithms
+\NewAlgorithm{\Enc}{Enc}
+\NewAlgorithm{\Dec}{Dec}
+\NewAlgorithm{\KDF}{KDF}
+\NewAlgorithm{\MAC}{HMAC}
+\NewAlgorithm{\Sign}{Sign}
+\NewAlgorithm{\Ver}{Verify}
+\NewAlgorithm{\AsymEnc}{AsymEnc}
+\NewAlgorithm{\AsymDec}{AsymDec}
+\NewAlgorithm{\AEADEnc}{AEAD.\!Enc}
+\NewAlgorithm{\Blind}{Blind}
+\NewAlgorithm{\Unblind}{Unblind}
+% Common variables
+\NewVariable{\sk}{sk}
+\NewVariable{\vk}{vk}
+\NewVariable{\pk}{pk}
+\NewVariable{\IV}{IV}
+% Police body cams (2025a)
+\NewVariable{\KCR}{k_{CR}}
+\NewVariable{\KENC}{k_{CR}^{\Enc}}
+\NewVariable{\KMAC}{k_{CR}^{\MAC}}
+\NewVariable{\SKC}{\sk_C}
+\NewVariable{\VKC}{\vk_C}
+\NewVariable{\PKR}{\pk_R}
+\NewVariable{\SKR}{\sk_R}
+\NewVariable{\Kn}{k_{CR}^{(n)}}
+\NewVariable{\Cn}{c_{\text{env}}^{(n)}}
+\NewVariable{\LogEntry}{L}
+\NewVariable{\LogHash}{h}
+\NewVariable{\SKRev}{sk_{\text{rev}}}
+\NewVariable{\VKRev}{vk_{\text{rev}}}
+\NewVariable{\SKSrv}{\sk_{\text{srv}}}
+\NewVariable{\VKSrv}{\vk_{\text{srv}}}
+% Parcel boxes (2025b)
+\NewVariable{\KBS}{k_{BS}}
+\NewVariable{\KToken}{k_{\text{token}}}
+\NewVariable{\SKD}{sk_D}
+\NewVariable{\PKD}{pk_D}
+\NewVariable{\SKS}{sk_S}
+\NewVariable{\PKS}{pk_S}
+\NewVariable{\SKProv}{sk_{\text{prov}}}
+\NewVariable{\PKProv}{pk_{\text{prov}}}
+% Smart energy (2026a)
+\NewVariable{\KHD}{k_{HD_i}}
+\NewVariable{\KHM}{k_{HM}}
+\NewVariable{\KEHD}{k_{HD_i}^{\Enc}}
+\NewVariable{\KMHD}{k_{HD_i}^{\MAC}}
+\NewVariable{\SKH}{\sk_H}
+\NewVariable{\VKH}{\vk_H}
+\NewVariable{\SKM}{\sk_M}
+\NewVariable{\VKM}{\vk_M}
+\NewVariable{\KME}{k_{ME}}
+\NewVariable{\SKManuf}{\sk_{\text{manuf}}}
+\NewVariable{\VKManuf}{\vk_{\text{manuf}}}
+% 2024 scenario
+\NewVariable{\PKC}{\pk_C}
+\NewVariable{\CertC}{\mathit{cert}_C}
+\NewVariable{\CertU}{\mathit{cert}_U}
+\NewAlgorithm{\GSign}{GSign}
+\NewAlgorithm{\GVer}{GVer}
+\NewAlgorithm{\GOpen}{Open}
+\NewAlgorithm{\RSign}{RSign}
+\NewAlgorithm{\RVer}{RVer}
+\NewAlgorithm{\BVer}{BVer}
 
 % Chapter-local table of contents (minitoc)
 \usepackage{etoc}
